@@ -2,7 +2,7 @@ import inspect
 import json
 
 from django.http import HttpResponse
-from website.apps.django_maced.utils.misc import MissingFromPost, is_item_name_valid, \
+from django_maced.utils.misc import MissingFromPost, is_item_name_valid, \
     get_bad_item_name_characters_in_string
 
 

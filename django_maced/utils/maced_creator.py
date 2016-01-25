@@ -4,7 +4,7 @@ import json
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
-from website.apps.django_maced.utils.get_html_code_functions import get_items_html_code_for_text, \
+from django_maced.utils.get_html_code_functions import get_items_html_code_for_text, \
     get_items_html_code_for_color, get_items_html_code_for_select
 
 BAD_ITEM_NAME_CHARACTERS = (".", ":", "#", "$", "*")

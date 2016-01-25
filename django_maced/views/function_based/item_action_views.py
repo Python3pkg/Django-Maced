@@ -6,8 +6,8 @@ from django.db import IntegrityError, transaction
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from website.apps.django_maced.utils.model_merging import merge_model_objects
-from website.apps.django_maced.views.function_based.authenticate_and_validate_view import \
+from django_maced.utils.model_merging import merge_model_objects
+from django_maced.views.function_based.authenticate_and_validate_view import \
     authenticate_and_validate_kwargs_view, get_fields_and_item_name_from_post_view
 
 

@@ -1,6 +1,6 @@
 import collections
 
-from website.apps.django_maced.utils.maced_creator import BAD_ITEM_NAME_CHARACTERS
+from django_maced.utils.maced_creator import BAD_ITEM_NAME_CHARACTERS
 
 
 class MissingFromPost:
