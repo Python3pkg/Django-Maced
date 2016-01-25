@@ -116,9 +116,9 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
     fields_to_save = result[0]
     item_name = result[1]
 
-    # Load item1
+    # Check that item1 exists
     try:
-        item1 = item_class.objects.get(id=item1_id)
+        item_class.objects.get(id=item1_id).exists()
     except ObjectDoesNotExist:
         return HttpResponse(content="The item on the left does not exist. Did someone delete it?", status=500)
 
@@ -130,9 +130,12 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
 
     # Fill item1 with whatever came from the frontend. This will be the primary item.
     try:
-        item1.update(**fields_to_save)
+        item_class.objects.filter(id=item1_id).update(**fields_to_save)
     except IntegrityError as error:
         return HttpResponse(content="An object related to this already exists or there is a problem with this item: " + str(error), status=500)
+
+    # Load item1
+    item1 = item_class.objects.get(id=item1_id)
 
     # Merge em :)
     merge_model_objects(item1, item2)
