@@ -117,7 +117,7 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
     item_name = result[1]
 
     # Check that item1 exists
-    if not item_class.objects.get(id=item1_id).exists():
+    if not item_class.objects.filter(id=item1_id).exists():
         return HttpResponse(content="The item with id " + str(item1_id) + " does not exist. Did someone delete it?", status=500)
 
     # Load item2
