@@ -1,0 +1,37 @@
+{% load bootstrap3 %}
+
+<div id="{{ action_type }}-{{ item_name }}-modal" class="modal fade" tabindex="-1" role="dialog"
+    aria-labelledby="{{ action_type }}-{{ item_name }}-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="{{ action_type }}-{{ item_name }}-modal-label">{{ action_type|title }} {{ item_html_name }}</h3>
+            </div>
+
+            <div class="modal-body">
+                <div id="{{ action_type }}-{{ item_name }}-spinner" style="display: none; text-align: center">
+                    <i class="icon icon-spinner icon-spin"></i>
+                </div>
+
+                <div id="{{ action_type }}-{{ item_name }}-error-div" style="display: none; text-align: center; color: Red">
+                </div>
+
+                {{ item_html_code|safe }}
+            </div>
+
+            <div class="modal-footer">
+                <div class="pull-right">
+                    <button type="button" class="btn btn-success"
+                        onclick="{{ action_type }}_item('{{ item_name }}', '{{ url }}');" aria-hidden="true">
+                        {% bootstrap_icon 'ok' %} Accept
+                    </button>
+
+                    <button class="btn btn-warning" data-dismiss="modal" aria-hidden="true">
+                        {% bootstrap_icon 'ban-circle' %} Discard Changes and Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

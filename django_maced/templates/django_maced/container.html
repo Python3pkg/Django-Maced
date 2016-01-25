@@ -1,0 +1,77 @@
+{% load bootstrap3 %}
+
+<input type="hidden" id="{{ item_name }}-hidden" name="{{ item_name }}_id" value="" />
+
+<tr id="{{ item_name }}-tr" {% if should_hide %} style="display: none" {% endif %}>
+    <th> {{ item_html_name }}: </th>
+
+    <td>
+        <select class="form-control disableable" id="{{ item_name }}-select" {% if should_disable %} disabled {% endif %}>
+            {% if allow_empty %} <option value=""></option> {% endif %}
+            {% for item in items %}
+                <option value="{{ item.id }}" {% if item.id == item_id %} selected {% endif %}> {{ item }} ({{ item.id }}) </option>
+            {% endfor %}
+        </select>
+
+        <div id="add-{{ item_name }}-success-div" style="display: none; color: Green">
+            <b> Successfully added a new {{ item_html_name }}. </b>
+        </div>
+
+        <div id="edit-{{ item_name }}-success-div" style="display: none; color: Green">
+            <b> Successfully edited the {{ item_html_name }}. </b>
+        </div>
+
+        <div id="merge-{{ item_name }}-success-div" style="display: none; color: Green">
+            <b> Successfully edited the {{ item_html_name }}. </b>
+        </div>
+
+        <div id="delete-{{ item_name }}-success-div" style="display: none; color: Green">
+            <b> Successfully deleted the {{ item_html_name }}. </b>
+        </div>
+    </td>
+
+    <td>
+        <div class="btn-group">
+            <div class="btn-group-vertical">
+                {% if not should_remove_add %}
+                    <button type="button" class="btn btn-success disableable" id="add-{{ item_name }}-button"
+                        data-original-title="Add New {{ item_html_name }}" data-toggle="modal"
+                        data-target="#add-{{ item_name }}-modal">
+                        {% bootstrap_icon 'plus' %} Add New {{ item_html_name }}
+                    </button>
+                {% endif %}
+
+                {% if not should_remove_edit %}
+                    <button type="button" class="btn btn-info disableable" id="edit-{{ item_name }}-button"
+                        data-original-title="Edit {{ item_html_name }}" data-toggle="modal"
+                        data-target="#edit-{{ item_name }}-modal">
+                        {% bootstrap_icon 'edit' %} Edit {{ item_html_name }}
+                    </button>
+                {% endif %}
+            </div>
+
+            <div class="btn-group-vertical">
+                {% if not should_remove_merge %}
+                    <button type="button" class="btn btn-warning disableable" id="merge-{{ item_name }}-button"
+                        data-original-title="Merge {{ item_html_name }}" data-toggle="modal"
+                        data-target="#merge-{{ item_name }}-modal">
+                        {% bootstrap_icon 'resize-small' %} Merge {{ item_html_name }}
+                    </button>
+                {% endif %}
+
+                {% if not should_remove_delete %}
+                    <button type="button" class="btn btn-danger disableable" id="delete-{{ item_name }}-button"
+                        data-original-title="Delete {{ item_html_name }}" data-toggle="modal"
+                        data-target="#delete-{{ item_name }}-modal">
+                        {% bootstrap_icon 'trash' %} Delete {{ item_html_name }}
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </td>
+</tr>
+
+{% include "django_maced/modal.html" with action_type="add" item_html_code=add_html_code url=add_url %}
+{% include "django_maced/modal.html" with action_type="edit" item_html_code=edit_html_code url=edit_url %}
+{% include "django_maced/modal.html" with action_type="merge" item_html_code=merge_html_code url=merge_url %}
+{% include "django_maced/modal.html" with action_type="delete" item_html_code=delete_html_code url=delete_url %}
