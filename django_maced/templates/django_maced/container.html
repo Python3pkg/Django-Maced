@@ -22,7 +22,11 @@
         </div>
 
         <div id="merge-{{ item_name }}-success-div" style="display: none; color: Green">
-            <b> Successfully edited the {{ item_html_name }}. </b>
+            <b> Successfully merged the {{ item_html_name }}. </b>
+        </div>
+
+        <div id="clone-{{ item_name }}-success-div" style="display: none; color: Green">
+            <b> Successfully cloned the {{ item_html_name }}. </b>
         </div>
 
         <div id="delete-{{ item_name }}-success-div" style="display: none; color: Green">
@@ -37,7 +41,7 @@
                     <button type="button" class="btn btn-success disableable" id="add-{{ item_name }}-button"
                         data-original-title="Add New {{ item_html_name }}" data-toggle="modal"
                         data-target="#add-{{ item_name }}-modal">
-                        {% bootstrap_icon 'plus' %} Add New {{ item_html_name }}
+                        {% bootstrap_icon "plus" %} Add New {{ item_html_name }}
                     </button>
                 {% endif %}
 
@@ -45,7 +49,7 @@
                     <button type="button" class="btn btn-info disableable" id="edit-{{ item_name }}-button"
                         data-original-title="Edit {{ item_html_name }}" data-toggle="modal"
                         data-target="#edit-{{ item_name }}-modal">
-                        {% bootstrap_icon 'edit' %} Edit {{ item_html_name }}
+                        {% bootstrap_icon "edit" %} Edit {{ item_html_name }}
                     </button>
                 {% endif %}
             </div>
@@ -55,7 +59,15 @@
                     <button type="button" class="btn btn-warning disableable" id="merge-{{ item_name }}-button"
                         data-original-title="Merge {{ item_html_name }}" data-toggle="modal"
                         data-target="#merge-{{ item_name }}-modal">
-                        {% bootstrap_icon 'resize-small' %} Merge {{ item_html_name }}
+                        {% bootstrap_icon "resize-small" %} Merge {{ item_html_name }}
+                    </button>
+                {% endif %}
+
+                {% if not should_remove_clone %}
+                    <button type="button" class="btn btn-warning disableable" id="clone-{{ item_name }}-button"
+                        data-original-title="Clone {{ item_html_name }}" data-toggle="modal"
+                        data-target="#clone-{{ item_name }}-modal">
+                        {% bootstrap_icon "duplicate" %} Clone {{ item_html_name }}
                     </button>
                 {% endif %}
 
@@ -63,7 +75,7 @@
                     <button type="button" class="btn btn-danger disableable" id="delete-{{ item_name }}-button"
                         data-original-title="Delete {{ item_html_name }}" data-toggle="modal"
                         data-target="#delete-{{ item_name }}-modal">
-                        {% bootstrap_icon 'trash' %} Delete {{ item_html_name }}
+                        {% bootstrap_icon "trash" %} Delete {{ item_html_name }}
                     </button>
                 {% endif %}
             </div>
@@ -74,4 +86,5 @@
 {% include "django_maced/modal.html" with action_type="add" item_html_code=add_html_code url=add_url %}
 {% include "django_maced/modal.html" with action_type="edit" item_html_code=edit_html_code url=edit_url %}
 {% include "django_maced/modal.html" with action_type="merge" item_html_code=merge_html_code url=merge_url %}
+{% include "django_maced/modal.html" with action_type="merge" item_html_code=merge_html_code url=merge_url %}  {# Will be changed to clone #}
 {% include "django_maced/modal.html" with action_type="delete" item_html_code=delete_html_code url=delete_url %}
