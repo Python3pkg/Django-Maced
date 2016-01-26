@@ -77,13 +77,29 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
     maced_data["get_urls"][item_name] = get_url
     field_name_list = []
 
-    # maced_object_option_html_code = get_html_code_for_options(options_list)
+    # Get all items of this type
+    items = get_items(item_class)
+
+    # Create an item_options_list which is a list of tuples defined as (id_of_the_item, name_of_the_item). This will
+    # be used in the merge function.
+    item_options_list = [(item.id, getattr(item, item_name_field_name)) for item in items]
+
+    maced_object_option_html_code = get_html_code_for_options(item_options_list)
 
     # Merge has special html before the regular html
     html_code_dictionary[item_name]["merge"] = \
         '<table class="table table-striped">' + \
             '<tr>' + \
-                '<'
+                '<td>' + \
+                    '<select class="form-control" id="merge-' + item_name + '1-input" disabled >' + maced_object_option_html_code + '</select>' + \
+                '</td>' + \
+                '<td>' + \
+                '<b> Resulting ' + str(item_html_name) + ' </b>' + \
+                '</td>' + \
+                '<td>' + \
+                    '<select class="form-control" id="merge-' + item_name + '2-input" disabled >' + maced_object_option_html_code + '</select>' + \
+                '</td>' + \
+            '</tr>'
 
     # Create html input fields for each field on the model
     for field in field_list:
@@ -117,6 +133,13 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
     sub_context["allow_empty"] = allow_empty
 
     context[item_name + "_item"] = render(request=None, template_name="django_maced/container.html", context=sub_context).content
+
+
+# Later, restrictions will be applied to incorporate permissions/public/private/etc.
+def get_items(item_class):
+    items = item_class.objects.all()
+
+    return items
 
 
 # original_dictionary is the dictionary that is being built up for a particular maced_item object.
