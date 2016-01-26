@@ -46,7 +46,7 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
         context["maced_data"] = {}
 
     if "maced_modals" not in context:
-        context["maced_modals"] = {}
+        context["maced_modals"] = ""
 
     maced_data = context["maced_data"]
 
