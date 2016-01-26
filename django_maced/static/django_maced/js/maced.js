@@ -202,17 +202,11 @@ function merge_item(item_name, base_url)
     var field_name;
     var i;
 
-    alert(item1_id);
-    alert(item2_id);
-
     for (i = 0; i < field_names[item_name].length; i++)
     {
         field_name = field_names[item_name][i];
         data[field_name] = get_input_item(action_type, item_name, field_name);
-        alert(data[field_name]);
     }
-
-    return;
 
     spinner.css("display", "");
     error_div.css("display", "none");
