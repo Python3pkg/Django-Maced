@@ -101,7 +101,7 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
                     '<b> Resulting ' + str(item_html_name) + ' </b>' + \
                 '</td>' + \
                 '<td>' + \
-                    '<select class="form-control" id="merge-' + item_name + '2-input" disabled >' + maced_object_option_html_code + '</select>' + \
+                    '<select class="form-control" id="merge-' + item_name + '2-input">' + maced_object_option_html_code + '</select>' + \
                 '</td>' + \
             '</tr>'
 
