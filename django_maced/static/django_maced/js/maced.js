@@ -193,6 +193,7 @@ function merge_item(item_name, base_url)
     var modal = $("#" + action_type + "-" + item_name + "-modal");
     var spinner = $("#" + action_type + "-" + item_name + "-spinner");
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
+    var item_select = $("#" + item_name + "-select");
     var item1_select = $("#" + MERGE + "-" + item_name + "1-input");
     var item2_select = $("#" + MERGE + "-" + item_name + "2-input");
     var data = {};
@@ -234,10 +235,15 @@ function merge_item(item_name, base_url)
             modal.modal("hide");
             $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
 
-            // Add the new option to the select and select it
-            item1_select.find(":selected").attr("value", id).text(name);
+            // For the following finds, which option is used to remove and which is used to set to doesn't matter
 
-            //// Fill edit, merge, and delete with this new data
+            // Remove the old option
+            item_select.find("option[value=" + item2_id + "]").remove();
+
+            // Find the new option and select it
+            item_select.find("option[value=" + item1_id + "]").attr("value", id).text(name);
+
+            // Fill edit, merge, and delete with this new data
             get_item(item_name);
         },
 
