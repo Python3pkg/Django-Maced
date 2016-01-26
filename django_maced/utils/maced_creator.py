@@ -90,12 +90,12 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
     html_code_dictionary[item_name]["merge"] = \
         '<table class="table table-striped">' + \
             '<tr>' + \
-                '<th></th>' + \
+                '<th>WhatIsThis</th>' + \
                 '<td>' + \
                     '<select class="form-control" id="merge-' + item_name + '1-input" disabled >' + maced_object_option_html_code + '</select>' + \
                 '</td>' + \
                 '<td>' + \
-                '<b> Resulting ' + str(item_html_name) + ' </b>' + \
+                    '<b> Resulting ' + str(item_html_name) + ' </b>' + \
                 '</td>' + \
                 '<td>' + \
                     '<select class="form-control" id="merge-' + item_name + '2-input" disabled >' + maced_object_option_html_code + '</select>' + \
