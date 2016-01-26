@@ -134,7 +134,7 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
     sub_context["allow_empty"] = allow_empty
 
     context[item_name + "_item"] = render(request=None, template_name="django_maced/container.html", context=sub_context).content
-    context[item_name + "_modals"] = render(request=None, template_name="django_maced/modal_list.html", context=sub_context).content
+    context["maced_modals"] += render(request=None, template_name="django_maced/modal_list.html", context=sub_context).content
 
 
 # Later, restrictions will be applied to incorporate permissions/public/private/etc.

@@ -92,7 +92,11 @@ In the template where you want the maced object to appear:
     <table class="table table-striped">
         {{ example_item|safe }}
     </table>
+
+    {{ maced_modals|safe }}
 ```
+
+Be sure that the modals are outside of any tables.
 
 And that's it. Just that small amount of code and you have access to merging, adding, cloning, editing, and deleting 
 records from you database with an easy-to-use dropdown/button/popup system. Note that many of the names from above were 
