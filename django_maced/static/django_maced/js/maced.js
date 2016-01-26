@@ -359,6 +359,9 @@ function get_item(item_name)
             var field_name;
             var i;
 
+            // 1 is for the merge modal left select. Setting it to the new id
+            $("#" + MERGE + "-" + item_name + "1-input").find("option[value=" + item_id + "]").attr("selected", true);
+
             // Fill the modals with appropriate content
             for (i = 0; i < field_names[item_name].length; i++)
             {
@@ -399,7 +402,7 @@ function get_item2_for_merge(item_name)
     var merge_button = $("#" + MERGE + "-" + item_name + "-button");
     var merge_spinner = $("#" + MERGE + "-" + item_name + "-spinner");
     var merge_error_div = $("#" + MERGE + "-" + item_name + "-error-div");
-    var item_select = $("#" + MERGE + "-" + item_name + "2-input");  // 2 is for the right panel. The left has already been filled.
+    var item_select = $("#" + MERGE + "-" + item_name + "2-input");  // 2 is for the right select. The left has already been filled.
     var item_id = item_select.val();
     var url = get_urls[item_name] + item_id + "/";
     var field_name;
