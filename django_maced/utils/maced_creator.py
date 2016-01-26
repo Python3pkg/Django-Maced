@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
 from django_maced.utils.get_html_code_functions import get_items_html_code_for_text, \
-    get_items_html_code_for_color, get_items_html_code_for_select
+    get_items_html_code_for_color, get_items_html_code_for_select, get_html_code_for_options
 
 BAD_ITEM_NAME_CHARACTERS = (".", ":", "#", "$", "*")
 ACTION_TYPES = ["add", "edit", "merge", "delete"]
@@ -77,6 +77,15 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
     maced_data["get_urls"][item_name] = get_url
     field_name_list = []
 
+    # maced_object_option_html_code = get_html_code_for_options(options_list)
+
+    # Merge has special html before the regular html
+    html_code_dictionary[item_name]["merge"] = \
+        '<table class="table table-striped">' + \
+            '<tr>' + \
+                '<'
+
+    # Create html input fields for each field on the model
     for field in field_list:
         if "type" not in field:
             field["type"] = "text"
@@ -86,6 +95,9 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
 
         insert_items_html_code(html_code_dictionary, item_name, field["type"], field["html_name"], field["name"])
         field_name_list.append(field["name"])
+
+    # Merge has special html after the regular html
+    html_code_dictionary[item_name]["merge"] = "</table>"
 
     insert_field_names(context, item_name, field_name_list)
 

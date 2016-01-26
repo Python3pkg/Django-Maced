@@ -67,7 +67,7 @@
                     <button type="button" class="btn btn-warning disableable" id="merge-{{ item_name }}-button"
                         data-original-title="Merge {{ item_html_name }}" data-toggle="modal"
                         data-target="#merge-{{ item_name }}-modal">
-                        {% bootstrap_icon "resize-small" %} Merge {{ item_html_name|pluralize }}
+                        {% bootstrap_icon "resize-small" %} Merge {{ item_html_name|pluralize|default:item_html_name }}
                     </button>
                 {% endif %}
 
