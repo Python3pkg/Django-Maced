@@ -49,7 +49,7 @@
                     <button type="button" class="btn btn-primary disableable" id="clone-{{ item_name }}-button"
                         data-original-title="Clone {{ item_html_name }}" data-toggle="modal"
                         data-target="#clone-{{ item_name }}-modal" disabled>
-                        {% bootstrap_icon "duplicate" %} Clone {{ item_html_name }}
+                        {% bootstrap_icon "duplicate" %} Clone {{ item_html_name }} (Function not implemented)
                     </button>
                 {% endif %}
 
@@ -83,17 +83,10 @@
                     <button type="button" class="btn btn-secondary disableable" id="info-{{ item_name }}-button"
                         data-original-title="{{ item_html_name }} Info" data-toggle="modal"
                         data-target="#info-{{ item_name }}-modal" disabled>
-                        {% bootstrap_icon "list-alt" %} {{ item_html_name }} Info
+                        {% bootstrap_icon "list-alt" %} {{ item_html_name }} Info (Function not implemented)
                     </button>
                 {% endif %}
             </div>
         </div>
     </td>
 </tr>
-
-{% include "django_maced/modal.html" with action_type="add" item_html_code=add_html_code url=add_url %}
-{# {% include "django_maced/modal.html" with action_type="merge" item_html_code=merge_html_code url=merge_url %} Will be changed to clone #}
-{% include "django_maced/modal.html" with action_type="edit" item_html_code=edit_html_code url=edit_url %}
-{% include "django_maced/modal.html" with action_type="merge" item_html_code=merge_html_code url=merge_url %}
-{% include "django_maced/modal.html" with action_type="delete" item_html_code=delete_html_code url=delete_url %}
-{# {% include "django_maced/modal.html" with action_type="merge" item_html_code=merge_html_code url=merge_url %} Will be changed to info #}

@@ -337,7 +337,7 @@ function get_item(item_name)
             set_input_item(DELETE, item_name, field_name, "");
         }
 
-        edit_button.prop("disabled", true);
+        edit_button.prop("disabled", false);
         merge_button.prop("disabled", true);
         delete_button.prop("disabled", true);
 
