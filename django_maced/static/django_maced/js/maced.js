@@ -193,8 +193,8 @@ function merge_item(item_name, base_url)
     var modal = $("#" + action_type + "-" + item_name + "-modal");
     var spinner = $("#" + action_type + "-" + item_name + "-spinner");
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
-    var item1_select = $("#" + item_name + "1-input");
-    var item2_select = $("#" + item_name + "2-input");
+    var item1_select = $("#" + MERGE + "-" + item_name + "1-input");
+    var item2_select = $("#" + MERGE + "-" + item_name + "2-input");
     var data = {};
     var item1_id = item1_select.val();
     var item2_id = item2_select.val();
