@@ -1,0 +1,4 @@
+Prevent merge when there is only 1 item. This needs to be done at least on the frontend.
+Add permission checking.
+Add duplication action.
+Add info action.

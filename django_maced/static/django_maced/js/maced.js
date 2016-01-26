@@ -26,47 +26,37 @@ $(document).ready(function()
 
         $("#" + item_name + "-hidden").val(item_select.val());
 
-        $("#" + ADD + "-" + item_name + "-button").click({item_name: item_name}, function(event)
+        // Add click events for all buttons to remove success divs
+        for (var action_type in [ADD, EDIT, MERGE, DELETE])
+        {
+            $("#" + action_type + "-" + item_name + "-button").click({item_name: item_name}, function(event)
+            {
+                remove_success_divs(event.data.item_name);
+            });
+        }
+
+        // Add click events for all selects to remove success divs
+        item_select.click({item_name: item_name}, function(event)
         {
             remove_success_divs(event.data.item_name);
         });
 
-        $("#" + EDIT + "-" + item_name + "-button").click({item_name: item_name}, function(event)
+        // Add change events for all selects to cause data loads
+        item_select.change({item_name: item_name}, function(event)
         {
-            remove_success_divs(event.data.item_name);
-        });
-
-        $("#" + MERGE + "-" + item_name + "-button").click({item_name: item_name}, function(event)
-        {
-            remove_success_divs(event.data.item_name);
-        });
-
-        $("#" + DELETE + "-" + item_name + "-button").click({item_name: item_name}, function(event)
-        {
-            remove_success_divs(event.data.item_name);
-        });
-
-        item_select.change({item_name: item_name, item_select: item_select}, function(event)
-        {
+            // Disable actions while we are getting data
             $("#" + EDIT + "-" + event.data.item_name + "-button").prop("disabled", true);
             $("#" + MERGE + "-" + event.data.item_name + "-button").prop("disabled", true);
             $("#" + DELETE + "-" + event.data.item_name + "-button").prop("disabled", true);
 
-            if ($(this).val() == "")
-            {
-                $("#" + event.data.item_name + "-hidden").val("");
-            }
-            else
-            {
-                get_item(event.data.item_name);
-            }
-
-            $("#" + event.data.item_name).val(event.data.item_select.val());
+            // Get the data
+            get_item(event.data.item_name);
         });
 
-        item_select.click({item_name: item_name}, function(event)
+        // Add change event for merge modal right select. Using "input" because it was copied and I'm too lazy to fix right now. :)
+        $("#merge-" + item_name + "2-input").change({item_name: item_name}, function(event)
         {
-            remove_success_divs(event.data.item_name);
+            get_item2_for_merge(event.data.item_name);
         });
     }
 });
@@ -121,7 +111,7 @@ function add_item(item_name, url)
             for (i = 0; i < field_names[item_name].length; i++)
             {
                 field_name = field_names[item_name][i];
-                set_input_item(action_type, item_name, field_name, "");
+                set_input_item(action_type, item_name, field_name, "", null);
             }
 
             // Fill edit, merge, and delete with this new data
@@ -203,20 +193,26 @@ function merge_item(item_name, base_url)
     var modal = $("#" + action_type + "-" + item_name + "-modal");
     var spinner = $("#" + action_type + "-" + item_name + "-spinner");
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
-    var item1_select = $("#" + item_name + "-select");
-    //var item2_select = $("#" + item_name + "-select");
+    var item1_select = $("#" + item_name + "1-input");
+    var item2_select = $("#" + item_name + "2-input");
     var data = {};
     var item1_id = item1_select.val();
-    //var item2_id = item2_select.val();
-    var url = base_url + item1_id + "/" + 1 + "/";
+    var item2_id = item2_select.val();
+    var url = base_url + item1_id + "/" + item2_id + "/";
     var field_name;
     var i;
+
+    alert(item1_id);
+    alert(item2_id);
 
     for (i = 0; i < field_names[item_name].length; i++)
     {
         field_name = field_names[item_name][i];
         data[field_name] = get_input_item(action_type, item_name, field_name);
+        alert(data[field_name]);
     }
+
+    return;
 
     spinner.css("display", "");
     error_div.css("display", "none");
@@ -324,6 +320,7 @@ function get_item(item_name)
     var field_name;
     var i;
 
+    // Fill the hidden value with the new value. This is what is sent to the backend on post.
     item_hidden.val(item_select.val());
 
     // Fill the modals with appropriate content
@@ -332,25 +329,16 @@ function get_item(item_name)
         for (i = 0; i < field_names[item_name].length; i++)
         {
             field_name = field_names[item_name][i];
-            set_input_item(EDIT, item_name, field_name, "");
-            set_input_item(MERGE, item_name, field_name, "");
-            set_input_item(DELETE, item_name, field_name, "");
-        }
 
-        edit_button.prop("disabled", false);
-        merge_button.prop("disabled", true);
-        delete_button.prop("disabled", true);
+            // Empty all the modals out for this item
+            set_input_item(EDIT, item_name, field_name, "", null);
+            set_input_item(MERGE, item_name, field_name, "", 1);
+            set_input_item(MERGE, item_name, field_name, "", 2);
+            set_input_item(DELETE, item_name, field_name, "", null);
+        }
 
         return;
     }
-    else
-    {
-        edit_button.prop("disabled", false);
-        merge_button.prop("disabled", false);
-        delete_button.prop("disabled", false);
-    }
-
-    //add_spinner();
 
     $.ajax(
     {
@@ -375,12 +363,16 @@ function get_item(item_name)
             for (i = 0; i < field_names[item_name].length; i++)
             {
                 field_name = field_names[item_name][i];
-                set_input_item(EDIT, item_name, field_name, fields[field_name]);
-                set_input_item(MERGE, item_name, field_name, fields[field_name]);
-                set_input_item(DELETE, item_name, field_name, fields[field_name]);
+                set_input_item(EDIT, item_name, field_name, fields[field_name], null);
+                set_input_item(MERGE, item_name, field_name, fields[field_name], 1);  // Fill in the left panel
+                set_input_item(MERGE, item_name, field_name, "", 2);  // But empty the right panel
+                set_input_item(DELETE, item_name, field_name, fields[field_name], null);
             }
 
-            //remove_spinner();
+            // Enable the buttons
+            edit_button.prop("disabled", false);
+            merge_button.prop("disabled", false);
+            delete_button.prop("disabled", false);
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
@@ -396,8 +388,72 @@ function get_item(item_name)
             delete_spinner.css("display", "none");
             delete_error_div.text(XMLHttpRequest.responseText);
             delete_error_div.css("display", "");
+        }
+    });
+}
 
-            //remove_spinner();
+// Special get action function for item2 on the merge modal
+function get_item2_for_merge(item_name)
+{
+    var action_type = GET;
+    var merge_button = $("#" + MERGE + "-" + item_name + "-button");
+    var merge_spinner = $("#" + MERGE + "-" + item_name + "-spinner");
+    var merge_error_div = $("#" + MERGE + "-" + item_name + "-error-div");
+    var item_select = $("#" + MERGE + "-" + item_name + "2-input");  // 2 is for the right panel. The left has already been filled.
+    var item_id = item_select.val();
+    var url = get_urls[item_name] + item_id + "/";
+    var field_name;
+    var i;
+
+    // Disable the confirmation button. Need to create this logic.
+    //merge_button.prop("disabled", true);
+
+    // Fill the merge modal's right panel with with appropriate content
+    if (item_id == "" || typeof item_id === typeof undefined)
+    {
+        for (i = 0; i < field_names[item_name].length; i++)
+        {
+            field_name = field_names[item_name][i];
+
+            // Empty the merge modal's right panel for this item
+            set_input_item(MERGE, item_name, field_name, "", 2);
+        }
+
+        return;
+    }
+
+    $.ajax(
+    {
+        type: "GET",
+        url: url,
+
+        success: function(out_data)
+        {
+            var out_data_json = JSON.parse(out_data);
+            var authenticated = out_data_json["authenticated"];
+
+            if (!authenticate(authenticated, action_type))
+            {
+                return;
+            }
+
+            var fields = out_data_json["fields"];
+            var field_name;
+            var i;
+
+            // Fill the modals with appropriate content
+            for (i = 0; i < field_names[item_name].length; i++)
+            {
+                field_name = field_names[item_name][i];
+                set_input_item(MERGE, item_name, field_name, fields[field_name], 2);  // Fill in the right panel
+            }
+        },
+
+        error: function(XMLHttpRequest, textStatus, errorThrown)
+        {
+            merge_spinner.css("display", "none");
+            merge_error_div.text(XMLHttpRequest.responseText);
+            merge_error_div.css("display", "");
         }
     });
 }
@@ -427,6 +483,7 @@ function remove_success_divs(item_name)
     $("#" + DELETE + "-" + item_name + "-success-div").css("display", "none");
 }
 
+// Get value from an input for the related item
 function get_input_item(action_type, item_name, field_name)
 {
     var input = $("#" + action_type + "-" + item_name + "-" + field_name + "-input");
@@ -449,9 +506,19 @@ function get_input_item(action_type, item_name, field_name)
     }
 }
 
-function set_input_item(action_type, item_name, field_name, value)
+// Set value of an input for the related item
+function set_input_item(action_type, item_name, field_name, value, merge_panel_number)
 {
-    var input = $("#" + action_type + "-" + item_name + "-" + field_name + "-input");
+    var input;
+
+    if (action_type == MERGE)
+    {
+        input = $("#" + action_type + "-" + item_name + merge_panel_number + "-" + field_name + "-input");
+    }
+    else
+    {
+        input = $("#" + action_type + "-" + item_name + "-" + field_name + "-input");
+    }
 
     if (input.is("input:text"))
     {
