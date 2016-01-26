@@ -97,7 +97,7 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
                 '<td>' + \
                     '<select class="form-control" id="merge-' + item_name + '1-input" disabled >' + maced_object_option_html_code + '</select>' + \
                 '</td>' + \
-                '<td>' + \
+                '<td style="text-align: center;">' + \
                     '<b> Resulting ' + str(item_html_name) + ' </b>' + \
                 '</td>' + \
                 '<td>' + \
