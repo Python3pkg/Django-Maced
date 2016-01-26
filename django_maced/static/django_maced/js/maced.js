@@ -68,6 +68,8 @@ function add_item(item_name, url)
     var spinner = $("#" + action_type + "-" + item_name + "-spinner");
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
     var item_select = $("#" + item_name + "-select");
+    var merge_item1_select = $("#" + MERGE + "-" + item_name + "1-input");
+    var merge_item2_select = $("#" + MERGE + "-" + item_name + "2-input");
     var data = {};
     var field_name;
     var i;
@@ -106,6 +108,8 @@ function add_item(item_name, url)
 
             // Add the new option to the select and select it
             item_select.append($("<option selected></option>").attr("value", id).text(name));
+            merge_item1_select.append($("<option selected></option>").attr("value", id).text(name));
+            merge_item2_select.append($("<option></option>").attr("value", id).text(name));  // Select 2 doesn't need to have its selection overridden
 
             // Reset the modal for the next item addition
             for (i = 0; i < field_names[item_name].length; i++)
@@ -134,6 +138,8 @@ function edit_item(item_name, base_url)
     var spinner = $("#" + action_type + "-" + item_name + "-spinner");
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
     var item_select = $("#" + item_name + "-select");
+    var merge_item1_select = $("#" + MERGE + "-" + item_name + "1-input");
+    var merge_item2_select = $("#" + MERGE + "-" + item_name + "2-input");
     var data = {};
     var item_id = item_select.val();
     var url = base_url + item_id + "/";
@@ -172,12 +178,13 @@ function edit_item(item_name, base_url)
             $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
 
             // Update the option with the new name (could be the same name though)
-            item_select.find(":selected").attr("value", item_id).text(name);
+            item_select.find(":selected").text(name);  // Using selected because it is probably faster
+            merge_item1_select.find("option[value=" + item_id + "]").text(name);  // Not using select for these since it can't be guaranteed that is the selected one
+            merge_item2_select.find("option[value=" + item_id + "]").text(name);  // Not using select for these since it can't be guaranteed that is the selected one
 
             // Fill edit, merge, and delete with this new data
             get_item(item_name);
         },
-
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
             spinner.css("display", "none");
@@ -194,11 +201,11 @@ function merge_item(item_name, base_url)
     var spinner = $("#" + action_type + "-" + item_name + "-spinner");
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
     var item_select = $("#" + item_name + "-select");
-    var item1_select = $("#" + MERGE + "-" + item_name + "1-input");
-    var item2_select = $("#" + MERGE + "-" + item_name + "2-input");
+    var merge_item1_select = $("#" + MERGE + "-" + item_name + "1-input");
+    var merge_item2_select = $("#" + MERGE + "-" + item_name + "2-input");
     var data = {};
-    var item1_id = item1_select.val();
-    var item2_id = item2_select.val();
+    var item1_id = merge_item1_select.val();
+    var item2_id = merge_item2_select.val();
     var url = base_url + item1_id + "/" + item2_id + "/";
     var field_name;
     var i;
@@ -239,9 +246,13 @@ function merge_item(item_name, base_url)
 
             // Remove the old option
             item_select.find("option[value=" + item2_id + "]").remove();
+            merge_item1_select.find("option[value=" + item2_id + "]").remove();
+            merge_item2_select.find("option[value=" + item2_id + "]").remove();
 
-            // Find the new option and select it
-            item_select.find("option[value=" + item1_id + "]").attr("value", id).text(name);
+            // Turn the other option into the new merged option and select it
+            item_select.find("option[value=" + item1_id + "]").attr("value", id).prop("selected", true).text(name);
+            merge_item1_select.find("option[value=" + item1_id + "]").attr("value", id).prop("selected", true).text(name);
+            merge_item2_select.find("option[value=" + item1_id + "]").attr("value", id).prop("selected", true).text(name);
 
             // Fill edit, merge, and delete with this new data
             get_item(item_name);
@@ -263,6 +274,8 @@ function delete_item(item_name, base_url)
     var spinner = $("#" + action_type + "-" + item_name + "-spinner");
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
     var item_select = $("#" + item_name + "-select");
+    var merge_item1_select = $("#" + MERGE + "-" + item_name + "1-input");
+    var merge_item2_select = $("#" + MERGE + "-" + item_name + "2-input");
     var item_id = item_select.val();
     var url = base_url + item_id + "/";
 
@@ -286,7 +299,9 @@ function delete_item(item_name, base_url)
             $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
 
             // Remove the option from the select
-            item_select.find("option[value=" + item_id + "]").remove();
+            item_select.find(":selected").remove();  // Using selected because it is probably faster
+            merge_item1_select.find("option[value=" + item_id + "]").remove();  // Not using select for these since it can't be guaranteed that is the selected one
+            merge_item2_select.find("option[value=" + item_id + "]").remove();  // Not using select for these since it can't be guaranteed that is the selected one
 
             // Fill edit, merge, and delete with this with data from whatever is the new selection
             get_item(item_name);
