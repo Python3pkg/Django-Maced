@@ -113,7 +113,7 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
         field_name_list.append(field["name"])
 
     # Merge has special html after the regular html
-    html_code_dictionary[item_name]["merge"] = "</table>"
+    html_code_dictionary[item_name]["merge"] += "</table>"
 
     insert_field_names(context, item_name, field_name_list)
 
