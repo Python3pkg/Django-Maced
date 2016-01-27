@@ -8,13 +8,45 @@ from django_maced.utils.get_html_code_functions import get_items_html_code_for_t
     get_items_html_code_for_color, get_items_html_code_for_select, get_html_code_for_options
 
 BAD_ITEM_NAME_CHARACTERS = (".", ":", "#", "$", "*")
-ACTION_TYPES = ["add", "edit", "merge", "delete"]
+ACTION_TYPES = ["add", "edit", "merge", "delete"]  # Action types of "clone" and "info" will be added later.
+                                                   # "info" is not really an action, but for the sake of ease of use,
+                                                   # it will be considered one.
 
 
 # The main function to craft html code for each item. This is the only function that should be called directly besides
-# finalize_context_for_items()
+#       finalize_context_for_items().
+# item_name is the name of the model in most cases. You could potentially have 2 of the same model on a page, however
+#       this will currently requires you to have 2 sets of urls which is kind of dumb, but still possible.
+# item_html_name is the name that will show up on the frontend to the users. This is also the name used on the modals.
+# item_class is the class of the model. Be sure to send in the class, not the instance of the class.
+# item_name_field_name is the name of the field that stores the name for this model. Example: You have a model called
+#       Gender. It will have some kind of field to identify the gender by. This will likely be called "name", but
+#       could be called anything so it is required to be able to identify the object on the frontend.
+# field_list is the specially formatted list of fields and their info. For more information please refer to the
+#       README.md file.
+# name_of_app_with_urls is the name of the app that has the urls that will be used for performing all of the actions
+#       from django_maced. Please note that url names should be named according to AppName.Action_ItemName. Example:
+#       App name is component_manager and the item is component. The url names should be
+#       "component_manager.add_component", "component_manager.edit_component", etc
+# current_item_id is the id of the item that will be selected by default on the frontend when you first land on the
+#       page. If you do not need one preselected, use 0. Since it can be tedious to get the current_item_id for each
+#       object if you have several for a page, you can simply use the get_current_item_id(model_instance, field_name)
+#       function. Just pass it your related model and the field name of the field that this item represents. Example:
+#       You have a model called Person with an attribute called City but it is not a required field for this Person
+#       object. You want City to be a django_maced item, but you don't want to have to check if city is there for this
+#       person, because if it doesn't you won't be able to say person.city.id because id isn't on None. Of course, you
+#       can do this manually, but if you have several of these, it could be annoying and the code will look cluttered.
+#       Instead use get_current_item_id(person, "city") and it will do the work for you and raise errors appropriately.
+#       If city isn't set for this person, it will return 0, which will result in the first select item to be
+#       preselected (should be a blank entry in the select in this case since city isn't required).
+# allow_empty simply sets whether or not a blank will be inserted into the select. This defaults to True. Set this to
+#       False if you want this field to be required. One caveat is that if you don't have any instances of this model
+#       in the system yet and you make it required, nothing will prevent it from allowing you to submit the form and
+#       will have to be handled on the backend. Perhaps this can be changed in the future.
+# field_to_order_by is the field to order your select by. It defaults to None which converts to item_name_field_name.
+#       Note that you can add "-" in front of the field_to_order_by to make it descending order.
 def add_item_to_context(context, item_name, item_html_name, item_class, item_name_field_name, field_list,
-                        name_of_app_with_urls, current_item_id=0, allow_empty=True, item_ordering=None):
+                        name_of_app_with_urls, current_item_id, allow_empty=True, field_to_order_by=None):
     if not isinstance(context, dict):
         raise TypeError("Please provide a valid context")
 
@@ -36,11 +68,11 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
     if not isinstance(allow_empty, bool):
         raise TypeError("allow_empty must be a bool")
 
-    if item_ordering is None:
-        item_ordering = item_name_field_name
+    if field_to_order_by is None:
+        field_to_order_by = item_name_field_name
 
-    if not isinstance(item_ordering, (str, unicode)):
-        raise TypeError("item_ordering must be a string that is the name of the field you want to order your objects by")
+    if not isinstance(field_to_order_by, (str, unicode)):
+        raise TypeError("field_to_order_by must be a string that is the name of the field you want to order your objects by")
 
     if "maced_data" not in context:
         context["maced_data"] = {}
@@ -125,7 +157,7 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
     sub_context["item_id"] = current_item_id
     sub_context["item_name"] = item_name
     sub_context["item_html_name"] = item_html_name
-    sub_context["items"] = item_class.objects.all().order_by(item_ordering)
+    sub_context["items"] = item_class.objects.all().order_by(field_to_order_by)
     sub_context["add_html_code"] = html_code_dictionary[item_name]["add"]
     sub_context["edit_html_code"] = html_code_dictionary[item_name]["edit"]
     sub_context["merge_html_code"] = html_code_dictionary[item_name]["merge"]
@@ -138,6 +170,23 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
 
     context[item_name + "_item"] = render(request=None, template_name="django_maced/container.html", context=sub_context).content
     context["maced_modals"] += render(request=None, template_name="django_maced/modal_list.html", context=sub_context).content
+
+
+# A nice helper function to simplify code for whoever is using this app. Since current_item_id is required, this makes
+# getting it much easier. In many cases you don't need a current_item_id and should use 0 instead.
+def get_current_item_id(model_instance, field_name):
+    if model_instance is None:
+        return 0
+
+    if not hasattr(model_instance, field_name):
+        raise ValueError(model_instance.__class__.__name__ + " does not have the field named " + str(field_name))
+
+    field = getattr(model_instance, field_name)
+
+    if field is None:
+        return 0
+    else:
+        return field.id
 
 
 # Later, restrictions will be applied to incorporate permissions/public/private/etc.

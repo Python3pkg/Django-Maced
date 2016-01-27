@@ -48,6 +48,7 @@ class SomeView(TemplateView):
         add_item_to_context(
             context=context, item_name="example", item_html_name="Example", item_class=Example,
             item_name_field_name="name", field_list=example_field_list, name_of_app_with_urls="example_app"
+            current_item_id=0
         )
         
         finalize_context_for_items(context, login_url=reverse("login"))
