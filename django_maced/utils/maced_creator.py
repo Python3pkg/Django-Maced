@@ -6,6 +6,7 @@ from django.shortcuts import render
 
 from django_maced.utils.get_html_code_functions import get_items_html_code_for_text, \
     get_items_html_code_for_color, get_items_html_code_for_select, get_html_code_for_options
+from django_maced.utils.misc import validate_select_options
 
 BAD_ITEM_NAME_CHARACTERS = (".", ":", "#", "$", "*")
 ACTION_TYPES = ["add", "edit", "merge", "delete"]  # Action types of "clone" and "info" will be added later.
@@ -150,8 +151,10 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
         if field["type"] == "select":
             if "options" in field:
                 extra_info = field["options"]
+
+                validate_select_options(extra_info, field, item_name)  # Will raise errors if invalid, else it move on
             else:
-                raise ValueError("Field " + str(field["name"]) + " in field_list is set to type \"select\", but doesn't have \"options\"")
+                raise ValueError("Field " + str(field["name"]) + " in field_list for " + str(item_name) + " is set to type \"select\", but doesn't have \"options\"")
 
         if "html_name" not in field:
             field["html_name"] = field["name"].title()

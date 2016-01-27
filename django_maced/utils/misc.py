@@ -52,3 +52,50 @@ def get_bad_item_name_characters_in_string(add_quotes=False):
     string.rstrip()
 
     return string
+
+
+def validate_select_options(extra_info, field, item_name):
+    if isinstance(extra_info, list):
+        option_count = 0
+
+        for option in extra_info:
+            if isinstance(option, tuple):
+                if len(option) == 2:
+                    if isinstance(option[0], int):
+                        if not isinstance(option[1], (str, unicode)):
+                            raise TypeError(
+                                "Name in option number " + str(option_count) + " in field " +
+                                str(field["name"]) + " in field_list for " + str(item_name) +
+                                " must be a string"
+                            )
+                    elif isinstance(option[0], (str, unicode)):
+                        try:
+                            int(option[0])
+                        except ValueError:
+                            raise TypeError(
+                                "ID in option number " + str(option_count) + " in field " +
+                                str(field["name"]) + " in field_list for " + str(item_name) +
+                                " must be an integer or a string version on an integer"
+                            )
+                    else:
+                        raise TypeError(
+                            "ID in option number " + str(option_count) + " in field " +
+                            str(field["name"]) + " in field_list for " + str(item_name) +
+                            " must be an integer or a string version on an integer"
+                        )
+                else:
+                    raise TypeError(
+                        "Option number " + str(option_count) + " in field " + str(field["name"]) +
+                        " in field_list for " + str(item_name) + " is a tuple of size " + str(len(option)) +
+                        " but must be a tuple where the tuple is (id, name)"
+                    )
+            else:
+                raise TypeError(
+                    "Option number " + str(option_count) + " in field " + str(field["name"]) +
+                    " in field_list for " + str(item_name) +
+                    " must be a tuple where the tuple is (id, name)"
+                )
+
+            option_count += 1
+    else:
+        raise TypeError("Options must be a list of tuples where the tuples are (id, name)")
