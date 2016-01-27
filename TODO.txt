@@ -2,3 +2,4 @@ Prevent merge when there is only 1 item. This needs to be done at least on the f
 Add permission checking.
 Add duplication action.
 Add info action.
+Refactor the url stuff so that you only need one url per item. It should be easy to do by simply passing item ids through the data in the ajax.
