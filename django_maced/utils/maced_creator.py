@@ -139,13 +139,24 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
 
     # Create html input fields for each field on the model
     for field in field_list:
+        extra_info = None
+
+        if "name" not in field:
+            raise ValueError("Field in field_list is missing \"name\"")
+
         if "type" not in field:
             field["type"] = "text"
+
+        if field["type"] == "select":
+            if "options" in field:
+                extra_info = field["options"]
+            else:
+                raise ValueError("Field " + str(field["name"]) + " in field_list is set to type \"select\", but doesn't have \"options\"")
 
         if "html_name" not in field:
             field["html_name"] = field["name"].title()
 
-        insert_items_html_code(html_code_dictionary, item_name, field["type"], field["html_name"], field["name"])
+        insert_items_html_code(html_code_dictionary, item_name, field["type"], field["html_name"], field["name"], extra_info)
         field_name_list.append(field["name"])
 
     # Merge has special html after the regular html
