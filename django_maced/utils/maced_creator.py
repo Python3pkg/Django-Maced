@@ -191,9 +191,6 @@ def get_current_item_id(model_instance, field_name):
     if model_instance is None:
         return 0
 
-    if not inspect.isclass(model_instance):
-        raise TypeError("model_instance must be a class")
-
     if not isinstance(field_name, (str, unicode)):
         raise TypeError("field_name must be a string")
 
