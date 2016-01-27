@@ -191,15 +191,34 @@ def get_current_item_id(model_instance, field_name):
     if model_instance is None:
         return 0
 
-    if not hasattr(model_instance, field_name):
-        raise ValueError(model_instance.__class__.__name__ + " does not have the field named " + str(field_name))
+    if not inspect.isclass(model_instance):
+        raise TypeError("model_instance must be a class")
 
-    field = getattr(model_instance, field_name)
+    if not isinstance(field_name, (str, unicode)):
+        raise TypeError("field_name must be a string")
 
-    if field is None:
-        return 0
-    else:
-        return field.id
+    if field_name == "":
+        raise ValueError("field_name must not be an empty string")
+
+    split_field_names = field_name.split(".")
+    parent = model_instance
+    path = model_instance.__class__.__name__
+
+    for split_field_name in split_field_names:
+        if not hasattr(parent, split_field_name):
+            raise ValueError(path + " does not have the field named " + str(split_field_name))
+
+        field = getattr(parent, split_field_name)
+
+        if field is None:
+            return 0
+
+        parent = field
+        path += "." + split_field_name
+
+    # Ignore this warning. It is not possible to have a split_field_names length of 0, and even if it were possible,
+    # catching that situation doesn't stop compilers from complaining about this anyway.
+    return field.id
 
 
 # Later, restrictions will be applied to incorporate permissions/public/private/etc.
