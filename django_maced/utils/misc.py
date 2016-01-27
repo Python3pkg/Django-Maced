@@ -1,6 +1,7 @@
 import collections
 
-from django_maced.utils.maced_creator import BAD_ITEM_NAME_CHARACTERS
+
+BAD_ITEM_NAME_CHARACTERS = (".", ":", "#", "$", "*")
 
 
 class MissingFromPost:

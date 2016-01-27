@@ -8,7 +8,6 @@ from django_maced.utils.get_html_code_functions import get_items_html_code_for_t
     get_items_html_code_for_color, get_items_html_code_for_select, get_html_code_for_options
 from django_maced.utils.misc import validate_select_options
 
-BAD_ITEM_NAME_CHARACTERS = (".", ":", "#", "$", "*")
 ACTION_TYPES = ["add", "edit", "merge", "delete"]  # Action types of "clone" and "info" will be added later.
                                                    # "info" is not really an action, but for the sake of ease of use,
                                                    # it will be considered one.
