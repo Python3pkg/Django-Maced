@@ -103,3 +103,7 @@ And that's it. Just that small amount of code and you have access to merging, ad
 records from you database with an easy-to-use dropdown/button/popup system. Note that many of the names from above were 
 actually specific names that must be followed. Also note that there are some assumptions made about these items such as
 the name field on a model being unique.
+
+# Special Thanks
+Xaralis: Wrote the original version of merge_model_objects() found here: https://djangosnippets.org/snippets/2283/
+Tyomklz: Made the logos for django-maced
