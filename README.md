@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/django-maced.svg)](https://pypi.python.org/pypi/django-maced)
 
 # Django-Maced
-![alt tag](https://raw.github.com/Macainian/Django-Maced/blob/master/maced_green.png)
+[[https://github.com/Macainian/Django-Maced/blob/master/maced_green.png|alt=logo]]
 Django app designed to help with easy database record manipulation/creation on the frontend. It is called Maced for Merge Add Clone Edit Delete.
 
 # System requirements
