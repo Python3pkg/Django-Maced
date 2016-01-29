@@ -132,6 +132,8 @@ add_item_to_context(
     item_name_field_name="name", field_list=example_field_list, name_of_app_with_urls="example_app",
     current_item_id=example_id
 )
+
+finalize_context_for_items(context, login_url=reverse("login"))
 ```
 
 Now that is nice and all, but it can be bulky and tedious for a page where you have many items, because you would have
@@ -148,6 +150,8 @@ add_item_to_context(
     item_name_field_name="name", field_list=example_field_list, name_of_app_with_urls="example_app",
     current_item_id=get_current_item_id(example_parent, "example")
 )
+
+finalize_context_for_items(context, login_url=reverse("login"))
 ```
 
 There much better. Now let's move on to making a separate function for when you have several items. I usually make a
@@ -179,6 +183,8 @@ def add_maced_items(context, example_parent):
         item_name_field_name="name", field_list=field_list, name_of_app_with_urls=app_name,
         current_item_id=get_current_item_id(example_parent, item_name)
     )
+
+    finalize_context_for_items(context, login_url=reverse("login"))
 ```
 
 I know that this is pretty basic concepts in this example, but if you have a ton of items, doing it this way will speed
@@ -203,6 +209,8 @@ def add_maced_items(context, house):
         item_name_field_name="name", field_list=field_list, name_of_app_with_urls=app_name,
         current_item_id=get_current_item_id(house, item_name)
     )
+
+    finalize_context_for_items(context, login_url=reverse("login"))
 ```
 
 Usually I would put "[(handle.id, handle.name) for handle in Handle.objects.all()]" in a function just to make it look
@@ -233,6 +241,8 @@ def add_maced_items(context, subject):
         item_name_field_name="name", field_list=denomination_field_list, name_of_app_with_urls=app_name,
         current_item_id=denomination_id
     )
+
+    finalize_context_for_items(context, login_url=reverse("login"))
 ```
 
 And that is it. Just a simple try-except on AttributeError. This will now allow you to still use get_current_item_id
