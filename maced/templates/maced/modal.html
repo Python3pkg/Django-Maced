@@ -22,12 +22,13 @@
 
             <div class="modal-footer">
                 <div class="pull-right">
-                    <button type="button" class="btn btn-success"
+                    <button type="button" class="btn btn-success" id="{{ action_type }}-{{ item_name }}-confirmation-button"
                         onclick="{{ action_type }}_item('{{ item_name }}', '{{ url }}');" aria-hidden="true">
                         {% bootstrap_icon 'ok' %} Accept
                     </button>
 
-                    <button class="btn btn-warning" data-dismiss="modal" aria-hidden="true">
+                    <button class="btn btn-warning" id="{{ action_type }}-{{ item_name }}-declination-button"
+                        data-dismiss="modal" aria-hidden="true">
                         {% bootstrap_icon 'ban-circle' %} Discard Changes and Close
                     </button>
                 </div>

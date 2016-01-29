@@ -326,6 +326,8 @@ function get_item(item_name)
     var delete_button = $("#" + DELETE + "-" + item_name + "-button");
     var delete_spinner = $("#" + DELETE + "-" + item_name + "-spinner");
     var delete_error_div = $("#" + DELETE + "-" + item_name + "-error-div");
+    var merge_confirmation_button = $("#" + MERGE + "-" + item_name + "-confirmation-button");
+    var merge_declination_button = $("#" + MERGE + "-" + item_name + "-declination-button");
     var item_select = $("#" + item_name + "-select");
     var item_id = item_select.val();
     var url = get_urls[item_name] + item_id + "/";
@@ -336,6 +338,8 @@ function get_item(item_name)
     edit_button.prop("disabled", true);
     merge_button.prop("disabled", true);
     delete_button.prop("disabled", true);
+    merge_confirmation_button.prop("disabled", true);
+    merge_declination_button.prop("disabled", true);
 
     // Fill the hidden value with the new value. This is what is sent to the backend on post.
     item_hidden.val(item_select.val());
@@ -375,9 +379,14 @@ function get_item(item_name)
             var fields = out_data_json["fields"];
             var field_name;
             var i;
+            var merge_select1 = $("#" + MERGE + "-" + item_name + "1-input");
+            var merge_select2 = $("#" + MERGE + "-" + item_name + "2-input");
+
+            // Re-enable the declination button
+            merge_declination_button.prop("disabled", false);
 
             // 1 is for the merge modal left select. Setting it to the new id
-            $("#" + MERGE + "-" + item_name + "1-input").find("option[value=" + item_id + "]").attr("selected", true);
+            merge_select1.find("option[value=" + item_id + "]").attr("selected", true);
 
             // Fill the modals with appropriate content
             for (i = 0; i < field_names[item_name].length; i++)
@@ -391,8 +400,23 @@ function get_item(item_name)
 
             // Enable the buttons
             edit_button.prop("disabled", false);
-            merge_button.prop("disabled", false);
             delete_button.prop("disabled", false);
+
+            if (merge_select1.find("option").size() > 1)
+            {
+                merge_button.prop("disabled", false);
+            }
+
+
+            // If both selects have the same thing in them, aka trying to merge with itself.
+            if (merge_select1.val() == merge_select2.val())
+            {
+                merge_confirmation_button.prop("disabled", true);
+            }
+            else
+            {
+                merge_confirmation_button.prop("disabled", false);
+            }
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
@@ -419,13 +443,17 @@ function get_item2_for_merge(item_name)
     var merge_button = $("#" + MERGE + "-" + item_name + "-button");
     var merge_spinner = $("#" + MERGE + "-" + item_name + "-spinner");
     var merge_error_div = $("#" + MERGE + "-" + item_name + "-error-div");
+    var merge_confirmation_button = $("#" + MERGE + "-" + item_name + "-confirmation-button");
+    var merge_declination_button = $("#" + MERGE + "-" + item_name + "-declination-button");
     var item_select = $("#" + MERGE + "-" + item_name + "2-input");  // 2 is for the right select. The left has already been filled.
     var item_id = item_select.val();
     var url = get_urls[item_name] + item_id + "/";
     var field_name;
     var i;
 
-    // Disable the confirmation button. Need to create this logic.
+    // Disable the confirmation and declination buttons. Need to create this logic.
+    merge_confirmation_button.prop("disabled", true);
+    merge_declination_button.prop("disabled", true);
     //merge_button.prop("disabled", true);
 
     // Fill the merge modal's right panel with with appropriate content
@@ -461,11 +489,24 @@ function get_item2_for_merge(item_name)
             var field_name;
             var i;
 
+            // Re-enable the declination button
+            merge_declination_button.prop("disabled", false);
+
             // Fill the modals with appropriate content
             for (i = 0; i < field_names[item_name].length; i++)
             {
                 field_name = field_names[item_name][i];
                 set_input_item(MERGE, item_name, field_name, fields[field_name], 2);  // Fill in the right panel
+            }
+
+            // If both selects have the same thing in them, aka trying to merge with itself.
+            if (merge_select1.val() == merge_select2.val())
+            {
+                merge_confirmation_button.prop("disabled", true);
+            }
+            else
+            {
+                merge_confirmation_button.prop("disabled", false);
             }
         },
 
