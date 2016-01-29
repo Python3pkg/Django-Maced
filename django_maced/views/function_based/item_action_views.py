@@ -57,7 +57,7 @@ def add_item_view(request, **kwargs):
     except ValueError as error:
         return HttpResponse(
             content="An invalid value was received for a field, if you are using select-object, be sure to supply the "
-                    "select_object_classes list in the kwargs: " + str(error),
+                    "select_object_models_info list in the kwargs: " + str(error),
             status=500
         )
 
@@ -115,7 +115,7 @@ def edit_item_view(request, item_id, **kwargs):
     except ValueError as error:
         return HttpResponse(
             content="An invalid value was received for a field, if you are using select-object, be sure to supply the "
-                    "select_object_classes list in the kwargs: " + str(error),
+                    "select_object_models_info list in the kwargs: " + str(error),
             status=500
         )
 
@@ -179,7 +179,7 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
     except ValueError as error:
         return HttpResponse(
             content="An invalid value was received for a field, if you are using select-object, be sure to supply the "
-                    "select_object_classes list in the kwargs: " + str(error),
+                    "select_object_models_info list in the kwargs: " + str(error),
             status=500
         )
 

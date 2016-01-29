@@ -40,7 +40,7 @@ def authenticate_and_validate_kwargs_view(request, **kwargs):
     else:
         return HttpResponse(content="item_model was not in the kwargs.", status=500)
 
-    # Get any select_object_classes
+    # Get any select_object_models_info
     if "select_object_models_info" in kwargs:
         select_object_models_info = kwargs["select_object_models_info"]
 
