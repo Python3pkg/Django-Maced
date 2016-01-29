@@ -103,12 +103,12 @@ def get_fields_and_item_name_from_post_view(request, item_model, item_name_field
     item_name = fields_to_save[item_name_field_name]
 
     if item_name.__class__ is MissingFromPost:
-        return HttpResponse(content=str(item_name_field_name) + " was not in the post but is set as the name field for this object", status=500)
+        return HttpResponse(content=str(item_name_field_name).title() + " was not in the post but is set as the name field for this object", status=500)
 
     if item_name == "":
-        return HttpResponse(content=str(item_name_field_name) + " is required.", status=500)
+        return HttpResponse(content=str(item_name_field_name).title() + " is required.", status=500)
     elif not is_item_name_valid(item_name):
-        return HttpResponse(content=str(item_name_field_name) + " name must not contain " + get_bad_item_name_characters_in_string(), status=500)
+        return HttpResponse(content=str(item_name_field_name).title() + " name must not contain " + get_bad_item_name_characters_in_string(), status=500)
 
     return (fields_to_save, item_name)
 

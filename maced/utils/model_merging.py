@@ -1,5 +1,6 @@
 # The original version of this code was written by xaralis and posted here: https://djangosnippets.org/snippets/2283/
-# Some modifications were made by Keith Hostetler to reflect django changes since the original version was written.
+# Some modifications were made by Keith Hostetler to reflect django changes since the original version was written
+# and a few minor bug fixes and edge cases.
 
 from django.db import transaction
 from django.apps import apps
@@ -8,7 +9,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 
 @transaction.atomic
-def merge_model_objects(primary_object, alias_objects=None, keep_old=False):
+def merge_model_objects(primary_object, original_alias_objects=None, keep_old=False):
     """
     Use this function to merge model objects (i.e. Users, Organizations, Polls,
     etc.) and migrate all of the related fields from the alias objects to the
@@ -20,8 +21,8 @@ def merge_model_objects(primary_object, alias_objects=None, keep_old=False):
     duplicate_user = User.objects.get(email='good_email+duplicate@example.com')
     merge_model_objects(primary_user, duplicate_user)
     """
-    if not isinstance(alias_objects, list):
-        alias_objects = [alias_objects]
+    if not isinstance(original_alias_objects, list):
+        original_alias_objects = [original_alias_objects]
 
     # check that all aliases are the same class as primary one and that
     # they are subclass of model
@@ -30,9 +31,16 @@ def merge_model_objects(primary_object, alias_objects=None, keep_old=False):
     if not issubclass(primary_class, Model):
         raise TypeError('Only django.db.models.Model subclasses can be merged')
 
-    for alias_object in alias_objects:
+    alias_objects = []
+
+    for alias_object in original_alias_objects:
         if not isinstance(alias_object, primary_class):
             raise TypeError('Only models of same class can be merged')
+
+        # If any alias_objects given were accidentally the primary_object, they will be ignored.
+        # Merging oneself with oneself results in oneself.
+        if primary_object != alias_object:
+            alias_objects.append(alias_object)
 
     # Get a list of all GenericForeignKeys in all models
     # TODO: this is a bit of a hack, since the generics framework should provide a similar

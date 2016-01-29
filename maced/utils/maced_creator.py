@@ -128,15 +128,15 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
         '<table class="table table-striped">' + \
             '<tr>' + \
                 '<th></th>' + \
-                '<td>' + \
+                '<th>' + \
                     '<select class="form-control" id="merge-' + item_name + '1-input" disabled >' + maced_object_option_html_code + '</select>' + \
-                '</td>' + \
-                '<td style="text-align: center;">' + \
-                    '<b> Resulting ' + str(item_html_name) + ' </b>' + \
-                '</td>' + \
-                '<td>' + \
+                '</th>' + \
+                '<th style="text-align: center; vertical-align: middle">' + \
+                    'Resulting ' + str(item_html_name) + \
+                '</th>' + \
+                '<th>' + \
                     '<select class="form-control" id="merge-' + item_name + '2-input">' + maced_object_option_html_code + '</select>' + \
-                '</td>' + \
+                '</th>' + \
             '</tr>'
 
     # Create html input fields for each field on the model
