@@ -107,14 +107,7 @@ the name field on a model being unique.
 
 # Special Notes and Tips
 
-## So this first example is going to cover:
-* handling cases when you may or may not have an object on the page to pull previous info from
-* making a separate function to keep things cleaner in your get_context_data() and making items in a concise way
-* getting select options for selects of type "object" (aka, ones that are selectors for another item in the database)
-* handling models that have inheritance where you will be working from an instance of the base model but don't know if
-the sub-model will exist or not
-
-### Example 1:
+## Example 1 (Handling cases when you may or may not have an object on the page to pull previous info from)
 So first let's look at the HARD way to handle cases where we have an object that we don't know if it is None or not.
 
 ```python
@@ -139,7 +132,7 @@ finalize_context_for_items(context, login_url=reverse("login"))
 Now that is nice and all, but it can be bulky and tedious for a page where you have many items, because you would have
 to check for None each time so that you could send it properly to get_current_item_id(). Well it turns out that
 get_current_item_id() actually allows you to pass a None object and will default to 0 if it is None. So just pass it in
-as is. Like this:
+as is. Let's try that:
 
 ```python
 example_field_list = [
@@ -157,7 +150,9 @@ finalize_context_for_items(context, login_url=reverse("login"))
 There much better. Now let's move on to making a separate function for when you have several items. I usually make a
 separate function called add_maced_items() and pass context and the parent_object (could be None). This is especially
 helpful if you have a CreateView and an EditView since you will likely be using all of the same maced items. CreateView
-will pass None, but EditView will pass an instance; both will be handled. Let's look at an example:
+will pass None, but EditView will pass an instance; both will be handled. Let's look at Example 2.
+
+## Example 2 (making a separate function to keep things cleaner in your get_context_data() and making items in a concise way)
 
 ```python
 def add_maced_items(context, example_parent):
@@ -190,6 +185,8 @@ def add_maced_items(context, example_parent):
 I know that this is pretty basic concepts in this example, but if you have a ton of items, doing it this way will speed
 up the process a lot. Copy-Paste-Edit. The less you have to edit the better right? :)
 
+## Example 3 (selects for other objects)
+
 Next let's look at getting select options for selects of type "object" so we can get connected with other objects in the
 database. For this example let's assume we have a model called House which has a field called door that is a model
 called Door which has a field called handle that is a model called Handle.
@@ -215,6 +212,8 @@ def add_maced_items(context, house):
 
 Usually I would put "[(handle.id, handle.name) for handle in Handle.objects.all()]" in a function just to make it look
 nicer. Lastly, we will look at model inheritance with maced items.
+
+## Example 4 (handling models that have inheritance where you will be working from an instance of the base model but don't know if the sub-model will exist or not)
 
 For this example we will use a model called Subject which is the base model. Then we will assume we have several models
 that inherent from this model, but we will only talk about one in this example; Clergy. A clergyman belongs to a church

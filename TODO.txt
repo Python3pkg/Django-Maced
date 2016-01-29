@@ -3,3 +3,5 @@ Add permission checking.
 Add duplication action.
 Add info action.
 Refactor the url stuff so that you only need one url per item. It should be easy to do by simply passing item ids through the data in the ajax.
+Make item_html_name an optional parameter that defaults to a prettified version of the item_name. "abc" to "Abc", "abc_def" to "Abc Def".
+Make an example explaining
