@@ -47,7 +47,7 @@ class SomeView(TemplateView):
         ]
         
         add_item_to_context(
-            context=context, item_name="example", item_html_name="Example", item_class=Example,
+            context=context, item_name="example", item_html_name="Example", item_model=Example,
             item_name_field_name="name", field_list=example_field_list, name_of_app_with_urls="example_app"
             current_item_id=0
         )
@@ -68,15 +68,15 @@ from website.apps.example_app.models import Example
 
 urlpatterns = [
     url(r"^add_example/$", add_item_view, name="example_app.add_example",
-        kwargs={"item_class": Example}),
+        kwargs={"item_model": Example}),
     url(r"^edit_example/(?P<item_id>\d+)/$", edit_item_view, name="example_app.edit_example",
-        kwargs={"item_class": Example}),
+        kwargs={"item_model": Example}),
     url(r"^merge_example/(?P<item1_id>\d+)/(?P<item2_id>\d+)/$", merge_item_view, name="example_app.merge_example",
-        kwargs={"item_class": Example}),
+        kwargs={"item_model": Example}),
     url(r"^delete_example/(?P<item_id>\d+)/$", delete_item_view, name="example_app.delete_example",
-        kwargs={"item_class": Example}),
+        kwargs={"item_model": Example}),
     url(r"^get_example/(?P<item_id>\d+)/$", get_item_view, name="example_app.get_example",
-        kwargs={"item_class": Example}),
+        kwargs={"item_model": Example}),
 ]
 ```
 

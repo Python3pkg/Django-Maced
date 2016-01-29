@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django_maced.utils.model_merging import merge_model_objects
 from django_maced.views.function_based.helper_views import \
-    authenticate_and_validate_kwargs_view, get_fields_and_item_name_from_post_view
+    authenticate_and_validate_kwargs_view, get_fields_and_item_name_from_post_view, convert_foreign_keys_to_objects
 
 
 @transaction.atomic
@@ -18,7 +18,7 @@ def add_item_view(request, **kwargs):
     # item_name_field_name is what the name value will correspond to in the database. This defaults to name.
     #   It will be used like ObjectToCreate(name=some_name), where name is the default value but it could be something
     #   else.
-    # item_class is the model that the item is referring to. This is the class, not an instance.
+    # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     result = authenticate_and_validate_kwargs_view(request, **kwargs)
 
@@ -28,9 +28,10 @@ def add_item_view(request, **kwargs):
 
     data = result[0]
     item_name_field_name = result[1]
-    item_class = result[2]
+    item_model = result[2]
+    select_object_models_info = result[3]
 
-    result = get_fields_and_item_name_from_post_view(request, item_class, item_name_field_name)
+    result = get_fields_and_item_name_from_post_view(request, item_model, item_name_field_name)
 
     # This will be a tuple as long as it succeeded, otherwise it will be a HttpResponse
     if not isinstance(result, tuple):
@@ -39,8 +40,15 @@ def add_item_view(request, **kwargs):
     fields_to_save = result[0]
     item_name = result[1]
 
+    result = convert_foreign_keys_to_objects(fields_to_save, select_object_models_info)
+
+    # This will be a bool as long as it succeeded, otherwise it will be a HttpResponse. Since there are no safe
+    # failures for this, there will never need to be a False returned.
+    if not isinstance(result, bool):
+        return result
+
     try:
-        item = item_class.objects.create(**fields_to_save)
+        item = item_model.objects.create(**fields_to_save)
     except IntegrityError as error:
         return HttpResponse(
             content="An object related to this already exists or there is a problem with this item: " + str(error),
@@ -66,7 +74,7 @@ def edit_item_view(request, item_id, **kwargs):
     # item_type_name_field_name is what the name value will correspond to in the database. This defaults to name.
     #   It will be used like ObjectToCreate(name=some_name), where name is the default value but it could be something
     #   else.
-    # item_class is the model that the item is referring to. This is the class, not an instance.
+    # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     result = authenticate_and_validate_kwargs_view(request, **kwargs)
 
@@ -76,9 +84,10 @@ def edit_item_view(request, item_id, **kwargs):
 
     data = result[0]
     item_name_field_name = result[1]
-    item_class = result[2]
+    item_model = result[2]
+    select_object_models_info = result[3]
 
-    result = get_fields_and_item_name_from_post_view(request, item_class, item_name_field_name)
+    result = get_fields_and_item_name_from_post_view(request, item_model, item_name_field_name)
 
     # This will be a tuple as long as it succeeded, otherwise it will be a HttpResponse
     if not isinstance(result, tuple):
@@ -89,8 +98,15 @@ def edit_item_view(request, item_id, **kwargs):
 
     data["name"] = item_name
 
+    result = convert_foreign_keys_to_objects(fields_to_save, select_object_models_info)
+
+    # This will be a bool as long as it succeeded, otherwise it will be a HttpResponse. Since there are no safe
+    # failures for this, there will never need to be a False returned.
+    if not isinstance(result, bool):
+        return result
+
     try:
-        item_class.objects.filter(id=item_id).update(**fields_to_save)
+        item_model.objects.filter(id=item_id).update(**fields_to_save)
     except IntegrityError as error:
         return HttpResponse(
             content="An object related to this already exists or there is a problem with this item: " + str(error),
@@ -113,7 +129,7 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
     # item_type_name_field_name is what the name value will correspond to in the database. This defaults to name.
     #   It will be used like ObjectToCreate(name=some_name), where name is the default value but it could be something
     #   else.
-    # item_class is the model that the item is referring to. This is the class, not an instance.
+    # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     result = authenticate_and_validate_kwargs_view(request, **kwargs)
 
@@ -123,9 +139,10 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
 
     data = result[0]
     item_name_field_name = result[1]
-    item_class = result[2]
+    item_model = result[2]
+    select_object_models_info = result[3]
 
-    result = get_fields_and_item_name_from_post_view(request, item_class, item_name_field_name)
+    result = get_fields_and_item_name_from_post_view(request, item_model, item_name_field_name)
 
     # This will be a tuple as long as it succeeded, otherwise it will be a HttpResponse
     if not isinstance(result, tuple):
@@ -134,19 +151,26 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
     fields_to_save = result[0]
     item_name = result[1]
 
+    result = convert_foreign_keys_to_objects(fields_to_save, select_object_models_info)
+
+    # This will be a bool as long as it succeeded, otherwise it will be a HttpResponse. Since there are no safe
+    # failures for this, there will never need to be a False returned.
+    if not isinstance(result, bool):
+        return result
+
     # Check that item1 exists
-    if not item_class.objects.filter(id=item1_id).exists():
+    if not item_model.objects.filter(id=item1_id).exists():
         return HttpResponse(content="The item with id " + str(item1_id) + " does not exist. Did someone delete it?", status=500)
 
     # Load item2
     try:
-        item2 = item_class.objects.get(id=item2_id)
+        item2 = item_model.objects.get(id=item2_id)
     except ObjectDoesNotExist:
         return HttpResponse(content="The item with id " + str(item1_id) + " does not exist. Did someone delete it?", status=500)
 
     # Fill item1 with whatever came from the frontend. This will be the primary item.
     try:
-        item_class.objects.filter(id=item1_id).update(**fields_to_save)
+        item_model.objects.filter(id=item1_id).update(**fields_to_save)
     except IntegrityError as error:
         return HttpResponse(
             content="An object related to this already exists or there is a problem with this item: " + str(error),
@@ -160,7 +184,7 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
         )
 
     # Load item1
-    item1 = item_class.objects.get(id=item1_id)
+    item1 = item_model.objects.get(id=item1_id)
 
     # Merge em :)
     merge_model_objects(item1, item2)
@@ -175,7 +199,7 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
 @csrf_exempt
 def delete_item_view(request, item_id, **kwargs):
     # need_authentication is a bool that defaults to True and is used to determined whether a login is required
-    # item_class is the model that the item is referring to. This is the class, not an instance.
+    # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     result = authenticate_and_validate_kwargs_view(request, **kwargs)
 
@@ -185,10 +209,11 @@ def delete_item_view(request, item_id, **kwargs):
 
     data = result[0]
     item_name_field_name = result[1]  # Unnecessary here
-    item_class = result[2]
+    item_model = result[2]
+    select_object_models_info = result[3]  # Unnecessary here
 
     try:
-        item_class.objects.get(id=item_id).delete()
+        item_model.objects.get(id=item_id).delete()
     except ProtectedError as error:
         return HttpResponse(content="This object is in use: " + str(error), status=500)
 
@@ -201,7 +226,7 @@ def get_item_view(request, item_id, **kwargs):
     # item_type_name_field_name is what the name value will correspond to in the database. This defaults to name.
     #   It will be used like ObjectToCreate(name=some_name), where name is the default value but it could be something
     #   else.
-    # item_class is the model that the item is referring to. This is the class, not an instance.
+    # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     result = authenticate_and_validate_kwargs_view(request, **kwargs)
 
@@ -211,14 +236,15 @@ def get_item_view(request, item_id, **kwargs):
 
     data = result[0]
     item_name_field_name = result[1]  # Unnecessary here
-    item_class = result[2]
+    item_model = result[2]
+    select_object_models_info = result[3]  # Unnecessary here
 
-    item = item_class.objects.get(id=item_id)
+    item = item_model.objects.get(id=item_id)
 
     data["fields"] = {}
 
     # Get all fields on the model
-    fields = item_class._meta.fields
+    fields = item_model._meta.fields
 
     # Build a list of potential fields to fill in
     for field in fields:

@@ -18,7 +18,7 @@ ACTION_TYPES = ["add", "edit", "merge", "delete"]  # Action types of "clone" and
 # item_name is the name of the model in most cases. You could potentially have 2 of the same model on a page, however
 #       this will currently requires you to have 2 sets of urls which is kind of dumb, but still possible.
 # item_html_name is the name that will show up on the frontend to the users. This is also the name used on the modals.
-# item_class is the class of the model. Be sure to send in the class, not the instance of the class.
+# item_model is the class of the model. Be sure to send in the class, not the instance of the class.
 # item_name_field_name is the name of the field that stores the name for this model. Example: You have a model called
 #       Gender. It will have some kind of field to identify the gender by. This will likely be called "name", but
 #       could be called anything so it is required to be able to identify the object on the frontend.
@@ -45,7 +45,7 @@ ACTION_TYPES = ["add", "edit", "merge", "delete"]  # Action types of "clone" and
 #       will have to be handled on the backend. Perhaps this can be changed in the future.
 # field_to_order_by is the field to order your select by. It defaults to None which converts to item_name_field_name.
 #       Note that you can add "-" in front of the field_to_order_by to make it descending order.
-def add_item_to_context(context, item_name, item_html_name, item_class, item_name_field_name, field_list,
+def add_item_to_context(context, item_name, item_html_name, item_model, item_name_field_name, field_list,
                         name_of_app_with_urls, current_item_id, allow_empty=True, field_to_order_by=None):
     if not isinstance(context, dict):
         raise TypeError("Please provide a valid context")
@@ -53,8 +53,8 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
     if not isinstance(item_name, (str, unicode)):
         raise TypeError("item_name must be a string")
 
-    if not inspect.isclass(item_class):
-        raise TypeError("item_class must be a class")
+    if not inspect.isclass(item_model):
+        raise TypeError("item_model must be a class")
 
     if not isinstance(item_name_field_name, (str, unicode)):
         raise TypeError("object_name_field_name must be a string")
@@ -113,7 +113,7 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
     field_name_list = []
 
     # Get all items of this type
-    items = get_items(item_class)
+    items = get_items(item_model)
 
     # Create an item_options_list which is a list of tuples defined as (id_of_the_item, name_of_the_item). This will
     # be used in the merge function.
@@ -170,7 +170,7 @@ def add_item_to_context(context, item_name, item_html_name, item_class, item_nam
     sub_context["item_id"] = current_item_id
     sub_context["item_name"] = item_name
     sub_context["item_html_name"] = item_html_name
-    sub_context["items"] = item_class.objects.all().order_by(field_to_order_by)
+    sub_context["items"] = item_model.objects.all().order_by(field_to_order_by)
     sub_context["add_html_code"] = html_code_dictionary[item_name]["add"]
     sub_context["edit_html_code"] = html_code_dictionary[item_name]["edit"]
     sub_context["merge_html_code"] = html_code_dictionary[item_name]["merge"]
@@ -219,8 +219,8 @@ def get_current_item_id(model_instance, field_name):
 
 
 # Later, restrictions will be applied to incorporate permissions/public/private/etc.
-def get_items(item_class):
-    items = item_class.objects.all()
+def get_items(item_model):
+    items = item_model.objects.all()
 
     return items
 
