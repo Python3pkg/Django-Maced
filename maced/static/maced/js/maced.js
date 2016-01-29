@@ -488,6 +488,8 @@ function get_item2_for_merge(item_name)
             var fields = out_data_json["fields"];
             var field_name;
             var i;
+            var merge_select1 = $("#" + MERGE + "-" + item_name + "1-input");
+            var merge_select2 = $("#" + MERGE + "-" + item_name + "2-input");
 
             // Re-enable the declination button
             merge_declination_button.prop("disabled", false);

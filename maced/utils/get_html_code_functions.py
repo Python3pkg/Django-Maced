@@ -106,10 +106,15 @@ def get_merge_html_code_for_select(item_name, field_html_name, field_name, optio
 
 
 # OPTIONS FOR SELECT
-def get_html_code_for_options(options_list):
+def get_html_code_for_options(options_list, selected_index=None):
     html_code = ""
 
     for i in range(len(options_list)):
-        html_code += '<option value="' + str(options_list[i][0]) + '"> ' + str(options_list[i][1]) + " </option>"
+        html_code += '<option value="' + str(options_list[i][0]) + '" '
+
+        if i == selected_index:
+            html_code += "selected"
+
+        html_code += '> ' + str(options_list[i][1]) + " </option>"
 
     return html_code
