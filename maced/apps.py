@@ -3,5 +3,5 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 
 
-class DjangoMacedConfig(AppConfig):
-    name = 'django_maced'
+class MacedConfig(AppConfig):
+    name = 'maced'
