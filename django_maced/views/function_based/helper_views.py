@@ -116,6 +116,9 @@ def get_fields_and_item_name_from_post_view(request, item_model, item_name_field
 # It is assumed that select_object_models_info has been validated by this point.
 # Should have been done in authenticate_and_validate_kwargs_view().
 def convert_foreign_keys_to_objects(fields_to_save, select_object_models_info):
+    if select_object_models_info is None:
+        return True  # True just means it succeeded (there was nothing to do).
+
     for select_object_model_info in select_object_models_info.iteritems():
         field_name1 = select_object_model_info[0]
 
@@ -139,4 +142,4 @@ def convert_foreign_keys_to_objects(fields_to_save, select_object_models_info):
                 status=500
             )
 
-    return True  # True just means it succeeded
+    return True  # True just means it succeeded.
