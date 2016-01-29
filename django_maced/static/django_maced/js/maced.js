@@ -6,6 +6,8 @@ var MERGE = "merge";
 var DELETE = "delete";
 var GET = "get";
 
+var ACTION_TYPES = [ADD, EDIT, MERGE, DELETE, GET];
+
 var item_names = maced_data["item_names"];
 var field_names = JSON.parse(maced_data["field_names"]);
 var get_urls = JSON.parse(maced_data["get_urls"]);
@@ -27,9 +29,9 @@ $(document).ready(function()
         $("#" + item_name + "-hidden").val(item_select.val());
 
         // Add click events for all buttons to remove success divs
-        for (var action_type in [ADD, EDIT, MERGE, DELETE])
+        for (var action_type in ACTION_TYPES)
         {
-            $("#" + action_type + "-" + item_name + "-button").click({item_name: item_name}, function(event)
+            $("#" + ACTION_TYPES[action_type] + "-" + item_name + "-button").click({item_name: item_name}, function(event)
             {
                 remove_success_divs(event.data.item_name);
             });
