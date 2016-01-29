@@ -23,7 +23,7 @@ def get_merge_html_code_for_text(item_name, field_html_name, field_name):
     html_code += '<td><input type="text" class="form-control" id="merge-' + item_name + "1-" + field_name + '-input" disabled /></td>'
 
     # Create middle panel
-    html_code += '<td><input type="text" class="form-control" id="merge-' + item_name + "-" + field_name + '-input" /></td>'
+    html_code += '<td style="background-color: #F7D358;"><input type="text" class="form-control" id="merge-' + item_name + "-" + field_name + '-input" /></td>'
 
     # Create right panel for merge
     html_code += '<td><input type="text" class="form-control" id="merge-' + item_name + "2-" + field_name + '-input" disabled /></td>'
@@ -58,7 +58,7 @@ def get_merge_html_code_for_color(item_name, field_html_name, field_name):
     html_code += '<td><input type="color" id="merge-' + item_name + "1-" + field_name + '-input" value="#00FF00" disabled /></td>'
 
     # Create middle panel
-    html_code += '<td><input type="color" id="merge-' + item_name + "-" + field_name + '-input" value="#00FF00" /></td>'
+    html_code += '<td style="background-color: #F7D358;"><input type="color" id="merge-' + item_name + "-" + field_name + '-input" value="#00FF00" /></td>'
 
     # Create right panel for merge
     html_code += '<td><input type="color" id="merge-' + item_name + "2-" + field_name + '-input" value="#00FF00" disabled /></td>'
@@ -95,7 +95,7 @@ def get_merge_html_code_for_select(item_name, field_html_name, field_name, optio
     html_code += '<td><select class="form-control" id="merge-' + item_name + "1-" + field_name + '-input" disabled >' + options_html_code + "</select></td>"
 
     # Create middle panel
-    html_code += '<td><select class="form-control" id="merge-' + item_name + "-" + field_name + '-input">' + options_html_code + "</select></td>"
+    html_code += '<td style="background-color: #F7D358;"><select class="form-control" id="merge-' + item_name + "-" + field_name + '-input">' + options_html_code + "</select></td>"
 
     # Create right panel for merge
     html_code += '<td><select class="form-control" id="merge-' + item_name + "2-" + field_name + '-input" disabled >' + options_html_code + "</select></td>"
