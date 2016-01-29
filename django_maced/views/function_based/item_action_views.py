@@ -42,7 +42,16 @@ def add_item_view(request, **kwargs):
     try:
         item = item_class.objects.create(**fields_to_save)
     except IntegrityError as error:
-        return HttpResponse(content="An object related to this already exists or there is a problem with this item: " + str(error), status=500)
+        return HttpResponse(
+            content="An object related to this already exists or there is a problem with this item: " + str(error),
+            status=500
+        )
+    except ValueError as error:
+        return HttpResponse(
+            content="An invalid value was received for a field, if you are using select-object, be sure to supply the "
+                    "select_object_classes list in the kwargs: " + str(error),
+            status=500
+        )
 
     data["id"] = item.id
     data["name"] = item_name
@@ -83,7 +92,16 @@ def edit_item_view(request, item_id, **kwargs):
     try:
         item_class.objects.filter(id=item_id).update(**fields_to_save)
     except IntegrityError as error:
-        return HttpResponse(content="An object related to this already exists or there is a problem with this item: " + str(error), status=500)
+        return HttpResponse(
+            content="An object related to this already exists or there is a problem with this item: " + str(error),
+            status=500
+        )
+    except ValueError as error:
+        return HttpResponse(
+            content="An invalid value was received for a field, if you are using select-object, be sure to supply the "
+                    "select_object_classes list in the kwargs: " + str(error),
+            status=500
+        )
 
     return HttpResponse(content=json.dumps(data))
 
@@ -130,7 +148,16 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
     try:
         item_class.objects.filter(id=item1_id).update(**fields_to_save)
     except IntegrityError as error:
-        return HttpResponse(content="An object related to this already exists or there is a problem with this item: " + str(error), status=500)
+        return HttpResponse(
+            content="An object related to this already exists or there is a problem with this item: " + str(error),
+            status=500
+        )
+    except ValueError as error:
+        return HttpResponse(
+            content="An invalid value was received for a field, if you are using select-object, be sure to supply the "
+                    "select_object_classes list in the kwargs: " + str(error),
+            status=500
+        )
 
     # Load item1
     item1 = item_class.objects.get(id=item1_id)
@@ -161,16 +188,11 @@ def delete_item_view(request, item_id, **kwargs):
     item_class = result[2]
 
     try:
-        delete_item(item_class, item_id)
+        item_class.objects.get(id=item_id).delete()
     except ProtectedError as error:
         return HttpResponse(content="This object is in use: " + str(error), status=500)
 
     return HttpResponse(json.dumps(data))
-
-
-def delete_item(item_class, item_id):
-    # It is assumed that integrity and permissions checks will be caught on an upper level
-    item_class.objects.get(id=item_id).delete()
 
 
 @csrf_exempt
