@@ -56,6 +56,12 @@ def merge_model_objects(primary_object, alias_objects=None, keep_old=False):
             alias_varname = related_object.get_accessor_name()
             # The variable name on the related model.
             obj_varname = related_object.field.name
+
+            # Needed to add a check here. The original design was faulty if there was a OneToOneField not on the
+            # alias_object directly and if that related_object was empty.
+            if not hasattr(alias_object, alias_varname):
+                break
+
             related_objects = getattr(alias_object, alias_varname)
 
             for obj in related_objects.all():
