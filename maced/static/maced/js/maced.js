@@ -143,6 +143,11 @@ function edit_item(item_name, base_url)
     var field_name;
     var i;
 
+    if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
+    {
+        return;
+    }
+
     for (i = 0; i < field_names[item_name].length; i++)
     {
         field_name = field_names[item_name][i];
@@ -206,6 +211,16 @@ function merge_item(item_name, base_url)
     var url = base_url + item1_id + "/" + item2_id + "/";
     var field_name;
     var i;
+
+    if (item1_id == "" || typeof item1_id === typeof undefined || item1_id === null)
+    {
+        return;
+    }
+
+    if (item2_id == "" || typeof item2_id === typeof undefined || item2_id === null)
+    {
+        return;
+    }
 
     for (i = 0; i < field_names[item_name].length; i++)
     {
@@ -275,6 +290,11 @@ function delete_item(item_name, base_url)
     var merge_item2_select = $("#" + MERGE + "-" + item_name + "2-input");
     var item_id = item_select.val();
     var url = base_url + item_id + "/";
+
+    if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
+    {
+        return;
+    }
 
     $.ajax(
     {
@@ -419,7 +439,7 @@ function get_item(item_name)
             }
 
             // Force this to reload
-            merge_select2.trigger("change");
+            get_item2_for_merge(item_name);
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
@@ -460,7 +480,7 @@ function get_item2_for_merge(item_name)
     //merge_button.prop("disabled", true);
 
     // Fill the merge modal's right panel with with appropriate content
-    if (item_id == "" || typeof item_id === typeof undefined)
+    if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
     {
         for (i = 0; i < field_names[item_name].length; i++)
         {
