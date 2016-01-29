@@ -339,7 +339,7 @@ function get_item(item_name)
     item_hidden.val(item_select.val());
 
     // Fill the modals with appropriate content
-    if (item_id == "" || typeof item_id === typeof undefined)
+    if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
     {
         for (i = 0; i < field_names[item_name].length; i++)
         {
