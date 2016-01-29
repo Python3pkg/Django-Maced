@@ -8,7 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django_maced.utils.model_merging import merge_model_objects
 from django_maced.views.function_based.helper_views import \
-    authenticate_and_validate_kwargs_view, get_fields_and_item_name_from_post_view, convert_foreign_keys_to_objects
+    authenticate_and_validate_kwargs_view, get_fields_and_item_name_from_post_view, convert_foreign_keys_to_objects, \
+    convert_objects_to_foreign_keys
 
 
 @transaction.atomic
@@ -237,17 +238,21 @@ def get_item_view(request, item_id, **kwargs):
     data = result[0]
     item_name_field_name = result[1]  # Unnecessary here
     item_model = result[2]
-    select_object_models_info = result[3]  # Unnecessary here
+    select_object_models_info = result[3]
 
     item = item_model.objects.get(id=item_id)
 
-    data["fields"] = {}
+    fields_to_load = {}
 
     # Get all fields on the model
-    fields = item_model._meta.fields
+    fields_info = item_model._meta.fields
 
     # Build a list of potential fields to fill in
-    for field in fields:
-        data["fields"][field.name] = getattr(item, field.name)
+    for field_info in fields_info:
+        fields_to_load[field_info.name] = getattr(item, field_info.name)
+
+    convert_objects_to_foreign_keys(fields_to_load, select_object_models_info)
+
+    data["fields"] = fields_to_load
 
     return HttpResponse(content=json.dumps(data))

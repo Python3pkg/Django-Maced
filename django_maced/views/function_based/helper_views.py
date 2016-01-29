@@ -119,7 +119,7 @@ def convert_foreign_keys_to_objects(fields_to_save, select_object_models_info):
     if select_object_models_info is None:
         return True  # True just means it succeeded (there was nothing to do).
 
-    for select_object_model_info in select_object_models_info.iteritems():
+    for select_object_model_info in select_object_models_info:
         field_name1 = select_object_model_info[0]
 
         for field_name2, field_value in fields_to_save.iteritems():
@@ -143,3 +143,35 @@ def convert_foreign_keys_to_objects(fields_to_save, select_object_models_info):
             )
 
     return True  # True just means it succeeded.
+
+
+# It is assumed that select_object_models_info has been validated by this point.
+# Should have been done in authenticate_and_validate_kwargs_view().
+def convert_objects_to_foreign_keys(fields_to_load, select_object_models_info):
+    if select_object_models_info is None:
+        return True  # True just means it succeeded (there was nothing to do).
+
+    for select_object_model_info in select_object_models_info:
+        field_name1 = select_object_model_info[0]
+
+        for field_name2, field_value in fields_to_load.iteritems():
+            if field_name2 == field_name1:
+                try:
+                    fields_to_load[field_name2] = field_value.id
+                except AttributeError:
+                    return HttpResponse(
+                        content="Tried to get id from model but " + field_value.__class__.__name__ +
+                                " is not a model. Please check kwargs and item_names for a field named " + field_name2 +
+                                " and check for typos.",
+                        status=500
+                    )
+                break
+        else:
+            return HttpResponse(
+                content="Could not find field name of " + field_name1 + " associated with the model named " +
+                        select_object_model_info.__class__.__name__ + " in fields_to_load. Check for typos in kwargs " +
+                        "and item_names. ",
+                status=500
+            )
+
+    return True  # True just means it succeeded (there was nothing to do).
