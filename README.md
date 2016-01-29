@@ -34,7 +34,7 @@ is a url named login that goes to the login page.
 
 In the view do:
 ```python
-from django_maced.utils.maced_creator import add_item_to_context, finalize_context_for_items
+from maced.utils.maced_creator import add_item_to_context, finalize_context_for_items
 from website.apps.example_app.models import Example
 
 
@@ -64,7 +64,7 @@ In the urls for example_app:
 ```python
 from django.conf.urls import url
 
-from django_maced.views.function_based.item_action_views import add_item_view, \
+from maced.views.function_based.item_action_views import add_item_view, \
     edit_item_view, merge_item_view, delete_item_view, get_item_view
 
 from website.apps.example_app.models import Example
@@ -89,7 +89,7 @@ In the template for "something.html" at the top:
     var maced_data = {{ maced_data|safe }};
 </script>
 
-<script src="{% static 'django_maced/js/maced.js' %}"></script>
+<script src="{% static 'maced/js/maced.js' %}"></script>
 ```
 
 In the template where you want the maced object to appear:
@@ -121,7 +121,7 @@ example_field_list = [
 if example_parent is None:
     example_id = 0
 else:
-    example_id = get_current_item_id(example_parent, "example")  # This function comes with django_maced
+    example_id = get_current_item_id(example_parent, "example")  # This function comes with django-maced
 
 add_item_to_context(
     context=context, item_name="example", item_html_name="Example", item_model=Example,

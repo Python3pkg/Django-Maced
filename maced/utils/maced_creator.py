@@ -4,9 +4,9 @@ import json
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
-from django_maced.utils.get_html_code_functions import get_items_html_code_for_text, \
+from maced.utils.get_html_code_functions import get_items_html_code_for_text, \
     get_items_html_code_for_color, get_items_html_code_for_select, get_html_code_for_options
-from django_maced.utils.misc import validate_select_options
+from maced.utils.misc import validate_select_options
 
 ACTION_TYPES = ["add", "edit", "merge", "delete"]  # Action types of "clone" and "info" will be added later.
                                                    # "info" is not really an action, but for the sake of ease of use,
@@ -27,7 +27,7 @@ VALID_SELECT_TYPES = ["object", "string"]
 # field_list is the specially formatted list of fields and their info. For more information please refer to the
 #       README.md file.
 # name_of_app_with_urls is the name of the app that has the urls that will be used for performing all of the actions
-#       from django_maced. Please note that url names should be named according to AppName.Action_ItemName. Example:
+#       from maced. Please note that url names should be named according to AppName.Action_ItemName. Example:
 #       App name is component_manager and the item is component. The url names should be
 #       "component_manager.add_component", "component_manager.edit_component", etc
 # current_item_id is the id of the item that will be selected by default on the frontend when you first land on the
@@ -35,7 +35,7 @@ VALID_SELECT_TYPES = ["object", "string"]
 #       object if you have several for a page, you can simply use the get_current_item_id(model_instance, field_name)
 #       function. Just pass it your related model and the field name of the field that this item represents. Example:
 #       You have a model called Person with an attribute called City but it is not a required field for this Person
-#       object. You want City to be a django_maced item, but you don't want to have to check if city is there for this
+#       object. You want City to be a maced item, but you don't want to have to check if city is there for this
 #       person, because if it doesn't you won't be able to say person.city.id because id isn't on None. Of course, you
 #       can do this manually, but if you have several of these, it could be annoying and the code will look cluttered.
 #       Instead use get_current_item_id(person, "city") and it will do the work for you and raise errors appropriately.
@@ -201,8 +201,8 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     sub_context["delete_url"] = delete_url
     sub_context["allow_empty"] = allow_empty
 
-    context[item_name + "_item"] = render(request=None, template_name="django_maced/container.html", context=sub_context).content
-    context["maced_modals"] += render(request=None, template_name="django_maced/modal_list.html", context=sub_context).content
+    context[item_name + "_item"] = render(request=None, template_name="maced/container.html", context=sub_context).content
+    context["maced_modals"] += render(request=None, template_name="maced/modal_list.html", context=sub_context).content
 
 
 # A nice helper function to simplify code for whoever is using this app. Since current_item_id is required, this makes
