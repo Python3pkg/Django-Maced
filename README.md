@@ -105,6 +105,139 @@ records from you database with an easy-to-use dropdown/button/popup system. Note
 actually specific names that must be followed. Also note that there are some assumptions made about these items such as
 the name field on a model being unique.
 
+# Special Notes and Tips
+
+## So this first example is going to cover:
+* handling cases when you may or may not have an object on the page to pull previous info from
+* making a separate function to keep things cleaner in your get_context_data() and making items in a concise way
+* getting select options for selects of type "object" (aka, ones that are selectors for another item in the database)
+* handling models that have inheritance where you will be working from an instance of the base model but don't know if
+the sub-model will exist or not
+
+### Example 1:
+So first let's look at the HARD way to handle cases where we have an object that we don't know if it is None or not.
+
+```python
+example_field_list = [
+    {"name": "name"}
+]
+
+if example_parent is None:
+    example_id = 0
+else:
+    example_id = get_current_item_id(example_parent, "example")  # This function comes with django_maced
+
+add_item_to_context(
+    context=context, item_name="example", item_html_name="Example", item_model=Example,
+    item_name_field_name="name", field_list=example_field_list, name_of_app_with_urls="example_app",
+    current_item_id=example_id
+)
+```
+
+Now that is nice and all, but it can be bulky and tedious for a page where you have many items, because you would have
+to check for None each time so that you could send it properly to get_current_item_id(). Well it turns out that
+get_current_item_id() actually allows you to pass a None object and will default to 0 if it is None. So just pass it in
+as is. Like this:
+
+```python
+example_field_list = [
+    {"name": "name"}
+]
+add_item_to_context(
+    context=context, item_name="example", item_html_name="Example", item_model=Example,
+    item_name_field_name="name", field_list=example_field_list, name_of_app_with_urls="example_app",
+    current_item_id=get_current_item_id(example_parent, "example")
+)
+```
+
+There much better. Now let's move on to making a separate function for when you have several items. I usually make a
+separate function called add_maced_items() and pass context and the parent_object (could be None). This is especially
+helpful if you have a CreateView and an EditView since you will likely be using all of the same maced items. CreateView
+will pass None, but EditView will pass an instance; both will be handled. Let's look at an example:
+
+```python
+def add_maced_items(context, example_parent):
+    app_name = "example_app"
+
+    item_name = "example"
+    field_list = [
+        {"name": "name"}
+    ]
+    add_item_to_context(
+        context=context, item_name=item_name, item_html_name="Example", item_model=Example,
+        item_name_field_name="name", field_list=field_list, name_of_app_with_urls=app_name,
+        current_item_id=get_current_item_id(example_parent, item_name)
+    )
+
+    item_name = "example2"
+    field_list = [
+        {"name": "name"}
+        {"color": "color"}
+    ]
+    add_item_to_context(
+        context=context, item_name=item_name, item_html_name="Example2", item_model=Example2,
+        item_name_field_name="name", field_list=field_list, name_of_app_with_urls=app_name,
+        current_item_id=get_current_item_id(example_parent, item_name)
+    )
+```
+
+I know that this is pretty basic concepts in this example, but if you have a ton of items, doing it this way will speed
+up the process a lot. Copy-Paste-Edit. The less you have to edit the better right? :)
+
+Next let's look at getting select options for selects of type "object" so we can get connected with other objects in the
+database. For this example let's assume we have a model called House which has a field called door that is a model
+called Door which has a field called handle that is a model called Handle.
+
+```python
+def add_maced_items(context, house):
+    app_name = "building_app"
+
+    item_name = "door"
+    field_list = [
+        {"name": "name"},
+        {"name": "handle", "type": "select", "select-type": "object",
+         "options": [(handle.id, handle.name) for handle in Handle.objects.all()]},
+    ]
+    add_item_to_context(
+        context=context, item_name=item_name, item_html_name="Door", item_model=Door,
+        item_name_field_name="name", field_list=field_list, name_of_app_with_urls=app_name,
+        current_item_id=get_current_item_id(house, item_name)
+    )
+```
+
+Usually I would put "[(handle.id, handle.name) for handle in Handle.objects.all()]" in a function just to make it look
+nicer. Lastly, we will look at model inheritance with maced items.
+
+For this example we will use a model called Subject which is the base model. Then we will assume we have several models
+that inherent from this model, but we will only talk about one in this example; Clergy. A clergyman belongs to a church
+and thus has a denomination. So we will also use a model called Denomination. So a Clergy is a Subject that has a
+Denomination, while the other sub-models do not have a Denomination. Also remember that we DON'T know if the subject we
+are sending in is None or not and whether or not it is a clergyman.
+
+With that we can now look at an example:
+
+```python
+def add_maced_items(context, subject):
+    app_name = "example_app"
+
+    item_name = "denomination"
+    denomination_field_list = [
+        {"name": "name"},
+    ]
+    try:
+        denomination_id = get_current_item_id(subject.clergy, item_name)
+    except AttributeError:
+        denomination_id = 0
+    add_item_to_context(
+        context=context, item_name=item_name, item_html_name="Denomination", item_model=Denomination,
+        item_name_field_name="name", field_list=denomination_field_list, name_of_app_with_urls=app_name,
+        current_item_id=denomination_id
+    )
+```
+
+And that is it. Just a simple try-except on AttributeError. This will now allow you to still use get_current_item_id
+while not worrying about what is None and what isn't.
+
 # Special Thanks
 * Xaralis: Wrote the original version of merge_model_objects() found here: https://djangosnippets.org/snippets/2283/
 * Tyomklz: Made the logos for django-maced
