@@ -9,7 +9,7 @@
         <select class="form-control disableable" id="{{ item_name }}-select" {% if should_disable %} disabled {% endif %}>
             {% if allow_empty %} <option value=""></option> {% endif %}
             {% for item in items %}
-                <option value="{{ item.id }}" {% if item.id == item_id %} selected {% endif %}> {{ item }} ({{ item.id }}) </option>
+                <option value="{{ item.id }}" {% if item.id == item_id %} selected {% endif %}> {{ item }} </option>
             {% endfor %}
         </select>
 
