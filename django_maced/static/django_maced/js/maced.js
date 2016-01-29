@@ -46,11 +46,6 @@ $(document).ready(function()
         // Add change events for all selects to cause data loads
         item_select.change({item_name: item_name}, function(event)
         {
-            // Disable actions while we are getting data
-            $("#" + EDIT + "-" + event.data.item_name + "-button").prop("disabled", true);
-            $("#" + MERGE + "-" + event.data.item_name + "-button").prop("disabled", true);
-            $("#" + DELETE + "-" + event.data.item_name + "-button").prop("disabled", true);
-
             // Get the data
             get_item(event.data.item_name);
         });
@@ -336,6 +331,11 @@ function get_item(item_name)
     var url = get_urls[item_name] + item_id + "/";
     var field_name;
     var i;
+
+    // Disable actions while we are getting data
+    edit_button.prop("disabled", true);
+    merge_button.prop("disabled", true);
+    delete_button.prop("disabled", true);
 
     // Fill the hidden value with the new value. This is what is sent to the backend on post.
     item_hidden.val(item_select.val());
