@@ -417,6 +417,9 @@ function get_item(item_name)
             {
                 merge_confirmation_button.prop("disabled", false);
             }
+
+            // Force this to reload
+            merge_select2.trigger("change");
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
