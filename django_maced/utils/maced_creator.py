@@ -11,6 +11,8 @@ from django_maced.utils.misc import validate_select_options
 ACTION_TYPES = ["add", "edit", "merge", "delete"]  # Action types of "clone" and "info" will be added later.
                                                    # "info" is not really an action, but for the sake of ease of use,
                                                    # it will be considered one.
+VALID_INPUT_TYPES = ["text", "color", "select"]
+VALID_SELECT_TYPES = ["object", "string"]
 
 
 # The main function to craft html code for each item. This is the only function that should be called directly besides
@@ -147,13 +149,31 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
         if "type" not in field:
             field["type"] = "text"
 
+        if field["type"] not in VALID_INPUT_TYPES:
+            raise ValueError(
+                "Field named " + str(field["name"]) + " has a type of " + str(field["type"]) + " which is invalid"
+            )
+
         if field["type"] == "select":
+            if "select_type" not in field:
+                field["select_type"] = "object"
+
+            if field["select_type"] not in VALID_SELECT_TYPES:
+                raise ValueError(
+                    "The select for the field named " + str(field["name"]) + " has a type of " +
+                    str(field["select_type"]) + " which is invalid"
+                )
+
             if "options" in field:
                 extra_info = field["options"]
 
-                validate_select_options(extra_info, field, item_name)  # Will raise errors if invalid, else it move on
+                # Will raise errors if invalid, else it move on
+                validate_select_options(extra_info, field, item_name, field["select_type"])
             else:
-                raise ValueError("Field " + str(field["name"]) + " in field_list for " + str(item_name) + " is set to type \"select\", but doesn't have \"options\"")
+                raise ValueError(
+                    "Field " + str(field["name"]) + " in field_list for " + str(item_name) +
+                    " is set to type \"select\", but doesn't have \"options\""
+                )
 
         if "html_name" not in field:
             field["html_name"] = field["name"].title()

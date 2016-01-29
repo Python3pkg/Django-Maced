@@ -55,7 +55,7 @@ def get_bad_item_name_characters_in_string(add_quotes=False):
     return string
 
 
-def validate_select_options(extra_info, field, item_name):
+def validate_select_options(extra_info, field, item_name, select_type):
     if isinstance(extra_info, list):
         option_count = 0
 
@@ -63,6 +63,19 @@ def validate_select_options(extra_info, field, item_name):
             if isinstance(option, tuple):
                 if len(option) == 2:
                     if isinstance(option[0], (int, str, unicode)):
+                        if select_type == "object":
+                            try:
+                                int(option[0])
+                            except ValueError:
+                                raise TypeError(
+                                    "Value in option number " + str(option_count) + " in field " +
+                                    str(field["name"]) + " in field_list for " + str(item_name) +
+                                    " is using select_type \"object\" and must be an integer or a string version of "
+                                    "an integer"
+                                )
+                        elif select_type == "string":
+                            pass  # Currently no validation
+
                         if not isinstance(option[1], (str, unicode)):
                             raise TypeError(
                                 "Name in option number " + str(option_count) + " in field " +
