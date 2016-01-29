@@ -95,7 +95,7 @@ def get_merge_html_code_for_select(item_name, field_html_name, field_name, optio
     html_code += '<td><select class="form-control" id="merge-' + item_name + "1-" + field_name + '-input" disabled >' + options_html_code + "</select></td>"
 
     # Create middle panel
-    html_code += '<td><select class="form-control" id="merge-' + item_name + "-" + field_name + '-input" disabled >' + options_html_code + "</select></td>"
+    html_code += '<td><select class="form-control" id="merge-' + item_name + "-" + field_name + '-input">' + options_html_code + "</select></td>"
 
     # Create right panel for merge
     html_code += '<td><select class="form-control" id="merge-' + item_name + "2-" + field_name + '-input" disabled >' + options_html_code + "</select></td>"
