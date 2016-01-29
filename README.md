@@ -4,8 +4,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/django-maced.svg)](https://pypi.python.org/pypi/django-maced)
 
 # Django-Maced
-![ScreenShot](/maced_green.png)
-[[https://github.com/Macainian/Django-Maced/blob/master/maced_green.png|alt=logo]]
+![ScreenShot](/maced_green.png=250x)
 Django app designed to help with easy database record manipulation/creation on the frontend. It is called Maced for Merge Add Clone Edit Delete.
 
 # System requirements
@@ -107,6 +106,5 @@ actually specific names that must be followed. Also note that there are some ass
 the name field on a model being unique.
 
 # Special Thanks
-Xaralis: Wrote the original version of merge_model_objects() found here: https://djangosnippets.org/snippets/2283/
-
-Tyomklz: Made the logos for django-maced
+* Xaralis: Wrote the original version of merge_model_objects() found here: https://djangosnippets.org/snippets/2283/
+* Tyomklz: Made the logos for django-maced
