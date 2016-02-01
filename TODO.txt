@@ -8,3 +8,4 @@ Change the way the the merge works such that the merge button is always availabl
 Add functionality for recursive maced items.
 Convert action views into a class based view so that it can be easily overridden by users for custom views. This might be hard since you would have to follow strict rules on what to send back through the ajax calls.
 Reimplement the spinners for the modals.
+Add new merge buttons to copy from the left or right panel into the middle panel.

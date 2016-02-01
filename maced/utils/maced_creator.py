@@ -11,7 +11,7 @@ from maced.utils.misc import validate_select_options
 ACTION_TYPES = ["add", "edit", "merge", "delete"]  # Action types of "clone" and "info" will be added later.
                                                    # "info" is not really an action, but for the sake of ease of use,
                                                    # it will be considered one.
-VALID_INPUT_TYPES = ["text", "color", "select"]
+VALID_INPUT_TYPES = ["maced", "text", "color", "select"]
 VALID_SELECT_TYPES = ["object", "string"]
 
 
@@ -157,7 +157,8 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
 
         if field["type"] not in VALID_INPUT_TYPES:
             raise ValueError(
-                "Field named " + str(field["name"]) + " has a type of " + str(field["type"]) + " which is invalid"
+                "Field named " + str(field["name"]) + " in field_list for " + str(item_name) + " has a type of " +
+                str(field["type"]) + " which is invalid"
             )
 
         if field["type"] == "select":
@@ -180,6 +181,38 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
                     "Field " + str(field["name"]) + " in field_list for " + str(item_name) +
                     " is set to type \"select\", but doesn't have \"options\""
                 )
+
+        if field["type"] == "maced":
+            if "maced_name" not in field:
+                raise ValueError(
+                    "Field named " + str(field["name"]) + " in field_list for " + str(item_name) +
+                    " is set as type \"maced\", but maced_name was not supplied. Please provide the name of the " +
+                    "maced item you are referencing."
+                )
+
+            if field["maced_name"] + "_item" not in context:
+                raise ValueError(
+                    "Field named " + str(field["name"]) + " in field_list for " + str(item_name) +
+                    " is set as type \"maced\" and is referencing " + str(field["maced_name"]) + " but it is not in " +
+                    "the context. Please make sure you have created a maced item for it and ensure that it is " +
+                    "created prior to this one."
+                )
+
+            extra_info = context[field["maced_name"] + "_item"]
+
+            # field["select_type"] = "object"  # This is used for clone, merge, delete, and info since they are just selects
+
+            # if "options" in field:
+            #     extra_info = field["options"]
+            #
+            #     # Will raise errors if invalid, else it move on
+            #     validate_select_options(extra_info, field, item_name, field["select_type"])
+            # else:
+            #     raise ValueError(
+            #         "Field " + str(field["name"]) + " in field_list for " + str(item_name) +
+            #         " is set to type \"maced\", but doesn't have \"options\". This still needs options for merge, " +
+            #         "clone, delete, and info modals."
+            #     )
 
         if "html_name" not in field:
             field["html_name"] = field["name"].title()
@@ -261,6 +294,9 @@ def get_items(item_model):
 # extra_info is an optional parameter that is used for special purposes depending on the item_type if the type uses it.
 #   Example: Select uses extra_info for options information
 def insert_items_html_code(original_dictionary, item_name, field_type, field_html_name, field_name, extra_info=None):
+    if field_type == "maced":
+        for action_type in ACTION_TYPES:
+            original_dictionary[item_name][action_type] += get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, extra_info)
     if field_type == "text":
         for action_type in ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_text(item_name, action_type, field_html_name, field_name)
@@ -271,7 +307,7 @@ def insert_items_html_code(original_dictionary, item_name, field_type, field_htm
         for action_type in ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, extra_info)
     else:
-        raise TypeError("field_type of " + str(field_type) + " is not supported yet. (maced_items.py:get_items_html_code_in_dictionary())")
+        raise TypeError("field_type of " + str(field_type) + " is not supported yet. (maced_items.py:insert_items_html_code())")
 
 
 # This function adds all fields connected to this item, to the context.

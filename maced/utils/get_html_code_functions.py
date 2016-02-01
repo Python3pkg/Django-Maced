@@ -1,3 +1,24 @@
+# MACED
+def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_item_html_code):
+    if action_type == "add" or action_type == "edit":
+        html_code = maced_item_html_code
+    else:
+        options_html_code = ""  # get_html_code_for_options(options_info)
+
+        if action_type == "merge":
+            return get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code)
+
+        html_code = '<b class="maced">' + field_html_name + ': </b>'
+        html_code += '<select class="maced form-control" id="' + action_type + '-' + item_name + '-' + field_name + '-input" '
+
+        if action_type == "delete" or action_type == "clone" or action_type == "info":
+            html_code += 'disabled '
+
+        html_code += '>' + options_html_code + '</select>'
+
+    return html_code
+
+
 # TEXT
 def get_items_html_code_for_text(item_name, action_type, field_html_name, field_name):
     if action_type == "merge":
