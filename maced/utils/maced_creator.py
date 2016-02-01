@@ -184,18 +184,16 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
 
         if field["type"] == "maced":
             if "maced_name" not in field:
-                raise ValueError(
-                    "Field named " + str(field["name"]) + " in field_list for " + str(item_name) +
-                    " is set as type \"maced\", but maced_name was not supplied. Please provide the name of the " +
-                    "maced item you are referencing."
-                )
+                field["maced_name"] = field["name"]
 
             if field["maced_name"] + "_item" not in context:
                 raise ValueError(
                     "Field named " + str(field["name"]) + " in field_list for " + str(item_name) +
                     " is set as type \"maced\" and is referencing " + str(field["maced_name"]) + " but it is not in " +
                     "the context. Please make sure you have created a maced item for it and ensure that it is " +
-                    "created prior to this one."
+                    "created prior to this one. If you are trying to use an object with a name different from the " +
+                    "name given for \"name\" for this field, please use \"maced_name\" to specify the name you want. " +
+                    "By default, \"name\" is used."
                 )
 
             extra_info = context[field["maced_name"] + "_item"]
