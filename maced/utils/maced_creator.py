@@ -198,6 +198,10 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
                 )
 
             extra_info = context[field["maced_name"] + "_item"]
+            # Hacking in a <b> </b> for now until I make a better solution
+            old_row_name_th = '<th class="maced" id="' + item_name + '-row-name-th"> ' + item_html_name + ': </th>'
+            new_row_name_th = '<th class="maced" id="' + item_name + '-row-name-th"> <b>' + item_html_name + ': </b> </th>'
+            extra_info = extra_info.replace(old_row_name_th, new_row_name_th)
 
             # field["select_type"] = "object"  # This is used for clone, merge, delete, and info since they are just selects
 

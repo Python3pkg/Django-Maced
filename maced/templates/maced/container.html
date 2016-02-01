@@ -3,7 +3,7 @@
 <input type="hidden" class="maced" id="{{ item_name }}-hidden" name="{{ item_name }}_id" value="" />
 
 <tr class="maced" id="{{ item_name }}-tr" {% if should_hide %} style="display: none" {% endif %}>
-    <th class="maced"> {{ item_html_name }}: </th>
+    <th class="maced" id="{{ item_name }}-row-name-th"> {{ item_html_name }}: </th>
 
     <td class="maced">
         <select class="maced form-control disableable" id="{{ item_name }}-select" {% if should_disable %} disabled {% endif %}>

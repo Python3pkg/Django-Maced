@@ -1,7 +1,10 @@
 # MACED
 def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_item_html_code):
     if action_type == "add" or action_type == "edit":
-        html_code = maced_item_html_code
+        # This goes into the pre-generated html and replaces the select id with the standard input id style
+        old_select_id = field_name + "-select"
+        new_select_id = action_type + "-" + item_name + "-" + field_name + "-input"
+        html_code = maced_item_html_code.replace(old_select_id, new_select_id)
     else:
         options_html_code = ""  # get_html_code_for_options(options_info)
 
