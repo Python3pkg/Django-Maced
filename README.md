@@ -10,7 +10,7 @@ If you want to report any bugs, you can use the github issue tracker. If you hav
 
 # Requirements
 
-* Python 2.7 only. Requires setuptools. Run `python ez_setup.py` command if you do not have setuptools installed in your virtual environment.
+* Python 2.7 only.
 * Django >=1.8 (probably works with some lower ones too)
 * django-bootstrap3 >= ? 
 * Bootstrap 3 (though eventually I will upgrade to using 4)

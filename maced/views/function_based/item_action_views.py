@@ -6,6 +6,7 @@ from django.db import IntegrityError, transaction
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from maced.utils.misc import make_random_id
 from maced.utils.model_merging import merge_model_objects
 from maced.views.function_based.helper_views import \
     authenticate_and_validate_kwargs_view, get_fields_and_item_name_from_post_view, convert_foreign_keys_to_objects, \
@@ -166,6 +167,13 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
     # Load item2
     try:
         item2 = item_model.objects.get(id=item2_id)
+        random_name = make_random_id(10)
+
+        while len(item_model.objects.filter(**{item_name_field_name: random_name})) > 0:
+            random_name = make_random_id(10)
+
+        setattr(item2, item_name_field_name, random_name)
+        item2.save()
     except ObjectDoesNotExist:
         return HttpResponse(content="The item with id " + str(item1_id) + " does not exist. Did someone delete it?", status=500)
 
