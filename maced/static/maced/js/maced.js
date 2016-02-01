@@ -23,7 +23,7 @@ $(document).ready(function()
     // Refer to http://stackoverflow.com/questions/8876928/allow-copy-paste-in-a-disabled-input-text-box-in-firefox-browsers
     $(".maced[readonly]").each(function()
     {
-        $(this).onkeydown(function(event)
+        $(this).keydown(function(event)
         {
             var key = event.which || event.keyCode || 0;
 
