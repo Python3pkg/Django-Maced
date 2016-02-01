@@ -1,44 +1,44 @@
 {% load bootstrap3 pluralize %}
 
-<input type="hidden" id="{{ item_name }}-hidden" name="{{ item_name }}_id" value="" />
+<input type="hidden" class="maced" id="{{ item_name }}-hidden" name="{{ item_name }}_id" value="" />
 
-<tr id="{{ item_name }}-tr" {% if should_hide %} style="display: none" {% endif %}>
-    <th> {{ item_html_name }}: </th>
+<tr class="maced" id="{{ item_name }}-tr" {% if should_hide %} style="display: none" {% endif %}>
+    <th class="maced"> {{ item_html_name }}: </th>
 
-    <td>
-        <select class="form-control disableable" id="{{ item_name }}-select" {% if should_disable %} disabled {% endif %}>
-            {% if allow_empty %} <option value=""></option> {% endif %}
+    <td class="maced">
+        <select class="maced form-control disableable" id="{{ item_name }}-select" {% if should_disable %} disabled {% endif %}>
+            {% if allow_empty %} <option class="maced" value=""></option> {% endif %}
             {% for item in items %}
-                <option value="{{ item.id }}" {% if item.id == item_id %} selected {% endif %}> {{ item }} </option>
+                <option class="maced" value="{{ item.id }}" {% if item.id == item_id %} selected {% endif %}> {{ item }} </option>
             {% endfor %}
         </select>
 
-        <div id="add-{{ item_name }}-success-div" style="display: none; color: Green">
-            <b> Successfully added a new {{ item_html_name }}. </b>
+        <div class="maced" id="add-{{ item_name }}-success-div" style="display: none; color: Green">
+            <b class="maced"> Successfully added a new {{ item_html_name }}. </b>
         </div>
 
-        <div id="edit-{{ item_name }}-success-div" style="display: none; color: Green">
-            <b> Successfully edited the {{ item_html_name }}. </b>
+        <div class="maced" id="edit-{{ item_name }}-success-div" style="display: none; color: Green">
+            <b class="maced"> Successfully edited the {{ item_html_name }}. </b>
         </div>
 
-        <div id="merge-{{ item_name }}-success-div" style="display: none; color: Green">
-            <b> Successfully merged the {{ item_html_name }}. </b>
+        <div class="maced" id="merge-{{ item_name }}-success-div" style="display: none; color: Green">
+            <b class="maced"> Successfully merged the {{ item_html_name }}. </b>
         </div>
 
-        <div id="clone-{{ item_name }}-success-div" style="display: none; color: Green">
-            <b> Successfully cloned the {{ item_html_name }}. </b>
+        <div class="maced" id="clone-{{ item_name }}-success-div" style="display: none; color: Green">
+            <b class="maced"> Successfully cloned the {{ item_html_name }}. </b>
         </div>
 
-        <div id="delete-{{ item_name }}-success-div" style="display: none; color: Green">
-            <b> Successfully deleted the {{ item_html_name }}. </b>
+        <div class="maced" id="delete-{{ item_name }}-success-div" style="display: none; color: Green">
+            <b class="maced"> Successfully deleted the {{ item_html_name }}. </b>
         </div>
     </td>
 
-    <td>
-        <div class="btn-group">
-            <div class="btn-group-vertical">
+    <td class="maced">
+        <div class="maced btn-group">
+            <div class="maced btn-group-vertical">
                 {% if not should_remove_add %}
-                    <button type="button" class="btn btn-success disableable" id="add-{{ item_name }}-button"
+                    <button type="button" class="maced btn btn-success disableable" id="add-{{ item_name }}-button"
                         data-original-title="Add New {{ item_html_name }}" data-toggle="modal"
                         data-target="#add-{{ item_name }}-modal">
                         {% bootstrap_icon "plus" %} Add New {{ item_html_name }}
@@ -46,7 +46,7 @@
                 {% endif %}
 
                 {% if not should_remove_clone %}
-                    <button type="button" class="btn btn-primary disableable" id="clone-{{ item_name }}-button"
+                    <button type="button" class="maced btn btn-primary disableable" id="clone-{{ item_name }}-button"
                         data-original-title="Clone {{ item_html_name }}" data-toggle="modal"
                         data-target="#clone-{{ item_name }}-modal" disabled>
                         {% bootstrap_icon "duplicate" %} Clone {{ item_html_name }}
@@ -54,7 +54,7 @@
                 {% endif %}
 
                 {% if not should_remove_edit %}
-                    <button type="button" class="btn btn-info disableable" id="edit-{{ item_name }}-button"
+                    <button type="button" class="maced btn btn-info disableable" id="edit-{{ item_name }}-button"
                         data-original-title="Edit {{ item_html_name }}" data-toggle="modal"
                         data-target="#edit-{{ item_name }}-modal">
                         {% bootstrap_icon "edit" %} Edit {{ item_html_name }}
@@ -62,9 +62,9 @@
                 {% endif %}
             </div>
 
-            <div class="btn-group-vertical">
+            <div class="maced btn-group-vertical">
                 {% if not should_remove_merge %}
-                    <button type="button" class="btn btn-warning disableable" id="merge-{{ item_name }}-button"
+                    <button type="button" class="maced btn btn-warning disableable" id="merge-{{ item_name }}-button"
                         data-original-title="Merge {{ item_html_name }}" data-toggle="modal"
                         data-target="#merge-{{ item_name }}-modal">
                         {% bootstrap_icon "resize-small" %} Merge {{ item_html_name|pluralize|default:item_html_name }}
@@ -72,7 +72,7 @@
                 {% endif %}
 
                 {% if not should_remove_delete %}
-                    <button type="button" class="btn btn-danger disableable" id="delete-{{ item_name }}-button"
+                    <button type="button" class="maced btn btn-danger disableable" id="delete-{{ item_name }}-button"
                         data-original-title="Delete {{ item_html_name }}" data-toggle="modal"
                         data-target="#delete-{{ item_name }}-modal">
                         {% bootstrap_icon "trash" %} Delete {{ item_html_name }}
@@ -80,7 +80,7 @@
                 {% endif %}
 
                 {% if not should_remove_info %}
-                    <button type="button" class="btn btn-secondary disableable" id="info-{{ item_name }}-button"
+                    <button type="button" class="maced btn btn-secondary disableable" id="info-{{ item_name }}-button"
                         data-original-title="{{ item_html_name }} Info" data-toggle="modal"
                         data-target="#info-{{ item_name }}-modal" disabled>
                         {% bootstrap_icon "list-alt" %} {{ item_html_name }} Info

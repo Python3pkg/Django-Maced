@@ -7,3 +7,4 @@ Add check for if an item was added to the context but not added to the template 
 Change the way the the merge works such that the merge button is always available (with at least 2 items in the system), and you can select on both sides of the merge, instead of just the right side.
 Add functionality for recursive maced items.
 Convert action views into a class based view so that it can be easily overridden by users for custom views. This might be hard since you would have to follow strict rules on what to send back through the ajax calls.
+Reimplement the spinners for the modals.

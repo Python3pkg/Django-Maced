@@ -125,23 +125,23 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
 
     # Merge has special html before the regular html
     html_code_dictionary[item_name]["merge"] = \
-        '<table class="table">' + \
-            '<tr>' + \
-                '<th></th>' + \
-                '<th style="text-align: center; vertical-align: middle;"> ' + item_html_name + ' 1 </th>' + \
-                '<th style="text-align: center; vertical-align: middle; background-color: #F7D358;">' + \
+        '<table class="maced table">' + \
+            '<tr class="maced">' + \
+                '<th class="maced"></th>' + \
+                '<th class="maced" style="text-align: center; vertical-align: middle;"> ' + item_html_name + ' 1 </th>' + \
+                '<th class="maced" style="text-align: center; vertical-align: middle; background-color: #F7D358;">' + \
                     'Resulting ' + item_html_name + \
                 '</th>' + \
-                '<th style="text-align: center; vertical-align: middle;"> ' + item_html_name + ' 2 </th>' + \
+                '<th class="maced" style="text-align: center; vertical-align: middle;"> ' + item_html_name + ' 2 </th>' + \
             '</tr>' + \
-            '<tr>' + \
-                '<th></th>' + \
+            '<tr class="maced">' + \
+                '<th class="maced"></th>' + \
                 '<th>' + \
-                    '<select class="form-control" id="merge-' + item_name + '1-input" disabled >' + maced_object_option_html_code + '</select>' + \
+                    '<select class="maced form-control" id="merge-' + item_name + '1-input" disabled >' + maced_object_option_html_code + '</select>' + \
                 '</th>' + \
-                '<th style="background-color: #F7D358;"></th>' + \
+                '<th class="maced" style="background-color: #F7D358;"></th>' + \
                 '<th>' + \
-                    '<select class="form-control" id="merge-' + item_name + '2-input">' + maced_object_option_html_code + '</select>' + \
+                    '<select class="maced form-control" id="merge-' + item_name + '2-input">' + maced_object_option_html_code + '</select>' + \
                 '</th>' + \
             '</tr>'
 

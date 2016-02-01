@@ -1,33 +1,33 @@
 {% load bootstrap3 %}
 
-<div id="{{ action_type }}-{{ item_name }}-modal" class="modal" data-backdrop="static" data-keyboard="false"
+<div class="maced modal" id="{{ action_type }}-{{ item_name }}-modal" data-backdrop="static" data-keyboard="false"
     aria-labelledby="{{ action_type }}-{{ item_name }}-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="{{ action_type }}-{{ item_name }}-modal-label">{{ action_type|title }} {{ item_html_name }}</h3>
+    <div class="maced modal-dialog modal-lg">
+        <div class="maced modal-content">
+            <div class="maced modal-header">
+                <button type="button" class="maced close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 class="maced" id="{{ action_type }}-{{ item_name }}-modal-label">{{ action_type|title }} {{ item_html_name }}</h3>
             </div>
 
-            <div class="modal-body">
-                <div id="{{ action_type }}-{{ item_name }}-spinner" style="display: none; text-align: center">
-                    <i class="icon icon-spinner icon-spin"></i>
+            <div class="maced modal-body">
+                <div class="maced" id="{{ action_type }}-{{ item_name }}-spinner" style="display: none; text-align: center">
+                    <i class="maced icon icon-spinner icon-spin"></i>
                 </div>
 
-                <div id="{{ action_type }}-{{ item_name }}-error-div" style="display: none; text-align: center; color: Red">
+                <div class="maced" id="{{ action_type }}-{{ item_name }}-error-div" style="display: none; text-align: center; color: Red">
                 </div>
 
                 {{ item_html_code|safe }}
             </div>
 
-            <div class="modal-footer">
-                <div class="pull-right">
-                    <button type="button" class="btn btn-success" id="{{ action_type }}-{{ item_name }}-confirmation-button"
+            <div class="maced modal-footer">
+                <div class="maced pull-right">
+                    <button type="button" class="maced btn btn-success" id="{{ action_type }}-{{ item_name }}-confirmation-button"
                         onclick="{{ action_type }}_item('{{ item_name }}', '{{ url }}');" aria-hidden="true">
                         {% bootstrap_icon 'ok' %} Accept
                     </button>
 
-                    <button class="btn btn-warning" id="{{ action_type }}-{{ item_name }}-declination-button"
+                    <button class="maced btn btn-warning" id="{{ action_type }}-{{ item_name }}-declination-button"
                         data-dismiss="modal" aria-hidden="true">
                         {% bootstrap_icon 'ban-circle' %} Discard Changes and Close
                     </button>
