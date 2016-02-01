@@ -1,17 +1,17 @@
 // maced_data comes in via django and must be set before including this file
 
-var ADD = "add";
-var EDIT = "edit";
-var MERGE = "merge";
-var DELETE = "delete";
-var GET = "get";
+var maced_ADD = "add";
+var maced_EDIT = "edit";
+var maced_maced_MERGE = "merge";
+var maced_DELETE = "delete";
+var maced_GET = "get";
 
-var ACTION_TYPES = [ADD, EDIT, MERGE, DELETE, GET];
+var maced_ACTION_TYPES = [maced_ADD, maced_EDIT, maced_maced_MERGE, maced_DELETE, maced_GET];
 
-var item_names = maced_data["item_names"];
-var field_names = JSON.parse(maced_data["field_names"]);
-var get_urls = JSON.parse(maced_data["get_urls"]);
-var login_url = JSON.parse(maced_data["login_url"]);
+var maced_item_names = maced_data["item_names"];
+var maced_field_names = JSON.parse(maced_data["field_names"]);
+var maced_get_urls = JSON.parse(maced_data["get_urls"]);
+var maced_login_url = JSON.parse(maced_data["login_url"]);
 
 $(document).ready(function()
 {
@@ -20,18 +20,18 @@ $(document).ready(function()
     var item_name;
 
     // Loop through all items and add "click" and "change" events and load any initial data if any exists.
-    for (i = 0; i < item_names.length; i++)
+    for (i = 0; i < maced_item_names.length; i++)
     {
-        item_name = item_names[i];
+        item_name = maced_item_names[i];
         item_select = $("#" + item_name + "-select");
         get_item(item_name);
 
         $("#" + item_name + "-hidden").val(item_select.val());
 
         // Add click events for all buttons to remove success divs
-        for (var action_type in ACTION_TYPES)
+        for (var action_type in maced_ACTION_TYPES)
         {
-            $("#" + ACTION_TYPES[action_type] + "-" + item_name + "-button").click({item_name: item_name}, function(event)
+            $("#" + maced_ACTION_TYPES[action_type] + "-" + item_name + "-button").click({item_name: item_name}, function(event)
             {
                 remove_success_divs(event.data.item_name);
             });
@@ -60,20 +60,20 @@ $(document).ready(function()
 
 function add_item(item_name, url)
 {
-    var action_type = ADD;
+    var action_type = maced_ADD;
     var modal = $("#" + action_type + "-" + item_name + "-modal");
     var spinner = $("#" + action_type + "-" + item_name + "-spinner");
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
     var item_select = $("#" + item_name + "-select");
-    var merge_item1_select = $("#" + MERGE + "-" + item_name + "1-input");
-    var merge_item2_select = $("#" + MERGE + "-" + item_name + "2-input");
+    var merge_item1_select = $("#" + maced_maced_MERGE + "-" + item_name + "1-input");
+    var merge_item2_select = $("#" + maced_maced_MERGE + "-" + item_name + "2-input");
     var data = {};
     var field_name;
     var i;
 
-    for (i = 0; i < field_names[item_name].length; i++)
+    for (i = 0; i < maced_field_names[item_name].length; i++)
     {
-        field_name = field_names[item_name][i];
+        field_name = maced_field_names[item_name][i];
         data[field_name] = get_input_item(action_type, item_name, field_name);
     }
 
@@ -109,9 +109,9 @@ function add_item(item_name, url)
             merge_item2_select.append($("<option></option>").attr("value", id).text(name));  // Select 2 doesn't need to have its selection overridden
 
             // Reset the modal for the next item addition
-            for (i = 0; i < field_names[item_name].length; i++)
+            for (i = 0; i < maced_field_names[item_name].length; i++)
             {
-                field_name = field_names[item_name][i];
+                field_name = maced_field_names[item_name][i];
                 set_input_item(action_type, item_name, field_name, "", null);
             }
 
@@ -130,13 +130,13 @@ function add_item(item_name, url)
 
 function edit_item(item_name, base_url)
 {
-    var action_type = EDIT;
+    var action_type = maced_EDIT;
     var modal = $("#" + action_type + "-" + item_name + "-modal");
     var spinner = $("#" + action_type + "-" + item_name + "-spinner");
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
     var item_select = $("#" + item_name + "-select");
-    var merge_item1_select = $("#" + MERGE + "-" + item_name + "1-input");
-    var merge_item2_select = $("#" + MERGE + "-" + item_name + "2-input");
+    var merge_item1_select = $("#" + maced_MERGE + "-" + item_name + "1-input");
+    var merge_item2_select = $("#" + maced_MERGE + "-" + item_name + "2-input");
     var data = {};
     var item_id = item_select.val();
     var url = base_url + item_id + "/";
@@ -148,9 +148,9 @@ function edit_item(item_name, base_url)
         return;
     }
 
-    for (i = 0; i < field_names[item_name].length; i++)
+    for (i = 0; i < maced_field_names[item_name].length; i++)
     {
-        field_name = field_names[item_name][i];
+        field_name = maced_field_names[item_name][i];
         data[field_name] = get_input_item(action_type, item_name, field_name);
     }
 
@@ -198,13 +198,13 @@ function edit_item(item_name, base_url)
 
 function merge_item(item_name, base_url)
 {
-    var action_type = MERGE;
+    var action_type = maced_MERGE;
     var modal = $("#" + action_type + "-" + item_name + "-modal");
     var spinner = $("#" + action_type + "-" + item_name + "-spinner");
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
     var item_select = $("#" + item_name + "-select");
-    var merge_item1_select = $("#" + MERGE + "-" + item_name + "1-input");
-    var merge_item2_select = $("#" + MERGE + "-" + item_name + "2-input");
+    var merge_item1_select = $("#" + maced_MERGE + "-" + item_name + "1-input");
+    var merge_item2_select = $("#" + maced_MERGE + "-" + item_name + "2-input");
     var data = {};
     var item1_id = merge_item1_select.val();
     var item2_id = merge_item2_select.val();
@@ -222,9 +222,9 @@ function merge_item(item_name, base_url)
         return;
     }
 
-    for (i = 0; i < field_names[item_name].length; i++)
+    for (i = 0; i < maced_field_names[item_name].length; i++)
     {
-        field_name = field_names[item_name][i];
+        field_name = maced_field_names[item_name][i];
         data[field_name] = get_input_item(action_type, item_name, field_name);
     }
 
@@ -281,13 +281,13 @@ function merge_item(item_name, base_url)
 
 function delete_item(item_name, base_url)
 {
-    var action_type = DELETE;
+    var action_type = maced_DELETE;
     var modal = $("#" + action_type + "-" + item_name + "-modal");
     var spinner = $("#" + action_type + "-" + item_name + "-spinner");
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
     var item_select = $("#" + item_name + "-select");
-    var merge_item1_select = $("#" + MERGE + "-" + item_name + "1-input");
-    var merge_item2_select = $("#" + MERGE + "-" + item_name + "2-input");
+    var merge_item1_select = $("#" + maced_MERGE + "-" + item_name + "1-input");
+    var merge_item2_select = $("#" + maced_MERGE + "-" + item_name + "2-input");
     var item_id = item_select.val();
     var url = base_url + item_id + "/";
 
@@ -298,7 +298,7 @@ function delete_item(item_name, base_url)
 
     $.ajax(
     {
-        type: "GET",
+        type: "maced_GET",
         url: url,
 
         success: function(out_data)
@@ -335,22 +335,22 @@ function delete_item(item_name, base_url)
 
 function get_item(item_name)
 {
-    var action_type = GET;
+    var action_type = maced_GET;
     var item_hidden = $("#" + item_name + "-hidden");
-    var edit_button = $("#" + EDIT + "-" + item_name + "-button");
-    var edit_spinner = $("#" + EDIT + "-" + item_name + "-spinner");
-    var edit_error_div = $("#" + EDIT + "-" + item_name + "-error-div");
-    var merge_button = $("#" + MERGE + "-" + item_name + "-button");
-    var merge_spinner = $("#" + MERGE + "-" + item_name + "-spinner");
-    var merge_error_div = $("#" + MERGE + "-" + item_name + "-error-div");
-    var delete_button = $("#" + DELETE + "-" + item_name + "-button");
-    var delete_spinner = $("#" + DELETE + "-" + item_name + "-spinner");
-    var delete_error_div = $("#" + DELETE + "-" + item_name + "-error-div");
-    var merge_confirmation_button = $("#" + MERGE + "-" + item_name + "-confirmation-button");
-    var merge_declination_button = $("#" + MERGE + "-" + item_name + "-declination-button");
+    var edit_button = $("#" + maced_EDIT + "-" + item_name + "-button");
+    var edit_spinner = $("#" + maced_EDIT + "-" + item_name + "-spinner");
+    var edit_error_div = $("#" + maced_EDIT + "-" + item_name + "-error-div");
+    var merge_button = $("#" + maced_MERGE + "-" + item_name + "-button");
+    var merge_spinner = $("#" + maced_MERGE + "-" + item_name + "-spinner");
+    var merge_error_div = $("#" + maced_MERGE + "-" + item_name + "-error-div");
+    var delete_button = $("#" + maced_DELETE + "-" + item_name + "-button");
+    var delete_spinner = $("#" + maced_DELETE + "-" + item_name + "-spinner");
+    var delete_error_div = $("#" + maced_DELETE + "-" + item_name + "-error-div");
+    var merge_confirmation_button = $("#" + maced_MERGE + "-" + item_name + "-confirmation-button");
+    var merge_declination_button = $("#" + maced_MERGE + "-" + item_name + "-declination-button");
     var item_select = $("#" + item_name + "-select");
     var item_id = item_select.val();
-    var url = get_urls[item_name] + item_id + "/";
+    var url = maced_get_urls[item_name] + item_id + "/";
     var field_name;
     var i;
 
@@ -367,15 +367,15 @@ function get_item(item_name)
     // Fill the modals with appropriate content
     if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
     {
-        for (i = 0; i < field_names[item_name].length; i++)
+        for (i = 0; i < maced_field_names[item_name].length; i++)
         {
-            field_name = field_names[item_name][i];
+            field_name = maced_field_names[item_name][i];
 
             // Empty all the modals out for this item
-            set_input_item(EDIT, item_name, field_name, "", null);
-            set_input_item(MERGE, item_name, field_name, "", 1);
-            set_input_item(MERGE, item_name, field_name, "", 2);
-            set_input_item(DELETE, item_name, field_name, "", null);
+            set_input_item(maced_EDIT, item_name, field_name, "", null);
+            set_input_item(maced_MERGE, item_name, field_name, "", 1);
+            set_input_item(maced_MERGE, item_name, field_name, "", 2);
+            set_input_item(maced_DELETE, item_name, field_name, "", null);
         }
 
         return;
@@ -383,7 +383,7 @@ function get_item(item_name)
 
     $.ajax(
     {
-        type: "GET",
+        type: "maced_GET",
         url: url,
 
         success: function(out_data)
@@ -399,8 +399,8 @@ function get_item(item_name)
             var fields = out_data_json["fields"];
             var field_name;
             var i;
-            var merge_select1 = $("#" + MERGE + "-" + item_name + "1-input");
-            var merge_select2 = $("#" + MERGE + "-" + item_name + "2-input");
+            var merge_select1 = $("#" + maced_MERGE + "-" + item_name + "1-input");
+            var merge_select2 = $("#" + maced_MERGE + "-" + item_name + "2-input");
 
             // Re-enable the declination button
             merge_declination_button.prop("disabled", false);
@@ -409,13 +409,13 @@ function get_item(item_name)
             merge_select1.find("option[value=" + item_id + "]").attr("selected", true);
 
             // Fill the modals with appropriate content
-            for (i = 0; i < field_names[item_name].length; i++)
+            for (i = 0; i < maced_field_names[item_name].length; i++)
             {
-                field_name = field_names[item_name][i];
-                set_input_item(EDIT, item_name, field_name, fields[field_name], null);
-                set_input_item(MERGE, item_name, field_name, fields[field_name], 1);  // Fill in the left panel
-                set_input_item(MERGE, item_name, field_name, "", 2);  // But empty the right panel
-                set_input_item(DELETE, item_name, field_name, fields[field_name], null);
+                field_name = maced_field_names[item_name][i];
+                set_input_item(maced_EDIT, item_name, field_name, fields[field_name], null);
+                set_input_item(maced_MERGE, item_name, field_name, fields[field_name], 1);  // Fill in the left panel
+                set_input_item(maced_MERGE, item_name, field_name, "", 2);  // But empty the right panel
+                set_input_item(maced_DELETE, item_name, field_name, fields[field_name], null);
             }
 
             // Enable the buttons
@@ -462,15 +462,15 @@ function get_item(item_name)
 // Special get action function for item2 on the merge modal
 function get_item2_for_merge(item_name)
 {
-    var action_type = GET;
-    var merge_button = $("#" + MERGE + "-" + item_name + "-button");
-    var merge_spinner = $("#" + MERGE + "-" + item_name + "-spinner");
-    var merge_error_div = $("#" + MERGE + "-" + item_name + "-error-div");
-    var merge_confirmation_button = $("#" + MERGE + "-" + item_name + "-confirmation-button");
-    var merge_declination_button = $("#" + MERGE + "-" + item_name + "-declination-button");
-    var item_select = $("#" + MERGE + "-" + item_name + "2-input");  // 2 is for the right select. The left has already been filled.
+    var action_type = maced_GET;
+    var merge_button = $("#" + maced_MERGE + "-" + item_name + "-button");
+    var merge_spinner = $("#" + maced_MERGE + "-" + item_name + "-spinner");
+    var merge_error_div = $("#" + maced_MERGE + "-" + item_name + "-error-div");
+    var merge_confirmation_button = $("#" + maced_MERGE + "-" + item_name + "-confirmation-button");
+    var merge_declination_button = $("#" + maced_MERGE + "-" + item_name + "-declination-button");
+    var item_select = $("#" + maced_MERGE + "-" + item_name + "2-input");  // 2 is for the right select. The left has already been filled.
     var item_id = item_select.val();
-    var url = get_urls[item_name] + item_id + "/";
+    var url = maced_get_urls[item_name] + item_id + "/";
     var field_name;
     var i;
 
@@ -482,12 +482,12 @@ function get_item2_for_merge(item_name)
     // Fill the merge modal's right panel with with appropriate content
     if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
     {
-        for (i = 0; i < field_names[item_name].length; i++)
+        for (i = 0; i < maced_field_names[item_name].length; i++)
         {
-            field_name = field_names[item_name][i];
+            field_name = maced_field_names[item_name][i];
 
             // Empty the merge modal's right panel for this item
-            set_input_item(MERGE, item_name, field_name, "", 2);
+            set_input_item(maced_MERGE, item_name, field_name, "", 2);
         }
 
         return;
@@ -495,7 +495,7 @@ function get_item2_for_merge(item_name)
 
     $.ajax(
     {
-        type: "GET",
+        type: "maced_GET",
         url: url,
 
         success: function(out_data)
@@ -511,17 +511,17 @@ function get_item2_for_merge(item_name)
             var fields = out_data_json["fields"];
             var field_name;
             var i;
-            var merge_select1 = $("#" + MERGE + "-" + item_name + "1-input");
-            var merge_select2 = $("#" + MERGE + "-" + item_name + "2-input");
+            var merge_select1 = $("#" + maced_MERGE + "-" + item_name + "1-input");
+            var merge_select2 = $("#" + maced_MERGE + "-" + item_name + "2-input");
 
             // Re-enable the declination button
             merge_declination_button.prop("disabled", false);
 
             // Fill the modals with appropriate content
-            for (i = 0; i < field_names[item_name].length; i++)
+            for (i = 0; i < maced_field_names[item_name].length; i++)
             {
-                field_name = field_names[item_name][i];
-                set_input_item(MERGE, item_name, field_name, fields[field_name], 2);  // Fill in the right panel
+                field_name = maced_field_names[item_name][i];
+                set_input_item(maced_MERGE, item_name, field_name, fields[field_name], 2);  // Fill in the right panel
             }
 
             // If both selects have the same thing in them, aka trying to merge with itself.
@@ -546,13 +546,13 @@ function get_item2_for_merge(item_name)
 
 function authenticate(authenticated, type)
 {
-    if (!authenticated && type != GET)
+    if (!authenticated && type != maced_GET)
     {
         alert("Please login to add/edit/merge/delete items.");
 
-        if (!(login_url === null))
+        if (!(maced_login_url === null))
         {
-            window.location.href = login_url;
+            window.location.href = maced_login_url;
         }
 
         return false;
@@ -563,10 +563,10 @@ function authenticate(authenticated, type)
 
 function remove_success_divs(item_name)
 {
-    $("#" + ADD + "-" + item_name + "-success-div").css("display", "none");
-    $("#" + EDIT + "-" + item_name + "-success-div").css("display", "none");
-    $("#" + MERGE + "-" + item_name + "-success-div").css("display", "none");
-    $("#" + DELETE + "-" + item_name + "-success-div").css("display", "none");
+    $("#" + maced_ADD + "-" + item_name + "-success-div").css("display", "none");
+    $("#" + maced_EDIT + "-" + item_name + "-success-div").css("display", "none");
+    $("#" + maced_MERGE + "-" + item_name + "-success-div").css("display", "none");
+    $("#" + maced_DELETE + "-" + item_name + "-success-div").css("display", "none");
 }
 
 // Get value from an input for the related item
@@ -597,7 +597,7 @@ function set_input_item(action_type, item_name, field_name, value, merge_panel_n
 {
     var input;
 
-    if (action_type == MERGE)
+    if (action_type == maced_MERGE)
     {
         input = $("#" + action_type + "-" + item_name + merge_panel_number + "-" + field_name + "-input");
     }
@@ -616,7 +616,7 @@ function set_input_item(action_type, item_name, field_name, value, merge_panel_n
     }
     else if (input.is("select"))
     {
-        if (action_type != ADD)
+        if (action_type != maced_ADD)
         {
             input.val(value);
         }

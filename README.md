@@ -11,9 +11,9 @@ If you want to report any bugs, you can use the github issue tracker. If you hav
 # Requirements
 
 * Python 2.7 only.
-* Django >=1.8 (probably works with some lower ones too)
-* django-bootstrap3 >= ? 
-* Bootstrap 3 (though eventually I will upgrade to using 4)
+* Django >=? (I am using 1.8.6 and 1.9.1))
+* django-bootstrap3 >= ? (I am using 6.1.0)
+* jQuery >= ? (I am using 1.11.3)
 
 # Installation
 
