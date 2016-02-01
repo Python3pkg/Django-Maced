@@ -5,7 +5,8 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
 from maced.utils.get_html_code_functions import get_items_html_code_for_text, \
-    get_items_html_code_for_color, get_items_html_code_for_select, get_html_code_for_options
+    get_items_html_code_for_color, get_items_html_code_for_select, get_html_code_for_options, \
+    get_items_html_code_for_maced
 from maced.utils.misc import validate_select_options
 
 ACTION_TYPES = ["add", "edit", "merge", "delete"]  # Action types of "clone" and "info" will be added later.
