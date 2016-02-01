@@ -19,6 +19,21 @@ $(document).ready(function()
     var item_select;
     var item_name;
 
+    // Set all readonly input fields within maced to deny backspace as a page-back mechanism.
+    // Refer to http://stackoverflow.com/questions/8876928/allow-copy-paste-in-a-disabled-input-text-box-in-firefox-browsers
+    $(".maced[readonly]").each(function()
+    {
+        $(this).onkeydown(function(event)
+        {
+            var key = event.which || event.keyCode || 0;
+
+            if(key === 8)
+            {
+                event.preventDefault();
+            }
+        });
+    });
+
     // Loop through all items and add "click" and "change" events and load any initial data if any exists.
     for (i = 0; i < maced_item_names.length; i++)
     {
