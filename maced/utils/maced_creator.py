@@ -296,7 +296,7 @@ def insert_items_html_code(original_dictionary, item_name, field_type, field_htm
     if field_type == "maced":
         for action_type in ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, extra_info)
-    if field_type == "text":
+    elif field_type == "text":
         for action_type in ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_text(item_name, action_type, field_html_name, field_name)
     elif field_type == "color":
