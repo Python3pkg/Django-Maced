@@ -1,5 +1,6 @@
 import collections
-
+import random
+import string
 
 BAD_ITEM_NAME_CHARACTERS = (".", ":", "#", "$", "*")
 
@@ -104,3 +105,7 @@ def validate_select_options(extra_info, field, item_name, select_type):
             option_count += 1
     else:
         raise TypeError("Options must be a list of tuples where the tuples are (value, name)")
+
+
+def make_random_id(size):
+    return "".join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(size))
