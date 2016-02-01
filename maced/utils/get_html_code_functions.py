@@ -20,7 +20,10 @@ def get_merge_html_code_for_text(item_name, field_html_name, field_name):
     html_code += '<th class="maced">' + field_html_name + ': </th>'
 
     # Create left panel
-    html_code += '<td class="maced"><input type="text" class="maced form-control" id="merge-' + item_name + '1-' + field_name + '-input" readonly /></td>'
+    html_code += \
+        '<td class="maced">' \
+            '<input type="text" class="maced form-control" id="merge-' + item_name + '1-' + field_name + '-input" readonly />' \
+        '</td>'
 
     # Create middle panel
     html_code += \
@@ -63,7 +66,7 @@ def get_merge_html_code_for_color(item_name, field_html_name, field_name):
     # Create left panel
     html_code += \
         '<td class="maced">' \
-            '<input type="color" class="maced form-control" id="merge-' + item_name + '1-' + field_name + '-input" value="#00FF00" readonly />' \
+            '<input type="color" class="maced form-control" id="merge-' + item_name + '1-' + field_name + '-input" value="#00FF00" disabled />' \
         '</td>'
 
     # Create middle panel
@@ -75,7 +78,7 @@ def get_merge_html_code_for_color(item_name, field_html_name, field_name):
     # Create right panel for merge
     html_code += \
         '<td class="maced">' \
-            '<input type="color" class="maced form-control" id="merge-' + item_name + '2-' + field_name + '-input" value="#00FF00" readonly />' \
+            '<input type="color" class="maced form-control" id="merge-' + item_name + '2-' + field_name + '-input" value="#00FF00" disabled />' \
         '</td>'
 
     html_code += '</tr>'
