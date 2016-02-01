@@ -2,11 +2,11 @@
 
 var maced_ADD = "add";
 var maced_EDIT = "edit";
-var maced_maced_MERGE = "merge";
+var maced_MERGE = "merge";
 var maced_DELETE = "delete";
 var maced_GET = "get";
 
-var maced_ACTION_TYPES = [maced_ADD, maced_EDIT, maced_maced_MERGE, maced_DELETE, maced_GET];
+var maced_ACTION_TYPES = [maced_ADD, maced_EDIT, maced_MERGE, maced_DELETE, maced_GET];
 
 var maced_item_names = maced_data["item_names"];
 var maced_field_names = JSON.parse(maced_data["field_names"]);
@@ -65,8 +65,8 @@ function add_item(item_name, url)
     var spinner = $("#" + action_type + "-" + item_name + "-spinner");
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
     var item_select = $("#" + item_name + "-select");
-    var merge_item1_select = $("#" + maced_maced_MERGE + "-" + item_name + "1-input");
-    var merge_item2_select = $("#" + maced_maced_MERGE + "-" + item_name + "2-input");
+    var merge_item1_select = $("#" + maced_MERGE + "-" + item_name + "1-input");
+    var merge_item2_select = $("#" + maced_MERGE + "-" + item_name + "2-input");
     var data = {};
     var field_name;
     var i;
