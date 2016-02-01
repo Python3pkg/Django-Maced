@@ -12,7 +12,7 @@ If you want to report any bugs, you can use the github issue tracker. If you hav
 
 * Python 2.7 only.
 * Django >=? (I am using 1.8.6 and 1.9.1))
-* django-bootstrap3 >= ? (I am using 6.1.0)
+* django-bootstrap3 >= ? (I am using 6.2.2)
 * jQuery >= ? (I am using 1.11.3)
 
 # Installation

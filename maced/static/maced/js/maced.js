@@ -18,6 +18,7 @@ $(document).ready(function()
     var i;
     var item_select;
     var item_name;
+    var modals = $(".modal");
 
     // Set all readonly input fields within maced to deny backspace as a page-back mechanism.
     // Refer to http://stackoverflow.com/questions/8876928/allow-copy-paste-in-a-disabled-input-text-box-in-firefox-browsers
@@ -32,6 +33,22 @@ $(document).ready(function()
                 event.preventDefault();
             }
         });
+    });
+
+    modals.on("show.bs.modal", function(event)
+    {
+        var index = $(".modal:visible").length;
+
+        $(this).css("z-index", 1040 + (10 * index));
+    });
+
+    modals.on("shown.bs.modal", function(event)
+    {
+        var index = ($(".modal:visible").length) -1; // raise backdrop after animation.
+        var modal_backdrops = $(".modal-backdrop");
+
+        modal_backdrops.not(".maced-stacked").css("z-index", 1039 + (10 * index));
+        modal_backdrops.not(".maced-stacked").addClass("maced-stacked");
     });
 
     // Loop through all items and add "click" and "change" events and load any initial data if any exists.
