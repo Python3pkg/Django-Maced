@@ -176,8 +176,7 @@ def get_html_code_with_replaced_ids_for_maced_fields(maced_info, action_type, it
     maced_modal_html_code = maced_info["maced_modal_html_code"]
     context = maced_info["context"]
     maced_data = context["maced_data"]
-    # Intentionally redundant so I don't have to make the main selects special. Maybe later...
-    field_identifier = item_name + "-" + action_type + "_type-" + item_name + "-" + field_name
+    field_identifier = action_type + "_type-" + item_name + "-" + field_name
 
     # First we will handle the modals and add them to the context by replacing all occurrences of the name of the object
     context[field_identifier + "_maced_modal"] = maced_modal_html_code.replace(maced_name, field_identifier)
@@ -188,7 +187,8 @@ def get_html_code_with_replaced_ids_for_maced_fields(maced_info, action_type, it
 
     # Finally we will add field_names and field_identifiers to the context
     maced_data["field_names"][item_name].append(field_name)
-    maced_data["field_identifiers"][item_name].append(field_identifier)
+    # Intentionally adding item_name twice...
+    maced_data["field_identifiers"][item_name].append(item_name + "-" + field_identifier)
 
     # # Now replace the select id (which has been modified so we need to search for the modified version)
     # # Used to be maced_name + "-select"
