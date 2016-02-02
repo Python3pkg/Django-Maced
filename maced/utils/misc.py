@@ -1,6 +1,7 @@
 import collections
 import random
 import string
+import json
 
 BAD_ITEM_NAME_CHARACTERS = (
     "!", '"', "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", ".", "/", ":", ";", "<", "=", ">", "?", "@", "[", "\\",
