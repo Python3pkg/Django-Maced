@@ -115,7 +115,7 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
 
     # Make a builder so we can reuse it later for maced fields
     context[item_name + "_builder"] = build_builder(
-        item_name, item_html_name, item_model, field_to_order_by, urls, item_options_list, field_list
+        item_name, item_html_name, item_model, field_to_order_by, urls, item_options_list, field_list, allow_empty
     )
 
     # All the special html that is built in python

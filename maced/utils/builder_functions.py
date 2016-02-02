@@ -175,7 +175,7 @@ def build_urls(item_name, name_of_app_with_urls, maced_data):
     return urls
 
 
-def build_builder(item_name, item_html_name, item_model, field_to_order_by, urls, item_options_list, field_list):
+def build_builder(item_name, item_html_name, item_model, field_to_order_by, urls, item_options_list, field_list, allow_empty):
     builder = {}
     builder["item_name"] = item_name
     builder["item_html_name"] = item_html_name
@@ -186,7 +186,7 @@ def build_builder(item_name, item_html_name, item_model, field_to_order_by, urls
     builder["edit_url"] = urls["edit_url"]
     builder["merge_url"] = urls["merge_url"]
     builder["delete_url"] = urls["delete_url"]
-    builder["allow_empty"] = urls["allow_empty"]
+    builder["allow_empty"] = allow_empty
 
     return builder
 
