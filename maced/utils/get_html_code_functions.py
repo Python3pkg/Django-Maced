@@ -1,7 +1,7 @@
+from maced.utils.constants import ACTION_TYPES
+
+
 # MACED
-from maced.utils.maced_creator import ACTION_TYPES
-
-
 def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
     if action_type == "add" or action_type == "edit":
         return get_html_code_with_replaced_ids_for_maced_fields(maced_info, action_type, item_name, field_name)

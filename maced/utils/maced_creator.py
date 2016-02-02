@@ -3,17 +3,12 @@ import json
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
+from maced.utils.constants import ACTION_TYPES, VALID_INPUT_TYPES, VALID_SELECT_TYPES
 
 from maced.utils.get_html_code_functions import get_items_html_code_for_text, \
     get_items_html_code_for_color, get_items_html_code_for_select, get_html_code_for_options, \
     get_items_html_code_for_maced
 from maced.utils.misc import validate_select_options
-
-ACTION_TYPES = ["add", "edit", "merge", "delete"]  # Action types of "clone" and "info" will be added later.
-                                                   # "info" is not really an action, but for the sake of ease of use,
-                                                   # it will be considered one.
-VALID_INPUT_TYPES = ["maced", "text", "color", "select"]
-VALID_SELECT_TYPES = ["object", "string"]
 
 
 # The main function to craft html code for each item. This is the only function that should be called directly besides
