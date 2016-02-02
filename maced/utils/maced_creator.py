@@ -1,3 +1,6 @@
+# This is 3 files in one. Used to be maced_creator.py, build_functions.py, and get_html_code_functions.py, but Python
+#       2.7 sucks and doesn't allow recursive imports. Now all 3 files are here in 1 and separated by large spacing.
+
 import inspect
 import json
 
@@ -642,7 +645,7 @@ def get_html_code_for_options(options_list, selected_index=None):
     return html_code
 
 
-# Other
+# OTHER
 # Search dependencies and change their ids to the full path
 def get_html_code_with_replaced_ids_for_maced_fields(context, maced_name, action_type, item_name, field_name):
     dependencies = context[item_name + "_dependencies"]
@@ -665,26 +668,13 @@ def get_html_code_with_replaced_ids_for_maced_fields(context, maced_name, action
         subcontext["merge_html_code"] = html_code_dictionary[item_name]["merge"]
         subcontext["delete_html_code"] = html_code_dictionary[item_name]["delete"]
 
-    # maced_item_html_code = maced_info["maced_item_html_code"]
-    maced_modal_html_code = context[maced_name + "_maced_modal"]
     maced_data = context["maced_data"]
     field_identifier = action_type + "_type-" + item_name + "-" + field_name
     full_field_identifier = item_name + "-" + field_identifier  # Intentionally adding item_name twice...
 
-    # First we will handle the modals and add them to the context by replacing all occurrences of the name of the object
-    base_modal = maced_modal_html_code.replace(maced_name, full_field_identifier)
-    context[full_field_identifier + "_maced_modal"] = base_modal
+    # context[full_field_identifier + "_maced_modal"] = base_modal
 
-    for action in ACTION_TYPES:
-        old_url = "/" + action + "_" + full_field_identifier + "/"
-        new_url = "/" + action + "_" + maced_name + "/"
-        base_modal = base_modal.replace(old_url, new_url)
-
-    context["maced_modals"] += base_modal
-
-
-    # Next we will copy the html for the maced item then replace all occurrences of the name of the object
-    # html_code = maced_item_html_code.replace(maced_name, full_field_identifier)
+    # context["maced_modals"] += base_modal
 
     # Finally we will add field_names, field_identifiers, and the custom item_name to the context
     maced_data["field_names"][item_name].append(field_name)
@@ -695,15 +685,4 @@ def get_html_code_with_replaced_ids_for_maced_fields(context, maced_name, action
     maced_data["field_identifiers"][full_field_identifier] = maced_data["field_identifiers"][maced_name]
     maced_data["get_urls"][full_field_identifier] = maced_data["get_urls"][maced_name]
 
-    # # Now replace the select id (which has been modified so we need to search for the modified version)
-    # # Used to be maced_name + "-select"
-    # old_select_id = item_name + "-" + field_name + "-select"
-    #
-    # # The new id will simply be a normal select syntax
-    # new_select_id = action_type + "-" + item_name + "-" + field_name + "-input"
-    #
-    # # Copy the html and replace the select id with the new one
-    # html_code = html_code.replace(old_select_id, new_select_id)
-
-    # return html_code
     return ""
