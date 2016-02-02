@@ -1,4 +1,7 @@
 # MACED
+from maced.utils.maced_creator import ACTION_TYPES
+
+
 def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
     if action_type == "add" or action_type == "edit":
         return get_html_code_with_replaced_ids_for_maced_fields(maced_info, action_type, item_name, field_name)
@@ -186,15 +189,24 @@ def get_html_code_for_options(options_list, selected_index=None):
 # Search dependencies and change their ids to the full path
 def get_html_code_with_replaced_ids_for_maced_fields(maced_info, action_type, item_name, field_name):
     maced_name = maced_info["maced_name"]
-    maced_item_html_code = maced_info["maced_item_html_code"]
-    maced_modal_html_code = maced_info["maced_modal_html_code"]
     context = maced_info["context"]
+    maced_item_html_code = maced_info["maced_item_html_code"]
+    maced_modal_html_code = context[maced_name + "_maced_modal"]
     maced_data = context["maced_data"]
     field_identifier = action_type + "_type-" + item_name + "-" + field_name
     full_field_identifier = item_name + "-" + field_identifier  # Intentionally adding item_name twice...
 
     # First we will handle the modals and add them to the context by replacing all occurrences of the name of the object
-    context["maced_modals"] += maced_modal_html_code.replace(maced_name, full_field_identifier)
+    base_modal = maced_modal_html_code.replace(maced_name, full_field_identifier)
+    context[full_field_identifier + "_maced_modal"] = base_modal
+
+    for action in ACTION_TYPES:
+        old_url = "/" + action + "_" + full_field_identifier + "/"
+        new_url = "/" + action + "_" + maced_name + "/"
+        base_modal = base_modal.replace(old_url, new_url)
+
+    context["maced_modals"] += base_modal
+
 
     # Next we will copy the html for the maced item then replace all occurrences of the name of the object
     html_code = maced_item_html_code.replace(maced_name, full_field_identifier)
