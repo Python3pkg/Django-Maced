@@ -624,7 +624,7 @@ function get_input_item(action_type, item_name, field_identifier)
     // Special case for maced inputs. Only applies to add and edit.
     if (input.length == 0 && (action_type == maced_ADD || action_type == maced_EDIT))
     {
-        input = $("#" + item_name + "-" + action_type + "_type-" + item_name + "-" + field_identifier + "-select");
+        input = $("#" + item_name + "-" + field_identifier + "-select");
     }
 
     if (input.is("input:text"))
@@ -661,7 +661,7 @@ function set_input_item(action_type, item_name, field_identifier, value, merge_p
         // Special case for maced inputs. Only applies to add and edit.
         if (input.length == 0 && (action_type == maced_ADD || action_type == maced_EDIT))
         {
-            input = $("#" + item_name + "-" + action_type + "_type-" + item_name + "-" + field_identifier + "-select");
+            input = $("#" + item_name + "-" + field_identifier + "-select");
         }
     }
 
@@ -682,7 +682,7 @@ function set_input_item(action_type, item_name, field_identifier, value, merge_p
     }
     else
     {
-        alert("#" + action_type + "-" + item_name + "-" + field_identifier + "-input");
+        //alert("#" + action_type + "-" + item_name + "-" + field_identifier + "-input");
         alert("Ensure that you have added \"" + item_name + "\" to the page");
         alert("Input type not implemented for set_input_item()");
     }
