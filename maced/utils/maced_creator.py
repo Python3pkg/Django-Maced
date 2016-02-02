@@ -99,6 +99,9 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     if "field_identifiers" not in maced_data:
         maced_data["field_identifiers"] = {}
 
+    maced_data["field_names"][item_name] = []
+    maced_data["field_identifiers"][item_name] = []
+
     if "get_urls" not in maced_data:
         maced_data["get_urls"] = {}
 

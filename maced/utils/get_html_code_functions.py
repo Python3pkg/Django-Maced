@@ -186,8 +186,8 @@ def get_html_code_with_replaced_ids_for_maced_fields(maced_info, action_type, it
     html_code = maced_item_html_code.replace(maced_name, field_identifier)
 
     # Finally we will add field_names and field_identifiers to the context
-    maced_data["field_names"][item_name] = field_name
-    maced_data["field_identifiers"][item_name] = field_identifier
+    maced_data["field_names"][item_name].append(field_name)
+    maced_data["field_identifiers"][item_name].append(field_identifier)
 
     # # Now replace the select id (which has been modified so we need to search for the modified version)
     # # Used to be maced_name + "-select"
