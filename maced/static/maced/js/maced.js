@@ -621,6 +621,12 @@ function get_input_item(action_type, item_name, field_identifier)
 {
     var input = $("#" + action_type + "-" + item_name + "-" + field_identifier + "-input");
 
+    // Special case for maced inputs. Only applies to add and edit.
+    if (input.length == 0 && (action_type == maced_ADD || action_type == maced_EDIT))
+    {
+        input = $("#" + item_name + "-" + action_type + "_type-" + item_name + "-" + field_identifier + "-select");
+    }
+
     if (input.is("input:text"))
     {
         return input.val();
@@ -651,6 +657,12 @@ function set_input_item(action_type, item_name, field_identifier, value, merge_p
     else
     {
         input = $("#" + action_type + "-" + item_name + "-" + field_identifier + "-input");
+
+        // Special case for maced inputs. Only applies to add and edit.
+        if (input.length == 0 && (action_type == maced_ADD || action_type == maced_EDIT))
+        {
+            input = $("#" + item_name + "-" + action_type + "_type-" + item_name + "-" + field_identifier + "-select");
+        }
     }
 
     if (input.is("input:text"))
