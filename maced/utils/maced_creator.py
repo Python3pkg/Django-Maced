@@ -105,34 +105,97 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     if "get_urls" not in maced_data:
         maced_data["get_urls"] = {}
 
-    html_code_dictionary = {}
-    html_code_dictionary[item_name] = {}
-
-    for action_type in ACTION_TYPES:
-        html_code_dictionary[item_name][action_type] = ""
-
-    add_base_url = name_of_app_with_urls + ".add_" + item_name
-    edit_base_url = name_of_app_with_urls + ".edit_" + item_name
-    merge_base_url = name_of_app_with_urls + ".merge_" + item_name
-    delete_base_url = name_of_app_with_urls + ".delete_" + item_name
-    get_base_url = name_of_app_with_urls + ".get_" + item_name
-
-    add_url = reverse(add_base_url)
-    edit_url = reverse(edit_base_url, args=["0"])[:-2]  # A number is required to get the url, then we cut it off with [:-2]  # noqa
-    merge_url = reverse(merge_base_url, args=["0", "0"])[:-4]  # A number is required to get the url, then we cut it off with [:-4]  # noqa
-    delete_url = reverse(delete_base_url, args=["0"])[:-2]  # A number is required to get the url, then we cut it off with [:-2]  # noqa
-    get_url = reverse(get_base_url, args=["0"])[:-2]  # A number is required to get the url, then we cut it off with [:-2]  # noqa
-
-    maced_data["get_urls"][item_name] = get_url
-
     # Get all items of this type
     items = get_items(item_model)
-
-    # context[item_name + "_dependencies"] = []
 
     # Create an item_options_list which is a list of tuples defined as (id_of_the_item, name_of_the_item). This will
     # be used in the merge function.
     item_options_list = [(item.id, getattr(item, item_name_field_name)) for item in items]
+
+    # All the special html that is built in python
+    html_code_dictionary = build_html_code(context, item_options_list, item_name, item_html_name, field_list)
+
+    # Constructs urls
+    urls = build_urls(html_code_dictionary, item_name, name_of_app_with_urls, maced_data)
+
+    # context[item_name + "_dependencies"] = []
+
+    # The final step of putting it all together to make 2 sets of html; one for the item on the page and one for the modal that pops up.
+    build_templates(
+        context, item_name, current_item_id, item_html_name, item_model, field_to_order_by, html_code_dictionary,
+        urls["add_url"], urls["edit_url"], urls["merge_url"], urls["delete_url"], allow_empty
+    )
+
+
+# A nice helper function to simplify code for whoever is using this app. Since current_item_id is required, this makes
+# getting it much easier. In many cases you don't need a current_item_id and should use 0 instead.
+def get_current_item_id(model_instance, field_name):
+    if model_instance is None:
+        return 0
+
+    if not isinstance(field_name, (str, unicode)):
+        raise TypeError("field_name must be a string")
+
+    if field_name == "":
+        raise ValueError("field_name must not be an empty string")
+
+    split_field_names = field_name.split(".")
+    parent = model_instance
+    path = model_instance.__class__.__name__
+
+    for split_field_name in split_field_names:
+        if not hasattr(parent, split_field_name):
+            raise ValueError(path + " does not have the field named " + str(split_field_name))
+
+        field = getattr(parent, split_field_name)
+
+        if field is None:
+            return 0
+
+        parent = field
+        path += "." + split_field_name
+
+    # Ignore this warning. It is not possible to have a split_field_names length of 0, and even if it were possible,
+    # catching that situation doesn't stop compilers from complaining about this anyway.
+    return field.id
+
+
+# Later, restrictions will be applied to incorporate permissions/public/private/etc.
+def get_items(item_model):
+    items = item_model.objects.all()
+
+    return items
+
+
+# original_dictionary is the dictionary that is being built up for a particular maced_item object.
+#   When it is complete, it should be sent to get_context_data_for_maced_items to be added to the context.
+# item_name is the name of the model.
+# field_type is small set of predefined constants to support various html input types.
+# field_html_name is the name that will be shown to the user for the modal that pops up after clicking add, edit, merge
+#   or delete
+# field_name is the name of the field on the model
+# extra_info is an optional parameter that is used for special purposes depending on the item_type if the type uses it.
+#   Example: Select uses extra_info for options information
+def insert_items_html_code(original_dictionary, item_name, field_type, field_html_name, field_name, extra_info=None):
+    if field_type == "maced":
+        for action_type in ACTION_TYPES:
+            original_dictionary[item_name][action_type] += get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, extra_info)
+    elif field_type == "text":
+        for action_type in ACTION_TYPES:
+            original_dictionary[item_name][action_type] += get_items_html_code_for_text(item_name, action_type, field_html_name, field_name)
+    elif field_type == "color":
+        for action_type in ACTION_TYPES:
+            original_dictionary[item_name][action_type] += get_items_html_code_for_color(item_name, action_type, field_html_name, field_name)
+    elif field_type == "select":
+        for action_type in ACTION_TYPES:
+            original_dictionary[item_name][action_type] += get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, extra_info)
+    else:
+        raise TypeError("field_type of " + str(field_type) + " is not supported yet. (maced_items.py:insert_items_html_code())")
+
+
+def build_html_code(context, item_options_list, item_name, item_html_name, field_list):
+    html_code_dictionary = {}
+    html_code_dictionary[item_name] = {}
 
     maced_object_option_html_code = get_html_code_for_options(item_options_list)
 
@@ -254,90 +317,57 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     # Merge has special html after the regular html
     html_code_dictionary[item_name]["merge"] += "</table>"
 
-    sub_context = {}
-    sub_context["item_id"] = current_item_id
-    sub_context["item_name"] = item_name
-    sub_context["item_html_name"] = item_html_name
-    sub_context["items"] = item_model.objects.all().order_by(field_to_order_by)
-    sub_context["add_html_code"] = html_code_dictionary[item_name]["add"]
-    sub_context["edit_html_code"] = html_code_dictionary[item_name]["edit"]
-    sub_context["merge_html_code"] = html_code_dictionary[item_name]["merge"]
-    sub_context["delete_html_code"] = html_code_dictionary[item_name]["delete"]
-    sub_context["add_url"] = add_url
-    sub_context["edit_url"] = edit_url
-    sub_context["merge_url"] = merge_url
-    sub_context["delete_url"] = delete_url
-    sub_context["allow_empty"] = allow_empty
 
-    context[item_name + "_item"] = render(request=None, template_name="maced/container.html", context=sub_context).content
-    context[item_name + "_maced_modal"] = render(request=None, template_name="maced/modal_list.html", context=sub_context).content
+def build_urls(html_code_dictionary, item_name, name_of_app_with_urls, maced_data):
+    for action_type in ACTION_TYPES:
+        html_code_dictionary[item_name][action_type] = ""
+
+    add_base_url = name_of_app_with_urls + ".add_" + item_name
+    edit_base_url = name_of_app_with_urls + ".edit_" + item_name
+    merge_base_url = name_of_app_with_urls + ".merge_" + item_name
+    delete_base_url = name_of_app_with_urls + ".delete_" + item_name
+    get_base_url = name_of_app_with_urls + ".get_" + item_name
+
+    add_url = reverse(add_base_url)
+    edit_url = reverse(edit_base_url, args=["0"])[:-2]  # A number is required to get the url, then we cut it off with [:-2]  # noqa
+    merge_url = reverse(merge_base_url, args=["0", "0"])[:-4]  # A number is required to get the url, then we cut it off with [:-4]  # noqa
+    delete_url = reverse(delete_base_url, args=["0"])[:-2]  # A number is required to get the url, then we cut it off with [:-2]  # noqa
+    get_url = reverse(get_base_url, args=["0"])[:-2]  # A number is required to get the url, then we cut it off with [:-2]  # noqa
+
+    maced_data["get_urls"][item_name] = get_url
+
+    urls = {}
+    urls["add_url"] = add_url
+    urls["edit_url"] = edit_url
+    urls["merge_url"] = merge_url
+    urls["delete_url"] = delete_url
+    urls["get_url"] = get_url  # Don't really need it, but why not :)
+
+    return urls
+
+
+def build_templates(context, item_name, item_id, item_html_name, item_model, field_to_order_by, html_code_dictionary,
+                    add_url, edit_url, merge_url, delete_url, allow_empty):
+    context[item_name + "_builder"] = {}
+    builder = context[item_name + "_builder"]
+
+    builder["item_id"] = item_id
+    builder["item_name"] = item_name
+    builder["item_html_name"] = item_html_name
+    builder["items"] = item_model.objects.all().order_by(field_to_order_by)
+    builder["add_html_code"] = html_code_dictionary[item_name]["add"]
+    builder["edit_html_code"] = html_code_dictionary[item_name]["edit"]
+    builder["merge_html_code"] = html_code_dictionary[item_name]["merge"]
+    builder["delete_html_code"] = html_code_dictionary[item_name]["delete"]
+    builder["add_url"] = add_url
+    builder["edit_url"] = edit_url
+    builder["merge_url"] = merge_url
+    builder["delete_url"] = delete_url
+    builder["allow_empty"] = allow_empty
+
+    context[item_name + "_item"] = render(request=None, template_name="maced/container.html", context=builder).content
+    context[item_name + "_maced_modal"] = render(request=None, template_name="maced/modal_list.html", context=builder).content
     context["maced_modals"] += context[item_name + "_maced_modal"]
-
-
-# A nice helper function to simplify code for whoever is using this app. Since current_item_id is required, this makes
-# getting it much easier. In many cases you don't need a current_item_id and should use 0 instead.
-def get_current_item_id(model_instance, field_name):
-    if model_instance is None:
-        return 0
-
-    if not isinstance(field_name, (str, unicode)):
-        raise TypeError("field_name must be a string")
-
-    if field_name == "":
-        raise ValueError("field_name must not be an empty string")
-
-    split_field_names = field_name.split(".")
-    parent = model_instance
-    path = model_instance.__class__.__name__
-
-    for split_field_name in split_field_names:
-        if not hasattr(parent, split_field_name):
-            raise ValueError(path + " does not have the field named " + str(split_field_name))
-
-        field = getattr(parent, split_field_name)
-
-        if field is None:
-            return 0
-
-        parent = field
-        path += "." + split_field_name
-
-    # Ignore this warning. It is not possible to have a split_field_names length of 0, and even if it were possible,
-    # catching that situation doesn't stop compilers from complaining about this anyway.
-    return field.id
-
-
-# Later, restrictions will be applied to incorporate permissions/public/private/etc.
-def get_items(item_model):
-    items = item_model.objects.all()
-
-    return items
-
-
-# original_dictionary is the dictionary that is being built up for a particular maced_item object.
-#   When it is complete, it should be sent to get_context_data_for_maced_items to be added to the context.
-# item_name is the name of the model.
-# field_type is small set of predefined constants to support various html input types.
-# field_html_name is the name that will be shown to the user for the modal that pops up after clicking add, edit, merge
-#   or delete
-# field_name is the name of the field on the model
-# extra_info is an optional parameter that is used for special purposes depending on the item_type if the type uses it.
-#   Example: Select uses extra_info for options information
-def insert_items_html_code(original_dictionary, item_name, field_type, field_html_name, field_name, extra_info=None):
-    if field_type == "maced":
-        for action_type in ACTION_TYPES:
-            original_dictionary[item_name][action_type] += get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, extra_info)
-    elif field_type == "text":
-        for action_type in ACTION_TYPES:
-            original_dictionary[item_name][action_type] += get_items_html_code_for_text(item_name, action_type, field_html_name, field_name)
-    elif field_type == "color":
-        for action_type in ACTION_TYPES:
-            original_dictionary[item_name][action_type] += get_items_html_code_for_color(item_name, action_type, field_html_name, field_name)
-    elif field_type == "select":
-        for action_type in ACTION_TYPES:
-            original_dictionary[item_name][action_type] += get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, extra_info)
-    else:
-        raise TypeError("field_type of " + str(field_type) + " is not supported yet. (maced_items.py:insert_items_html_code())")
 
 
 # This function just does some serialization before pushing to the frontend. MUST be called after all html code has been
