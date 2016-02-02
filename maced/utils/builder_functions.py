@@ -2,8 +2,12 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from maced.utils.constants import VALID_INPUT_TYPES, VALID_SELECT_TYPES, ACTION_TYPES
 from maced.utils.get_html_code_functions import get_html_code_for_options
-from maced.utils.maced_creator import insert_items_html_code
 from maced.utils.misc import validate_select_options
+
+try:
+    from maced.utils.maced_creator import insert_items_html_code
+except ImportError:
+    pass
 
 
 def build_html_code(context, item_options_list, item_name, item_html_name, field_list):
