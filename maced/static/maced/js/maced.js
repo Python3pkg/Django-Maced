@@ -670,6 +670,7 @@ function set_input_item(action_type, item_name, field_identifier, value, merge_p
     }
     else
     {
+        alert("#" + action_type + "-" + item_name + "-" + field_identifier + "-input");
         alert("Ensure that you have added \"" + item_name + "\" to the page");
         alert("Input type not implemented for set_input_item()");
     }
