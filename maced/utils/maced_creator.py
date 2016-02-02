@@ -85,13 +85,13 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
 
     maced_data = context["maced_data"]
 
+    if "item_names" not in maced_data:
+        maced_data["item_names"] = []
+
     if item_name in maced_data["item_names"]:
         raise ValueError("Duplicate item var name of " + str(item_name))
 
     maced_data["item_names"].append(item_name)
-
-    if "item_names" not in maced_data:
-        maced_data["item_names"] = []
 
     if "field_names" not in maced_data:
         maced_data["field_names"] = {}
