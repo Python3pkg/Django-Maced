@@ -1,5 +1,8 @@
 from maced.utils.constants import ACTION_TYPES
 
+
+#  Used to prevent recursive importing since builder_functions.py and get_html_code_functions.py both rely on each other
+#       through recursion. This is used to recursively/dynamically create maced items within maced items.
 try:
     from maced.utils.builder_functions import build_html_code
 except ImportError:

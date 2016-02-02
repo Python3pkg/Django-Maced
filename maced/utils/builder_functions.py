@@ -4,14 +4,12 @@ from maced.utils.constants import VALID_INPUT_TYPES, VALID_SELECT_TYPES, ACTION_
 from maced.utils.get_html_code_functions import get_html_code_for_options
 from maced.utils.misc import validate_select_options
 
-import maced.utils.maced_creator
-
-insert_items_html_code = maced.utils.maced_creator.insert_items_html_code
-
-# try:
-#     from maced.utils.maced_creator import insert_items_html_code
-# except ImportError:
-#     pass
+#  Used to prevent recursive importing since builder_functions.py and get_html_code_functions.py both rely on each other
+#       through recursion. This is used to recursively/dynamically create maced items within maced items.
+try:
+    from maced.utils.maced_creator import insert_items_html_code
+except ImportError:
+    pass
 
 
 def build_html_code(context, item_options_list, item_name, item_html_name, field_list):
