@@ -85,11 +85,19 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
 
     maced_data = context["maced_data"]
 
+    if item_name in maced_data["item_names"]:
+        raise ValueError("Duplicate item var name of " + str(item_name))
+
+    maced_data["item_names"].append(item_name)
+
     if "item_names" not in maced_data:
         maced_data["item_names"] = []
 
     if "field_names" not in maced_data:
         maced_data["field_names"] = {}
+
+    if "field_identifiers" not in maced_data:
+        maced_data["field_identifiers"] = {}
 
     if "get_urls" not in maced_data:
         maced_data["get_urls"] = {}
@@ -113,7 +121,6 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     get_url = reverse(get_base_url, args=["0"])[:-2]  # A number is required to get the url, then we cut it off with [:-2]  # noqa
 
     maced_data["get_urls"][item_name] = get_url
-    field_name_list = []
 
     # Get all items of this type
     items = get_items(item_model)
@@ -241,12 +248,9 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
             field["html_name"] = field["name"].title()
 
         insert_items_html_code(html_code_dictionary, item_name, field["type"], field["html_name"], field["name"], extra_info)
-        field_name_list.append(field["name"])
 
     # Merge has special html after the regular html
     html_code_dictionary[item_name]["merge"] += "</table>"
-
-    insert_field_names(context, item_name, field_name_list)
 
     sub_context = {}
     sub_context["item_id"] = current_item_id
@@ -334,18 +338,6 @@ def insert_items_html_code(original_dictionary, item_name, field_type, field_htm
         raise TypeError("field_type of " + str(field_type) + " is not supported yet. (maced_items.py:insert_items_html_code())")
 
 
-# This function adds all fields connected to this item, to the context.
-def insert_field_names(context, item_name, field_name_list):
-    maced_data = context["maced_data"]
-
-    if item_name in maced_data["item_names"]:
-        raise ValueError("Duplicate item var name of " + str(item_name))
-
-    maced_data["item_names"].append(item_name)
-
-    maced_data["field_names"][item_name] = field_name_list
-
-
 # This function just does some serialization before pushing to the frontend. MUST be called after all html code has been
 # generated and should only be called once
 def finalize_context_for_items(context, login_url=None):
@@ -354,8 +346,11 @@ def finalize_context_for_items(context, login_url=None):
 
     maced_data = context["maced_data"]
 
-    if "get_urls" not in maced_data or "field_names" not in maced_data:
-        raise RuntimeError("ERROR: maced_items is not configured correctly. Please check why get_urls and/or field_names is missing from the context.")
+    if "get_urls" not in maced_data or "field_names" not in maced_data or "field_identifiers" not in maced_data:
+        raise RuntimeError(
+            "ERROR: maced_items is not configured correctly. Please check why get_urls and/or field_names and/or "
+            "field_identifiers is missing from the context."
+        )
 
     maced_data["get_urls"] = json.dumps(maced_data["get_urls"])
     maced_data["field_names"] = json.dumps(maced_data["field_names"])
