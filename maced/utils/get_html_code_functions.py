@@ -183,14 +183,14 @@ def get_html_code_with_replaced_ids_for_maced_fields(maced_info, action_type, it
     # Copy the html for the maced item then replace all occurrences of the name of the object
     html_code = maced_item_html_code.replace(maced_name, item_name + "-" + field_name)
 
-    # Now replace the select id (which has been modified so we need to search for the modified version)
-    # Used to be maced_name + "-select"
-    old_select_id = item_name + "-" + field_name + "-select"
-
-    # The new id will simply be a normal select syntax
-    new_select_id = action_type + "-" + item_name + "-" + field_name + "-input"
-
-    # Copy the html and replace the select id with the new one
-    html_code = html_code.replace(old_select_id, new_select_id)
+    # # Now replace the select id (which has been modified so we need to search for the modified version)
+    # # Used to be maced_name + "-select"
+    # old_select_id = item_name + "-" + field_name + "-select"
+    #
+    # # The new id will simply be a normal select syntax
+    # new_select_id = action_type + "-" + item_name + "-" + field_name + "-input"
+    #
+    # # Copy the html and replace the select id with the new one
+    # html_code = html_code.replace(old_select_id, new_select_id)
 
     return html_code
