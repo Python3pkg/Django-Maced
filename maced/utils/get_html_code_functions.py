@@ -2,9 +2,15 @@ from maced.utils.constants import ACTION_TYPES
 
 
 # MACED
+from maced.utils.maced_creator import build_html_code
+
+
 def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
+    context = maced_info["context"]
+    maced_name = maced_info["maced_name"]
+
     if action_type == "add" or action_type == "edit":
-        return get_html_code_with_replaced_ids_for_maced_fields(maced_info, action_type, item_name, field_name)
+        return get_html_code_with_replaced_ids_for_maced_fields(context, maced_name, action_type, item_name, field_name)
     elif action_type == "merge":
         options_html_code = ""  # get_html_code_for_options(options_info)
 
@@ -15,7 +21,7 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
         simple_maced_info["maced_item_html_code"] = html_code
         simple_maced_info["maced_modal_html_code"] = maced_info["maced_modal_html_code"]
 
-        return get_html_code_with_replaced_ids_for_maced_fields(simple_maced_info, action_type, item_name, field_name)
+        return get_html_code_with_replaced_ids_for_maced_fields(context, maced_name, action_type, item_name, field_name)
     else:
         options_html_code = ""  # get_html_code_for_options(options_info)
 
@@ -33,7 +39,7 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
         simple_maced_info["maced_item_html_code"] = html_code
         simple_maced_info["maced_modal_html_code"] = maced_info["maced_modal_html_code"]
 
-        return get_html_code_with_replaced_ids_for_maced_fields(simple_maced_info, action_type, item_name, field_name)
+        return get_html_code_with_replaced_ids_for_maced_fields(context, maced_name, action_type, item_name, field_name)
 
 
 # TEXT
@@ -187,10 +193,28 @@ def get_html_code_for_options(options_list, selected_index=None):
 
 # Other
 # Search dependencies and change their ids to the full path
-def get_html_code_with_replaced_ids_for_maced_fields(maced_info, action_type, item_name, field_name):
-    maced_name = maced_info["maced_name"]
-    context = maced_info["context"]
-    maced_item_html_code = maced_info["maced_item_html_code"]
+def get_html_code_with_replaced_ids_for_maced_fields(context, maced_name, action_type, item_name, field_name):
+    dependencies = context[item_name + "_dependencies"]
+
+    for dependency in dependencies:
+        child_maced_name = dependency["maced_name"]
+        subcontext = dependency["builder"].deepcopy()
+
+        # Add the missing variables that are required
+        subcontext["item_id"] = 0  # Doesn't need to be preloaded, so set it to 0
+        subcontext["item_name"] = action_type + "_type-" + item_name + "-" + field_name  # Modify the item_name to the complex path
+
+        html_code_dictionary = build_html_code(
+            context, subcontext["item_options_list"], subcontext["item_name"], subcontext["item_html_name"],
+            subcontext["field_list"]
+        )
+
+        subcontext["add_html_code"] = html_code_dictionary[item_name]["add"]
+        subcontext["edit_html_code"] = html_code_dictionary[item_name]["edit"]
+        subcontext["merge_html_code"] = html_code_dictionary[item_name]["merge"]
+        subcontext["delete_html_code"] = html_code_dictionary[item_name]["delete"]
+
+    # maced_item_html_code = maced_info["maced_item_html_code"]
     maced_modal_html_code = context[maced_name + "_maced_modal"]
     maced_data = context["maced_data"]
     field_identifier = action_type + "_type-" + item_name + "-" + field_name
@@ -209,7 +233,7 @@ def get_html_code_with_replaced_ids_for_maced_fields(maced_info, action_type, it
 
 
     # Next we will copy the html for the maced item then replace all occurrences of the name of the object
-    html_code = maced_item_html_code.replace(maced_name, full_field_identifier)
+    # html_code = maced_item_html_code.replace(maced_name, full_field_identifier)
 
     # Finally we will add field_names, field_identifiers, and the custom item_name to the context
     maced_data["field_names"][item_name].append(field_name)
@@ -230,4 +254,5 @@ def get_html_code_with_replaced_ids_for_maced_fields(maced_info, action_type, it
     # # Copy the html and replace the select id with the new one
     # html_code = html_code.replace(old_select_id, new_select_id)
 
-    return html_code
+    # return html_code
+    return ""
