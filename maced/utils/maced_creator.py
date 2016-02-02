@@ -192,6 +192,9 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
     html_code_dictionary = {}
     html_code_dictionary[item_name] = {}
 
+    for action_type in ACTION_TYPES:
+        html_code_dictionary[item_name][action_type] = ""
+
     maced_object_option_html_code = get_html_code_for_options(item_options_list)
 
     # Merge has special html before the regular html
@@ -314,9 +317,6 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
 
 
 def build_urls(html_code_dictionary, item_name, name_of_app_with_urls, maced_data):
-    for action_type in ACTION_TYPES:
-        html_code_dictionary[item_name][action_type] = ""
-
     add_base_url = name_of_app_with_urls + ".add_" + item_name
     edit_base_url = name_of_app_with_urls + ".edit_" + item_name
     merge_base_url = name_of_app_with_urls + ".merge_" + item_name
