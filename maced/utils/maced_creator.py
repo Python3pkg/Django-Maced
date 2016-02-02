@@ -199,8 +199,8 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
                     "By default, \"name\" is used."
                 )
 
-            if field["maced_name"] + "_dependencies" not in context:
-                raise RuntimeError(field["maced_name"] + "_dependencies was not in the context. Did you overwrite it?")
+            # if field["maced_name"] + "_dependencies" not in context:
+            #     raise RuntimeError(field["maced_name"] + "_dependencies was not in the context. Did you overwrite it?")
 
             # context[item_name + "_dependencies"].append(field["maced_name"])
 
