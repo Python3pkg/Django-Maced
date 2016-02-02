@@ -124,6 +124,9 @@ def convert_foreign_keys_to_objects(fields_to_save, select_object_models_info):
 
         for field_name2, field_value in fields_to_save.iteritems():
             if field_name2 == field_name1:
+                if field_value == "":
+                    break
+
                 try:
                     fields_to_save[field_name2] = select_object_model_info[1].objects.get(id=field_value)
                 except ObjectDoesNotExist:
