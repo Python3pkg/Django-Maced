@@ -1,10 +1,8 @@
+from maced.utils.builder_functions import build_html_code
 from maced.utils.constants import ACTION_TYPES
 
 
 # MACED
-from maced.utils.maced_creator import build_html_code
-
-
 def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
     context = maced_info["context"]
     maced_name = maced_info["maced_name"]
