@@ -118,6 +118,8 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     # Get all items of this type
     items = get_items(item_model)
 
+    # context[item_name + "_dependencies"] = []
+
     # Create an item_options_list which is a list of tuples defined as (id_of_the_item, name_of_the_item). This will
     # be used in the merge function.
     item_options_list = [(item.id, getattr(item, item_name_field_name)) for item in items]
@@ -197,11 +199,19 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
                     "By default, \"name\" is used."
                 )
 
-            extra_info = context[field["maced_name"] + "_item"]
-            # Hacking in a <b> </b> for now until I make a better solution
-            old_row_name_th = '<th class="maced" id="' + item_name + '-row-name-th"> ' + item_html_name + ': </th>'
-            new_row_name_th = '<th class="maced" id="' + item_name + '-row-name-th"> <b>' + item_html_name + ': </b> </th>'
-            extra_info = extra_info.replace(old_row_name_th, new_row_name_th)
+            if field["maced_name"] + "_dependencies" not in context:
+                raise RuntimeError(field["maced_name"] + "_dependencies was not in the context. Did you overwrite it?")
+
+            # context[item_name + "_dependencies"].append(field["maced_name"])
+
+            extra_info = {}
+            extra_info["maced_item_html_code"] = context[field["maced_name"] + "_item"]
+            extra_info["maced_name"] = field["maced_name"]
+
+            # # Hacking in a <b> </b> for now until I make a better solution
+            # old_row_name_th = '<th class="maced" id="' + extra_info["maced_name"] + '-row-name-th"> ' + item_html_name + ': </th>'
+            # new_row_name_th = '<th class="maced" id="' + item_name + '-row-name-th"> <b>' + item_html_name + ': </b> </th>'
+            # extra_info = extra_info["html_code"].replace(old_row_name_th, new_row_name_th)
 
             # field["select_type"] = "object"  # This is used for clone, merge, delete, and info since they are just selects
 

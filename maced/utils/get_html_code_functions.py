@@ -1,10 +1,9 @@
 # MACED
-def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_item_html_code):
+def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
     if action_type == "add" or action_type == "edit":
-        # This goes into the pre-generated html and replaces the select id with the standard input id style
-        old_select_id = field_name + "-select"
-        new_select_id = action_type + "-" + item_name + "-" + field_name + "-input"
-        html_code = maced_item_html_code.replace(old_select_id, new_select_id)
+        maced_item_html_code = maced_info["maced_item_html_code"]
+
+        return get_html_code_with_replaced_ids_for_maced_fields(maced_item_html_code, action_type, item_name, field_name, maced_info["maced_name"])
     else:
         options_html_code = ""  # get_html_code_for_options(options_info)
 
@@ -167,5 +166,24 @@ def get_html_code_for_options(options_list, selected_index=None):
             html_code += 'selected'
 
         html_code += '> ' + str(options_list[i][1]) + ' </option>'
+
+    return html_code
+
+
+# Other
+# Search dependencies and change their ids to the full path
+def get_html_code_with_replaced_ids_for_maced_fields(maced_item_html_code, action_type, item_name, field_name, maced_name):
+    # Copy the html for the maced item then replace all occurrences of the name of the object
+    html_code = maced_item_html_code.replace(maced_name, item_name + "-" + field_name)
+
+    # Now replace the select id (which has been modified so we need to search for the modified version)
+    # Used to be maced_name + "-select"
+    old_select_id = item_name + "-" + field_name + "-select"
+
+    # The new id will simply be a normal select syntax
+    new_select_id = action_type + "-" + item_name + "-" + field_name + "-input"
+
+    # Copy the html and replace the select id with the new one
+    html_code = html_code.replace(old_select_id, new_select_id)
 
     return html_code

@@ -2,7 +2,10 @@ import collections
 import random
 import string
 
-BAD_ITEM_NAME_CHARACTERS = (".", ":", "#", "$", "*")
+BAD_ITEM_NAME_CHARACTERS = (
+    "!", '"', "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", ".", "/", ":", ";", "<", "=", ">", "?", "@", "[", "\\",
+    "]", "^", "`", "{", "|", "}", "~"
+)
 
 
 class MissingFromPost:
