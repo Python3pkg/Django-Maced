@@ -1,9 +1,7 @@
 # MACED
 def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
     if action_type == "add" or action_type == "edit":
-        maced_item_html_code = maced_info["maced_item_html_code"]
-
-        return get_html_code_with_replaced_ids_for_maced_fields(maced_item_html_code, action_type, item_name, field_name, maced_info["maced_name"])
+        return get_html_code_with_replaced_ids_for_maced_fields(maced_info, action_type, item_name, field_name)
     else:
         options_html_code = ""  # get_html_code_for_options(options_info)
 
@@ -172,7 +170,16 @@ def get_html_code_for_options(options_list, selected_index=None):
 
 # Other
 # Search dependencies and change their ids to the full path
-def get_html_code_with_replaced_ids_for_maced_fields(maced_item_html_code, action_type, item_name, field_name, maced_name):
+def get_html_code_with_replaced_ids_for_maced_fields(maced_info, action_type, item_name, field_name):
+    maced_name = maced_info["maced_name"]
+    maced_item_html_code = maced_info["maced_item_html_code"]
+    maced_modal_html_code = maced_info["maced_modal_html_code"]
+    context = maced_info["context"]
+
+    # First we will handle the modals and add them to the context by replacing all occurrences of the name of the object
+    context[item_name + "-" + field_name + "_maced_modal"] = maced_modal_html_code.replace(maced_name, item_name + "-" + field_name)
+    context["maced_modals"] += context[item_name + "-" + field_name + "_maced_modal"]
+
     # Copy the html for the maced item then replace all occurrences of the name of the object
     html_code = maced_item_html_code.replace(maced_name, item_name + "-" + field_name)
 

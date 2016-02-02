@@ -206,7 +206,9 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
 
             extra_info = {}
             extra_info["maced_item_html_code"] = context[field["maced_name"] + "_item"]
+            extra_info["maced_modal_html_code"] = context[item_name + "_maced_modal"]
             extra_info["maced_name"] = field["maced_name"]
+            extra_info["context"] = context
 
             # # Hacking in a <b> </b> for now until I make a better solution
             # old_row_name_th = '<th class="maced" id="' + extra_info["maced_name"] + '-row-name-th"> ' + item_html_name + ': </th>'
@@ -254,7 +256,8 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     sub_context["allow_empty"] = allow_empty
 
     context[item_name + "_item"] = render(request=None, template_name="maced/container.html", context=sub_context).content
-    context["maced_modals"] += render(request=None, template_name="maced/modal_list.html", context=sub_context).content
+    context[item_name + "_maced_modal"] = render(request=None, template_name="maced/modal_list.html", context=sub_context).content
+    context["maced_modals"] += context[item_name + "_maced_modal"]
 
 
 # A nice helper function to simplify code for whoever is using this app. Since current_item_id is required, this makes
