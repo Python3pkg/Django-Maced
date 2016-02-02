@@ -354,4 +354,5 @@ def finalize_context_for_items(context, login_url=None):
 
     maced_data["get_urls"] = json.dumps(maced_data["get_urls"])
     maced_data["field_names"] = json.dumps(maced_data["field_names"])
+    maced_data["field_identifiers"] = json.dumps(maced_data["field_identifiers"])
     maced_data["login_url"] = json.dumps(login_url)
