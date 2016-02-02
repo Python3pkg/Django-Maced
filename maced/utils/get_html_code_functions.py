@@ -1,5 +1,9 @@
-from maced.utils.builder_functions import build_html_code
 from maced.utils.constants import ACTION_TYPES
+
+try:
+    from maced.utils.builder_functions import build_html_code
+except ImportError:
+    pass
 
 
 # MACED
