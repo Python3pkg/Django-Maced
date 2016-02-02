@@ -2,11 +2,19 @@
 def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
     if action_type == "add" or action_type == "edit":
         return get_html_code_with_replaced_ids_for_maced_fields(maced_info, action_type, item_name, field_name)
-    else:
+    elif action_type == "merge":
         options_html_code = ""  # get_html_code_for_options(options_info)
 
-        if action_type == "merge":
-            return get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code)
+        html_code = get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code)
+        simple_maced_info = {}
+        simple_maced_info["context"] = maced_info["context"]
+        simple_maced_info["maced_name"] = maced_info["maced_name"]
+        simple_maced_info["maced_item_html_code"] = html_code
+        simple_maced_info["maced_modal_html_code"] = maced_info["maced_modal_html_code"]
+
+        return get_html_code_with_replaced_ids_for_maced_fields(simple_maced_info, action_type, item_name, field_name)
+    else:
+        options_html_code = ""  # get_html_code_for_options(options_info)
 
         html_code = '<b class="maced">' + field_html_name + ': </b>'
         html_code += '<select class="maced form-control" id="' + action_type + '-' + item_name + '-' + field_name + '-input" '
@@ -16,7 +24,13 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
 
         html_code += '>' + options_html_code + '</select>'
 
-    return html_code
+        simple_maced_info = {}
+        simple_maced_info["context"] = maced_info["context"]
+        simple_maced_info["maced_name"] = maced_info["maced_name"]
+        simple_maced_info["maced_item_html_code"] = html_code
+        simple_maced_info["maced_modal_html_code"] = maced_info["maced_modal_html_code"]
+
+        return get_html_code_with_replaced_ids_for_maced_fields(simple_maced_info, action_type, item_name, field_name)
 
 
 # TEXT
