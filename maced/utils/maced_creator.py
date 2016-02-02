@@ -199,6 +199,14 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
                     "By default, \"name\" is used."
                 )
 
+            if field["maced_name"] + "_maced_modal" not in context:
+                raise RuntimeError(
+                    "Field named " + str(field["name"]) + " in field_list for " + str(item_name) +
+                    " is set as type \"maced\" and is referencing " + str(field["maced_name"]) + ". " +
+                    str(field["maced_name"]) + "_item is in the context, but " + str(field["maced_name"]) +
+                    "_maced_modal isn't. This is likely a programming error with django-maced."
+                )
+
             # if field["maced_name"] + "_dependencies" not in context:
             #     raise RuntimeError(field["maced_name"] + "_dependencies was not in the context. Did you overwrite it?")
 
@@ -206,7 +214,7 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
 
             extra_info = {}
             extra_info["maced_item_html_code"] = context[field["maced_name"] + "_item"]
-            extra_info["maced_modal_html_code"] = context[item_name + "_maced_modal"]
+            extra_info["maced_modal_html_code"] = context[field["maced_name"] + "_maced_modal"]
             extra_info["maced_name"] = field["maced_name"]
             extra_info["context"] = context
 
