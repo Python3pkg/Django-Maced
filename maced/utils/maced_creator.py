@@ -84,22 +84,21 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     if "item_names" not in maced_data:
         maced_data["item_names"] = []
 
-    if item_name in maced_data["item_names"]:
-        raise ValueError("Duplicate item var name of " + str(item_name))
-
-    maced_data["item_names"].append(item_name)
-
     if "field_names" not in maced_data:
         maced_data["field_names"] = {}
 
     if "field_identifiers" not in maced_data:
         maced_data["field_identifiers"] = {}
 
-    maced_data["field_names"][item_name] = []
-    maced_data["field_identifiers"][item_name] = []
-
     if "get_urls" not in maced_data:
         maced_data["get_urls"] = {}
+
+    if item_name in maced_data["item_names"]:
+        raise ValueError("Duplicate item var name of " + str(item_name))
+
+    maced_data["item_names"].append(item_name)
+    maced_data["field_names"][item_name] = []
+    maced_data["field_identifiers"][item_name] = []
 
     context[item_name + "_dependencies"] = []
 
@@ -112,6 +111,9 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
 
     # Constructs urls
     urls = build_urls(item_name=item_name, name_of_app_with_urls=name_of_app_with_urls, maced_data=maced_data)
+
+    # Add the get url to the context
+    maced_data["get_urls"][item_name] = urls["get_url"]
 
     # Make a builder so we can reuse it later for maced fields
     context[item_name + "_builder"] = build_builder(
@@ -245,6 +247,7 @@ def get_items(item_model, field_to_order_by=None):
 
 
 def build_html_code(context, item_options_list, item_name, item_html_name, field_list):
+    maced_data = context["maced_data"]
     html_code_dictionary = {}
     html_code_dictionary[item_name] = {}
 
@@ -374,7 +377,12 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
         if "html_name" not in field:
             field["html_name"] = field["name"].title()
 
+        # Form the html based on the info from field
         insert_items_html_code(html_code_dictionary, item_name, field["type"], field["html_name"], field["name"], extra_info)
+
+        # Lastly add the field info to the context
+        maced_data["field_names"][item_name].append(field["name"])
+        maced_data["field_identifiers"][item_name].append(field["name"])
 
     # Merge has special html after the regular html
     html_code_dictionary[item_name]["merge"] += "</table>"
@@ -395,14 +403,12 @@ def build_urls(item_name, name_of_app_with_urls, maced_data):
     delete_url = reverse(delete_base_url, args=["0"])[:-2]  # A number is required to get the url, then we cut it off with [:-2]  # noqa
     get_url = reverse(get_base_url, args=["0"])[:-2]  # A number is required to get the url, then we cut it off with [:-2]  # noqa
 
-    maced_data["get_urls"][item_name] = get_url
-
     urls = {}
     urls["add_url"] = add_url
     urls["edit_url"] = edit_url
     urls["merge_url"] = merge_url
     urls["delete_url"] = delete_url
-    urls["get_url"] = get_url  # Don't really need it, but why not :)
+    urls["get_url"] = get_url
 
     return urls
 
@@ -666,52 +672,78 @@ def get_html_code_for_options(options_list, selected_index=None):
 # Search dependencies and change their ids to the full path
 def get_html_code_for_child_maced_fields(context, parent_name, child_name, parents_name_for_child, action_type, path):
     dependencies = context[child_name + "_dependencies"]
+    maced_data = context["maced_data"]
     html_code_to_return = ""
 
     for dependency in dependencies:
         grandchild_name = dependency["maced_name"]
         childs_name_for_child = dependency["parents_name_for_child"]
-        builder = dependency["builder"].deepcopy()
+        grandchild_builder = dependency["builder"].deepcopy()
         new_path = path + "-" + childs_name_for_child
 
         # Modify the item_name to the complex path
-        builder["item_name"] = action_type + "_type-" + new_path
+        grandchild_builder["item_name"] = action_type + "_type-" + new_path
 
+        # Build the special python-html
         html_code_dictionary = build_html_code(
-            context=context, item_options_list=builder["item_options_list"], item_name=builder["item_name"],
-            item_html_name=builder["item_html_name"], field_list=builder["field_list"]
+            context=context, item_options_list=grandchild_builder["item_options_list"],
+            item_name=grandchild_builder["item_name"], item_html_name=grandchild_builder["item_html_name"],
+            field_list=grandchild_builder["field_list"]
         )
 
+        # Build the templates
         maced_html_code, maced_modal_html_code = build_templates(
-            builder=builder, html_code_dictionary=html_code_dictionary, item_id=0
+            builder=grandchild_builder, html_code_dictionary=html_code_dictionary, item_id=0
         )
 
+        # Add the template to the blob
         html_code_to_return += maced_html_code
 
-        # context[item_name + "_item"] = render(request=None, template_name="maced/container.html", context=subcontext).content
-        context[action_type + "_type-" + new_path + "_maced_modal"] = maced_modal_html_code
+        # Add the modal the the list of modals
+        context[action_type + "_type-" + new_path + "_maced_modal"] = maced_modal_html_code  # This will probably go away later
         context["maced_modals"] += context[action_type + "_type-" + new_path + "_maced_modal"]
 
-        get_html_code_for_child_maced_fields(
+        # Add the other pieces to the context. maced_data is a part of the context.
+        grandchild_full_name = grandchild_builder["item_name"]
+        maced_data["item_names"].append(grandchild_full_name)
+        maced_data["field_names"][grandchild_full_name].append(childs_name_for_child)
+        maced_data["field_identifiers"][grandchild_full_name].append(grandchild_full_name)
+        maced_data["get_urls"][grandchild_full_name] = maced_data["get_urls"][grandchild_name]
+
+        # Now go recursive and go down a child generation and add it to the blob
+        html_code_to_return += get_html_code_for_child_maced_fields(
             context=context, parent_name=child_name, child_name=grandchild_name,
             parents_name_for_child=childs_name_for_child, action_type=action_type, path=new_path
         )
 
-    maced_data = context["maced_data"]
-    field_identifier = action_type + "_type-" + parent_name + "-" + parents_name_for_child
-    full_field_identifier = parent_name + "-" + field_identifier  # Intentionally adding item_name twice...
+    child_builder = context[child_name + "_builder"].deepcopy()  # Let's build some children. :)
 
-    # context[full_field_identifier + "_maced_modal"] = base_modal
+    # Modify the item_name to the complex path
+    child_builder["item_name"] = action_type + "_type-" + path
 
-    # context["maced_modals"] += base_modal
+    # Build the special python-html
+    html_code_dictionary = build_html_code(
+        context=context, item_options_list=child_builder["item_options_list"], item_name=child_builder["item_name"],
+        item_html_name=child_builder["item_html_name"], field_list=child_builder["field_list"]
+    )
 
-    # Finally we will add field_names, field_identifiers, and the custom item_name to the context
-    maced_data["field_names"][parent_name].append(parents_name_for_child)
-    maced_data["field_identifiers"][parent_name].append(field_identifier)
+    # Build the templates
+    maced_html_code, maced_modal_html_code = build_templates(
+        builder=child_builder, html_code_dictionary=html_code_dictionary, item_id=0
+    )
 
-    maced_data["item_names"].append(full_field_identifier)
-    maced_data["field_names"][full_field_identifier] = maced_data["field_names"][child_name]
-    maced_data["field_identifiers"][full_field_identifier] = maced_data["field_identifiers"][child_name]
-    maced_data["get_urls"][full_field_identifier] = maced_data["get_urls"][child_name]
+    # Add the template to the blob
+    html_code_to_return += maced_html_code
 
-    return ""
+    # Add the modal the the list of modals
+    context[action_type + "_type-" + path + "_maced_modal"] = maced_modal_html_code  # This will probably go away later
+    context["maced_modals"] += context[action_type + "_type-" + path + "_maced_modal"]
+
+    # Add the other pieces to the context. maced_data is a part of the context.
+    child_full_name = child_builder["item_name"]
+    maced_data["item_names"].append(child_full_name)
+    maced_data["field_names"][child_full_name].append(parents_name_for_child)
+    maced_data["field_identifiers"][child_full_name].append(child_full_name)
+    maced_data["get_urls"][child_full_name] = maced_data["get_urls"][child_name]
+
+    return html_code_to_return
