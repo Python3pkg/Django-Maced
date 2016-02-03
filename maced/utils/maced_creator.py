@@ -3,6 +3,7 @@
 
 import inspect
 import json
+from copy import deepcopy
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
@@ -103,28 +104,36 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     context[item_name + "_dependencies"] = []
 
     # Get all items of this type
-    items = get_items(item_model)
+    items = get_items(item_model=item_model, field_to_order_by=field_to_order_by)
 
     # Create an item_options_list which is a list of tuples defined as (id_of_the_item, name_of_the_item). This will
     # be used in the merge function.
     item_options_list = [(item.id, getattr(item, item_name_field_name)) for item in items]
 
     # Constructs urls
-    urls = build_urls(item_name, name_of_app_with_urls, maced_data)
+    urls = build_urls(item_name=item_name, name_of_app_with_urls=name_of_app_with_urls, maced_data=maced_data)
 
     # Make a builder so we can reuse it later for maced fields
     context[item_name + "_builder"] = build_builder(
-        item_name, item_html_name, item_model, field_to_order_by, urls, item_options_list, field_list, allow_empty
+        item_name=item_name, item_html_name=item_html_name, item_model=item_model, field_to_order_by=field_to_order_by,
+        urls=urls, item_options_list=item_options_list, field_list=field_list, allow_empty=allow_empty
     )
 
     # All the special html that is built in python
-    html_code_dictionary = build_html_code(context, item_options_list, item_name, item_html_name, field_list)
+    html_code_dictionary = build_html_code(
+        context=context, item_options_list=item_options_list, item_name=item_name, item_html_name=item_html_name,
+        field_list=field_list
+    )
 
     # The final step of putting it all together to make 2 sets of html; one for the item on the page and one for the modal that pops up.
-    build_templates(
-        context, item_name, current_item_id, item_html_name, item_model, field_to_order_by, html_code_dictionary,
-        urls["add_url"], urls["edit_url"], urls["merge_url"], urls["delete_url"], allow_empty
+    maced_html_code, maced_modal_html_code = build_templates(
+        builder=context[item_name + "_builder"], html_code_dictionary=html_code_dictionary, item_id=current_item_id
     )
+
+    context[item_name + "_item"] = maced_html_code
+    context[item_name + "_maced_modal"] = maced_modal_html_code
+    context["maced_modals"] += context[item_name + "_maced_modal"]
+
 
 
 # A nice helper function to simplify code for whoever is using this app. Since current_item_id is required, this makes
@@ -414,26 +423,25 @@ def build_builder(item_name, item_html_name, item_model, field_to_order_by, urls
     return builder
 
 
-def build_templates(context, item_name, item_id, item_html_name, item_model, field_to_order_by, html_code_dictionary,
-                    add_url, edit_url, merge_url, delete_url, allow_empty):
-    subcontext = {}
+def build_templates(builder, html_code_dictionary, item_id):
+    subcontext = builder.deepcopy()
+    item_name = subcontext["item_name"]
+
     subcontext["item_id"] = item_id
-    subcontext["item_name"] = item_name
-    subcontext["item_html_name"] = item_html_name
-    subcontext["items"] = get_items(item_model, field_to_order_by)
     subcontext["add_html_code"] = html_code_dictionary[item_name]["add"]
     subcontext["edit_html_code"] = html_code_dictionary[item_name]["edit"]
     subcontext["merge_html_code"] = html_code_dictionary[item_name]["merge"]
     subcontext["delete_html_code"] = html_code_dictionary[item_name]["delete"]
-    subcontext["add_url"] = add_url
-    subcontext["edit_url"] = edit_url
-    subcontext["merge_url"] = merge_url
-    subcontext["delete_url"] = delete_url
-    subcontext["allow_empty"] = allow_empty
 
-    context[item_name + "_item"] = render(request=None, template_name="maced/container.html", context=subcontext).content
-    context[item_name + "_maced_modal"] = render(request=None, template_name="maced/modal_list.html", context=subcontext).content
-    context["maced_modals"] += context[item_name + "_maced_modal"]
+    maced_html_code = render(request=None, template_name="maced/container.html", context=subcontext).content
+    maced_modal_html_code = render(request=None, template_name="maced/modal_list.html", context=subcontext).content
+
+    return maced_html_code, maced_modal_html_code
+
+
+    # context[item_name + "_item"] = render(request=None, template_name="maced/container.html", context=subcontext).content
+    # context[item_name + "_maced_modal"] = render(request=None, template_name="maced/modal_list.html", context=subcontext).content
+    # context["maced_modals"] += context[item_name + "_maced_modal"]
 
 
 
@@ -464,7 +472,10 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
     maced_name = maced_info["maced_name"]
 
     if action_type == "add" or action_type == "edit":
-        return get_html_code_with_replaced_ids_for_maced_fields(context, maced_name, action_type, item_name, field_name)
+        return get_html_code_for_child_maced_fields(
+            context=context, parent_name=item_name, child_name=maced_name, parents_name_for_child=field_name,
+            action_type=action_type, path=""
+        )
     elif action_type == "merge":
         options_html_code = ""  # get_html_code_for_options(options_info)
 
@@ -475,7 +486,10 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
         simple_maced_info["maced_item_html_code"] = html_code
         simple_maced_info["maced_modal_html_code"] = maced_info["maced_modal_html_code"]
 
-        return get_html_code_with_replaced_ids_for_maced_fields(context, maced_name, action_type, item_name, field_name)
+        return get_html_code_for_child_maced_fields(
+            context=context, parent_name=item_name, child_name=maced_name, parents_name_for_child=field_name,
+            action_type=action_type, path=""
+        )
     else:
         options_html_code = ""  # get_html_code_for_options(options_info)
 
@@ -493,7 +507,10 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
         simple_maced_info["maced_item_html_code"] = html_code
         simple_maced_info["maced_modal_html_code"] = maced_info["maced_modal_html_code"]
 
-        return get_html_code_with_replaced_ids_for_maced_fields(context, maced_name, action_type, item_name, field_name)
+        return get_html_code_for_child_maced_fields(
+            context=context, parent_name=item_name, child_name=maced_name, parents_name_for_child=field_name,
+            action_type=action_type, path=""
+        )
 
 
 # TEXT
@@ -647,42 +664,54 @@ def get_html_code_for_options(options_list, selected_index=None):
 
 # OTHER
 # Search dependencies and change their ids to the full path
-def get_html_code_with_replaced_ids_for_maced_fields(context, maced_name, action_type, item_name, field_name):
-    dependencies = context[item_name + "_dependencies"]
+def get_html_code_for_child_maced_fields(context, parent_name, child_name, parents_name_for_child, action_type, path):
+    dependencies = context[child_name + "_dependencies"]
+    html_code_to_return = ""
 
     for dependency in dependencies:
-        child_maced_name = dependency["maced_name"]
-        subcontext = dependency["builder"].deepcopy()
+        grandchild_name = dependency["maced_name"]
+        childs_name_for_child = dependency["parents_name_for_child"]
+        builder = dependency["builder"].deepcopy()
+        new_path = path + "-" + childs_name_for_child
 
-        # Add the missing variables that are required
-        subcontext["item_id"] = 0  # Doesn't need to be preloaded, so set it to 0
-        subcontext["item_name"] = action_type + "_type-" + item_name + "-" + field_name  # Modify the item_name to the complex path
+        # Modify the item_name to the complex path
+        builder["item_name"] = action_type + "_type-" + new_path
 
         html_code_dictionary = build_html_code(
-            context, subcontext["item_options_list"], subcontext["item_name"], subcontext["item_html_name"],
-            subcontext["field_list"]
+            context=context, item_options_list=builder["item_options_list"], item_name=builder["item_name"],
+            item_html_name=builder["item_html_name"], field_list=builder["field_list"]
         )
 
-        subcontext["add_html_code"] = html_code_dictionary[item_name]["add"]
-        subcontext["edit_html_code"] = html_code_dictionary[item_name]["edit"]
-        subcontext["merge_html_code"] = html_code_dictionary[item_name]["merge"]
-        subcontext["delete_html_code"] = html_code_dictionary[item_name]["delete"]
+        maced_html_code, maced_modal_html_code = build_templates(
+            builder=builder, html_code_dictionary=html_code_dictionary, item_id=0
+        )
+
+        html_code_to_return += maced_html_code
+
+        # context[item_name + "_item"] = render(request=None, template_name="maced/container.html", context=subcontext).content
+        context[action_type + "_type-" + new_path + "_maced_modal"] = maced_modal_html_code
+        context["maced_modals"] += context[action_type + "_type-" + new_path + "_maced_modal"]
+
+        get_html_code_for_child_maced_fields(
+            context=context, parent_name=child_name, child_name=grandchild_name,
+            parents_name_for_child=childs_name_for_child, action_type=action_type, path=new_path
+        )
 
     maced_data = context["maced_data"]
-    field_identifier = action_type + "_type-" + item_name + "-" + field_name
-    full_field_identifier = item_name + "-" + field_identifier  # Intentionally adding item_name twice...
+    field_identifier = action_type + "_type-" + parent_name + "-" + parents_name_for_child
+    full_field_identifier = parent_name + "-" + field_identifier  # Intentionally adding item_name twice...
 
     # context[full_field_identifier + "_maced_modal"] = base_modal
 
     # context["maced_modals"] += base_modal
 
     # Finally we will add field_names, field_identifiers, and the custom item_name to the context
-    maced_data["field_names"][item_name].append(field_name)
-    maced_data["field_identifiers"][item_name].append(field_identifier)
+    maced_data["field_names"][parent_name].append(parents_name_for_child)
+    maced_data["field_identifiers"][parent_name].append(field_identifier)
 
     maced_data["item_names"].append(full_field_identifier)
-    maced_data["field_names"][full_field_identifier] = maced_data["field_names"][maced_name]
-    maced_data["field_identifiers"][full_field_identifier] = maced_data["field_identifiers"][maced_name]
-    maced_data["get_urls"][full_field_identifier] = maced_data["get_urls"][maced_name]
+    maced_data["field_names"][full_field_identifier] = maced_data["field_names"][child_name]
+    maced_data["field_identifiers"][full_field_identifier] = maced_data["field_identifiers"][child_name]
+    maced_data["get_urls"][full_field_identifier] = maced_data["get_urls"][child_name]
 
     return ""
