@@ -683,7 +683,11 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
         new_path = path + "-" + childs_name_for_child
 
         # Modify the item_name to the complex path
-        grandchild_builder["item_name"] = action_type + "_type-" + new_path
+        grandchild_full_name = action_type + "_type-" + new_path
+        grandchild_builder["item_name"] = grandchild_full_name
+
+        maced_data["field_names"][grandchild_full_name] = []
+        maced_data["field_identifiers"][grandchild_full_name] = []
 
         # Build the special python-html
         html_code_dictionary = build_html_code(
@@ -705,7 +709,6 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
         context["maced_modals"] += context[action_type + "_type-" + new_path + "_maced_modal"]
 
         # Add the other pieces to the context. maced_data is a part of the context.
-        grandchild_full_name = grandchild_builder["item_name"]
         maced_data["item_names"].append(grandchild_full_name)
         maced_data["field_names"][grandchild_full_name].append(childs_name_for_child)
         maced_data["field_identifiers"][grandchild_full_name].append(grandchild_full_name)
