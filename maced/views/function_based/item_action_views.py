@@ -162,7 +162,7 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
 
     # Check that item1 exists
     if not item_model.objects.filter(id=item1_id).exists():
-        return HttpResponse(content="The item with id " + str(item1_id) + " does not exist. Did someone delete it?", status=500)
+        return HttpResponse(content="The item with id \"" + str(item1_id) + "\" does not exist. Did someone delete it?", status=500)
 
     # Load item2
     try:
@@ -175,7 +175,7 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
         setattr(item2, item_name_field_name, random_name)
         item2.save()
     except ObjectDoesNotExist:
-        return HttpResponse(content="The item with id " + str(item1_id) + " does not exist. Did someone delete it?", status=500)
+        return HttpResponse(content="The item with id \"" + str(item1_id) + "\" does not exist. Did someone delete it?", status=500)
 
     # Fill item1 with whatever came from the frontend. This will be the primary item.
     try:
