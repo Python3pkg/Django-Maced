@@ -472,15 +472,14 @@ def build_templates(builder, html_code_dictionary, item_id):
 
 # MACED
 def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
-    context = maced_info["context"]
-    maced_name = maced_info["maced_name"]
-    maced_data = context["maced_data"]
-    item_path = item_name + "-" + field_name
-
-    full_item_name = get_prefixed_item_path(action_type, item_path)
-    initialize_fields_for_item_in_maced_data(maced_data, full_item_name)
-
     if action_type == "add" or action_type == "edit":
+        context = maced_info["context"]
+        maced_name = maced_info["maced_name"]
+        maced_data = context["maced_data"]
+        item_path = item_name + "-" + field_name
+        full_item_name = get_prefixed_item_path(action_type, item_path)
+        initialize_fields_for_item_in_maced_data(maced_data, full_item_name)
+
         # This function will handle the field_name, field_identifier, item_name, and get_url additions to the context
         html_code = get_html_code_for_child_maced_fields(
             context=context, parent_name=item_name, child_name=maced_name, parents_name_for_child=field_name,
@@ -490,11 +489,6 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
         options_html_code = ""  # get_html_code_for_options(options_info)
 
         html_code = get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code)
-
-        add_item_info_to_maced_data(
-            maced_data=maced_data, full_item_name=full_item_name, field_name=field_name,
-            base_item_name=field_name
-        )
     else:
         options_html_code = ""  # get_html_code_for_options(options_info)
 
@@ -505,11 +499,6 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
             html_code += 'disabled '
 
         html_code += '>' + options_html_code + '</select>'
-
-        add_item_info_to_maced_data(
-            maced_data=maced_data, full_item_name=full_item_name, field_name=field_name,
-            base_item_name=field_name
-        )
 
     return html_code
 
@@ -701,10 +690,8 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
         context["maced_modals"] += context[action_type + "_type-" + grandchild_item_path + "_maced_modal"]
 
         # Add the other pieces to the context. maced_data is a part of the context
-        add_item_info_to_maced_data(
-            maced_data=maced_data, full_item_name=full_grandchild_name, field_name=childs_name_for_child,
-            base_item_name=grandchild_name
-        )
+        maced_data["item_names"].append(full_grandchild_name)
+        maced_data["get_urls"][full_grandchild_name] = maced_data["get_urls"][grandchild_name]
 
         # Now go recursive and go down a child generation and add it to the blob
         html_code_to_return += get_html_code_for_child_maced_fields(
@@ -737,10 +724,8 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
     context["maced_modals"] += context[full_child_name + "_maced_modal"]
 
     # Add the other pieces to the context. maced_data is part of the context
-    add_item_info_to_maced_data(
-        maced_data=maced_data, full_item_name=full_child_name, field_name=parents_name_for_child,
-        base_item_name=child_name
-    )
+    maced_data["item_names"].append(full_child_name)
+    maced_data["get_urls"][full_child_name] = maced_data["get_urls"][child_name]
 
     return html_code_to_return
 
@@ -754,10 +739,3 @@ def get_prefixed_item_path(action_type, path):
 def initialize_fields_for_item_in_maced_data(maced_data, item_name):
     maced_data["field_names"][item_name] = []
     maced_data["field_identifiers"][item_name] = []
-
-
-def add_item_info_to_maced_data(maced_data, full_item_name, field_name, base_item_name):
-    maced_data["item_names"].append(full_item_name)
-    maced_data["field_names"][full_item_name].append(field_name)
-    maced_data["field_identifiers"][full_item_name].append(full_item_name)
-    maced_data["get_urls"][full_item_name] = maced_data["get_urls"][base_item_name]

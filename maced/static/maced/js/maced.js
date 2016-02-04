@@ -107,7 +107,6 @@ function add_item(item_name, url)
 
     for (i = 0; i < maced_field_names[item_name].length; i++)
     {
-        alert(maced_field_names[item_name][i]);
         field_name = maced_field_names[item_name][i];
         field_identifier = maced_field_identifiers[item_name][i];
         data[field_name] = get_input_item(action_type, item_name, field_identifier);
@@ -625,7 +624,7 @@ function get_input_item(action_type, item_name, field_identifier)
     // Special case for maced inputs. Only applies to add and edit.
     if (input.length == 0 && (action_type == maced_ADD || action_type == maced_EDIT))
     {
-        input = $("#" + item_name + "-" + field_identifier + "-select");
+        input = $("#" + action_type + "_type-" + item_name + "-" + field_identifier + "-select");
     }
 
     if (input.is("input:text"))
@@ -662,7 +661,7 @@ function set_input_item(action_type, item_name, field_identifier, value, merge_p
         // Special case for maced inputs. Only applies to add and edit.
         if (input.length == 0 && (action_type == maced_ADD || action_type == maced_EDIT))
         {
-            input = $("#" + item_name + "-" + field_identifier + "-select");
+            input = $("#" + action_type + "_type-" + item_name + "-" + field_identifier + "-select");
         }
     }
 
