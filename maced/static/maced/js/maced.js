@@ -423,7 +423,7 @@ function get_item(item_name)
 
     $.ajax(
     {
-        type: "maced_GET",
+        type: "GET",
         url: url,
 
         success: function(out_data)
@@ -539,7 +539,7 @@ function get_item2_for_merge(item_name)
 
     $.ajax(
     {
-        type: "maced_GET",
+        type: "GET",
         url: url,
 
         success: function(out_data)
@@ -625,6 +625,11 @@ function get_input_item(action_type, item_name, field_identifier)
     if (input.length == 0 && (action_type == maced_ADD || action_type == maced_EDIT))
     {
         input = $("#" + action_type + "_type-" + item_name + "-" + field_identifier + "-select");
+
+        if (action_type == maced_EDIT)
+        {
+            get_item(action_type + "_type-" + item_name + "-" + field_identifier);
+        }
     }
 
     if (input.is("input:text"))
