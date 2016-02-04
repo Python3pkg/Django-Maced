@@ -716,7 +716,7 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
             parents_name_for_child=childs_name_for_child, action_type=action_type, path=new_path
         )
 
-    child_builder = context[child_name + "_builder"].deepcopy()  # Let's build some children. :)
+    child_builder = deepcopy(context[child_name + "_builder"])  # Let's build some children. :)
 
     # Modify the item_name to the complex path
     child_builder["item_name"] = action_type + "_type-" + path
