@@ -731,7 +731,11 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
     child_builder = deepcopy(context[child_name + "_builder"])  # Let's build some children. :)
 
     # Modify the item_name to the complex path
-    child_builder["item_name"] = action_type + "_type-" + path
+    child_full_name = action_type + "_type-" + path
+    child_builder["item_name"] = child_full_name
+
+    maced_data["field_names"][child_full_name] = []
+    maced_data["field_identifiers"][child_full_name] = []
 
     # Build the special python-html
     html_code_dictionary = build_html_code(
@@ -752,10 +756,9 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
     context["maced_modals"] += context[action_type + "_type-" + path + "_maced_modal"]
 
     # Add the other pieces to the context. maced_data is a part of the context.
-    child_full_name = child_builder["item_name"]
     maced_data["item_names"].append(child_full_name)
-    maced_data["field_names"][child_full_name].append(parents_name_for_child)
-    maced_data["field_identifiers"][child_full_name].append(child_full_name)
+    # maced_data["field_names"][child_full_name].append(parents_name_for_child)
+    # maced_data["field_identifiers"][child_full_name].append(child_full_name)
     maced_data["get_urls"][child_full_name] = maced_data["get_urls"][child_name]
 
     return html_code_to_return
