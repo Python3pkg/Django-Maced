@@ -18,8 +18,8 @@ from maced.views.function_based.helper_views import \
 def add_item_view(request, **kwargs):
     # need_authentication is a bool that defaults to True and is used to determined whether a login is required
     # item_name_field_name is what the name value will correspond to in the database. This defaults to name.
-    #   It will be used like ObjectToCreate(name=some_name), where name is the default value but it could be something
-    #   else.
+    #       It will be used like ObjectToCreate(name=some_name), where name is the default value but it could be
+    #       something else.
     # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     result = authenticate_and_validate_kwargs_view(request, **kwargs)
@@ -74,8 +74,8 @@ def add_item_view(request, **kwargs):
 def edit_item_view(request, item_id, **kwargs):
     # need_authentication is a bool that defaults to True and is used to determined whether a login is required
     # item_type_name_field_name is what the name value will correspond to in the database. This defaults to name.
-    #   It will be used like ObjectToCreate(name=some_name), where name is the default value but it could be something
-    #   else.
+    #       It will be used like ObjectToCreate(name=some_name), where name is the default value but it could be
+    #       something else.
     # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     result = authenticate_and_validate_kwargs_view(request, **kwargs)
@@ -129,8 +129,8 @@ def edit_item_view(request, item_id, **kwargs):
 def merge_item_view(request, item1_id, item2_id, **kwargs):
     # need_authentication is a bool that defaults to True and is used to determined whether a login is required
     # item_type_name_field_name is what the name value will correspond to in the database. This defaults to name.
-    #   It will be used like ObjectToCreate(name=some_name), where name is the default value but it could be something
-    #   else.
+    #       It will be used like ObjectToCreate(name=some_name), where name is the default value but it could be
+    #       something else.
     # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     result = authenticate_and_validate_kwargs_view(request, **kwargs)
@@ -233,8 +233,8 @@ def delete_item_view(request, item_id, **kwargs):
 def get_item_view(request, item_id, **kwargs):
     # need_authentication is a bool that defaults to True and is used to determined whether a login is required
     # item_type_name_field_name is what the name value will correspond to in the database. This defaults to name.
-    #   It will be used like ObjectToCreate(name=some_name), where name is the default value but it could be something
-    #   else.
+    #       It will be used like ObjectToCreate(name=some_name), where name is the default value but it could be
+    #       something else.
     # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     result = authenticate_and_validate_kwargs_view(request, **kwargs)
