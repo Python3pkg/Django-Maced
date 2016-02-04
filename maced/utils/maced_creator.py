@@ -476,11 +476,12 @@ def build_templates(builder, html_code_dictionary, item_id):
 def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
     context = maced_info["context"]
     maced_name = maced_info["maced_name"]
+    path = item_name + "-" + field_name
 
     if action_type == "add" or action_type == "edit":
         return get_html_code_for_child_maced_fields(
             context=context, parent_name=item_name, child_name=maced_name, parents_name_for_child=field_name,
-            action_type=action_type, path=""
+            action_type=action_type, path=path
         )
     elif action_type == "merge":
         options_html_code = ""  # get_html_code_for_options(options_info)
@@ -494,7 +495,7 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
 
         return get_html_code_for_child_maced_fields(
             context=context, parent_name=item_name, child_name=maced_name, parents_name_for_child=field_name,
-            action_type=action_type, path=""
+            action_type=action_type, path=path
         )
     else:
         options_html_code = ""  # get_html_code_for_options(options_info)
@@ -515,7 +516,7 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
 
         return get_html_code_for_child_maced_fields(
             context=context, parent_name=item_name, child_name=maced_name, parents_name_for_child=field_name,
-            action_type=action_type, path=""
+            action_type=action_type, path=path
         )
 
 
