@@ -97,9 +97,7 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
         raise ValueError("Duplicate item var name of " + str(item_name))
 
     maced_data["item_names"].append(item_name)
-    maced_data["field_names"][item_name] = []
-    maced_data["field_identifiers"][item_name] = []
-
+    initialize_fields_for_item_in_maced_data(maced_data=maced_data, item_name=item_name)
     context[item_name + "_dependencies"] = []
 
     # Get all items of this type
@@ -482,26 +480,26 @@ def build_templates(builder, html_code_dictionary, item_id):
 def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
     context = maced_info["context"]
     maced_name = maced_info["maced_name"]
-    path = item_name + "-" + field_name
+    maced_data = context["maced_data"]
+    item_path = item_name + "-" + field_name
+
+    full_item_name = get_prefixed_item_path(action_type, item_path)
+    initialize_fields_for_item_in_maced_data(maced_data, full_item_name)
 
     if action_type == "add" or action_type == "edit":
-        return get_html_code_for_child_maced_fields(
+        # This function will handle the field_name, field_identifier, item_name, and get_url additions to the context
+        html_code = get_html_code_for_child_maced_fields(
             context=context, parent_name=item_name, child_name=maced_name, parents_name_for_child=field_name,
-            action_type=action_type, path=path
+            action_type=action_type, item_path=item_path
         )
     elif action_type == "merge":
         options_html_code = ""  # get_html_code_for_options(options_info)
 
         html_code = get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code)
-        simple_maced_info = {}
-        simple_maced_info["context"] = maced_info["context"]
-        simple_maced_info["maced_name"] = maced_info["maced_name"]
-        simple_maced_info["maced_item_html_code"] = html_code
-        simple_maced_info["maced_modal_html_code"] = maced_info["maced_modal_html_code"]
 
-        return get_html_code_for_child_maced_fields(
-            context=context, parent_name=item_name, child_name=maced_name, parents_name_for_child=field_name,
-            action_type=action_type, path=path
+        add_item_info_to_maced_data(
+            maced_data=maced_data, full_item_name=full_item_name, field_name=field_name,
+            base_item_name=field_name
         )
     else:
         options_html_code = ""  # get_html_code_for_options(options_info)
@@ -514,16 +512,12 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
 
         html_code += '>' + options_html_code + '</select>'
 
-        simple_maced_info = {}
-        simple_maced_info["context"] = maced_info["context"]
-        simple_maced_info["maced_name"] = maced_info["maced_name"]
-        simple_maced_info["maced_item_html_code"] = html_code
-        simple_maced_info["maced_modal_html_code"] = maced_info["maced_modal_html_code"]
-
-        return get_html_code_for_child_maced_fields(
-            context=context, parent_name=item_name, child_name=maced_name, parents_name_for_child=field_name,
-            action_type=action_type, path=path
+        add_item_info_to_maced_data(
+            maced_data=maced_data, full_item_name=full_item_name, field_name=field_name,
+            base_item_name=field_name
         )
+
+    return html_code
 
 
 # TEXT
@@ -677,7 +671,7 @@ def get_html_code_for_options(options_list, selected_index=None):
 
 # OTHER
 # Search dependencies and change their ids to the full path
-def get_html_code_for_child_maced_fields(context, parent_name, child_name, parents_name_for_child, action_type, path):
+def get_html_code_for_child_maced_fields(context, parent_name, child_name, parents_name_for_child, action_type, item_path):
     dependencies = context[child_name + "_dependencies"]
     maced_data = context["maced_data"]
     html_code_to_return = ""
@@ -686,16 +680,12 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
         grandchild_name = dependency["maced_name"]
         childs_name_for_child = dependency["parents_name_for_child"]
         grandchild_builder = deepcopy(dependency["builder"])
-        new_path = path + "-" + childs_name_for_child
+        grandchild_item_path = item_path + "-" + childs_name_for_child
 
         # Modify the item_name to the complex path
-        grandchild_full_name = action_type + "_type-" + new_path
-        grandchild_builder["item_name"] = grandchild_full_name
-
-        maced_data["field_names"][grandchild_full_name] = []
-        maced_data["field_identifiers"][grandchild_full_name] = []
-        print "after init:"
-        print maced_data["field_names"]
+        full_grandchild_name = get_prefixed_item_path(action_type, grandchild_item_path)
+        initialize_fields_for_item_in_maced_data(maced_data, full_grandchild_name)
+        grandchild_builder["item_name"] = full_grandchild_name
 
         # Build the special python-html
         html_code_dictionary = build_html_code(
@@ -713,29 +703,26 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
         html_code_to_return += maced_html_code
 
         # Add the modal the the list of modals
-        context[action_type + "_type-" + new_path + "_maced_modal"] = maced_modal_html_code  # This will probably go away later
-        context["maced_modals"] += context[action_type + "_type-" + new_path + "_maced_modal"]
+        context[action_type + "_type-" + grandchild_item_path + "_maced_modal"] = maced_modal_html_code  # This will probably go away later
+        context["maced_modals"] += context[action_type + "_type-" + grandchild_item_path + "_maced_modal"]
 
-        # Add the other pieces to the context. maced_data is a part of the context.
-        maced_data["item_names"].append(grandchild_full_name)
-        maced_data["field_names"][grandchild_full_name].append(childs_name_for_child)
-        maced_data["field_identifiers"][grandchild_full_name].append(grandchild_full_name)
-        maced_data["get_urls"][grandchild_full_name] = maced_data["get_urls"][grandchild_name]
+        # Add the other pieces to the context. maced_data is a part of the context
+        add_item_info_to_maced_data(
+            maced_data=maced_data, full_item_name=full_grandchild_name, field_name=childs_name_for_child,
+            base_item_name=grandchild_name
+        )
 
         # Now go recursive and go down a child generation and add it to the blob
         html_code_to_return += get_html_code_for_child_maced_fields(
             context=context, parent_name=child_name, child_name=grandchild_name,
-            parents_name_for_child=childs_name_for_child, action_type=action_type, path=new_path
+            parents_name_for_child=childs_name_for_child, action_type=action_type, item_path=grandchild_item_path
         )
 
     child_builder = deepcopy(context[child_name + "_builder"])  # Let's build some children. :)
 
     # Modify the item_name to the complex path
-    child_full_name = action_type + "_type-" + path
-    child_builder["item_name"] = child_full_name
-
-    maced_data["field_names"][child_full_name] = []
-    maced_data["field_identifiers"][child_full_name] = []
+    full_child_name = get_prefixed_item_path(action_type, item_path)
+    child_builder["item_name"] = full_child_name
 
     # Build the special python-html
     html_code_dictionary = build_html_code(
@@ -752,13 +739,31 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
     html_code_to_return += maced_html_code
 
     # Add the modal the the list of modals
-    context[action_type + "_type-" + path + "_maced_modal"] = maced_modal_html_code  # This will probably go away later
-    context["maced_modals"] += context[action_type + "_type-" + path + "_maced_modal"]
+    context[full_child_name + "_maced_modal"] = maced_modal_html_code  # This will probably go away later
+    context["maced_modals"] += context[full_child_name + "_maced_modal"]
 
-    # Add the other pieces to the context. maced_data is a part of the context.
-    maced_data["item_names"].append(child_full_name)
-    # maced_data["field_names"][child_full_name].append(parents_name_for_child)
-    # maced_data["field_identifiers"][child_full_name].append(child_full_name)
-    maced_data["get_urls"][child_full_name] = maced_data["get_urls"][child_name]
+    # Add the other pieces to the context. maced_data is part of the context
+    add_item_info_to_maced_data(
+        maced_data=maced_data, full_item_name=full_child_name, field_name=parents_name_for_child,
+        base_item_name=child_name
+    )
 
     return html_code_to_return
+
+
+# Gets the special path for a given action_type
+def get_prefixed_item_path(action_type, path):
+    return action_type + "_type-" + path
+
+
+# Simply creates an entry into the maced_data dictionary as a list so that things can be appended later.
+def initialize_fields_for_item_in_maced_data(maced_data, item_name):
+    maced_data["field_names"][item_name] = []
+    maced_data["field_identifiers"][item_name] = []
+
+
+def add_item_info_to_maced_data(maced_data, full_item_name, field_name, base_item_name):
+    maced_data["item_names"].append(full_item_name)
+    maced_data["field_names"][full_item_name].append(field_name)
+    maced_data["field_identifiers"][full_item_name].append(full_item_name)
+    maced_data["get_urls"][full_item_name] = maced_data["get_urls"][base_item_name]
