@@ -430,7 +430,7 @@ def build_builder(item_name, item_html_name, item_model, field_to_order_by, urls
 
 
 def build_templates(builder, html_code_dictionary, item_id):
-    subcontext = builder.deepcopy()
+    subcontext = deepcopy(builder)
     item_name = subcontext["item_name"]
 
     subcontext["item_id"] = item_id
@@ -678,7 +678,7 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
     for dependency in dependencies:
         grandchild_name = dependency["maced_name"]
         childs_name_for_child = dependency["parents_name_for_child"]
-        grandchild_builder = dependency["builder"].deepcopy()
+        grandchild_builder = deepcopy(dependency["builder"])
         new_path = path + "-" + childs_name_for_child
 
         # Modify the item_name to the complex path
