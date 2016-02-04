@@ -251,6 +251,8 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
     html_code_dictionary = {}
     html_code_dictionary[item_name] = {}
 
+    print maced_data["field_names"]
+
     for action_type in ACTION_TYPES:
         html_code_dictionary[item_name][action_type] = ""
 
@@ -379,6 +381,8 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
 
         # Form the html based on the info from field
         insert_items_html_code(html_code_dictionary, item_name, field["type"], field["html_name"], field["name"], extra_info)
+
+        print maced_data["field_names"]
 
         # Lastly add the field info to the context
         maced_data["field_names"][item_name].append(field["name"])
@@ -688,6 +692,7 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
 
         maced_data["field_names"][grandchild_full_name] = []
         maced_data["field_identifiers"][grandchild_full_name] = []
+        print maced_data["field_names"]
 
         # Build the special python-html
         html_code_dictionary = build_html_code(
