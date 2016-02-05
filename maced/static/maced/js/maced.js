@@ -404,6 +404,16 @@ function get_item(item_name)
     // Fill the hidden value with the new value. This is what is sent to the backend on post.
     item_hidden.val(item_select.val());
 
+    // This suggests we have the wrong name for the select. Alternatively it was removed some how.
+    if (item_select.length == 0)
+    {
+        alert(
+            "The select with id \"" + item_name + "-select\" is not on the page. Perhaps the id is wrong or it was" +
+            " removed from the page dynamically."
+        );
+        return;
+    }
+
     // Fill the modals with appropriate content
     if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
     {
@@ -465,7 +475,7 @@ function get_item(item_name)
             edit_button.prop("disabled", false);
             delete_button.prop("disabled", false);
 
-            if (merge_select1.find("option").size() > 1)
+            if (merge_select1.find("option").length > 1)
             {
                 merge_button.prop("disabled", false);
             }
@@ -667,6 +677,14 @@ function set_input_item(action_type, item_name, field_identifier, value, merge_p
         if (input.length == 0 && (action_type == maced_ADD || action_type == maced_EDIT))
         {
             input = $("#" + action_type + "_type-" + item_name + "-" + field_identifier + "-select");
+
+            // If the input exists and is for the edit section
+            if (action_type == maced_EDIT && input.length > 0)
+            {
+                input.val(value).trigger("change");
+
+                return;
+            }
         }
     }
 
