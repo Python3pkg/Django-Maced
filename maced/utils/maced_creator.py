@@ -44,8 +44,12 @@ from maced.utils.misc import validate_select_options
 #       will have to be handled on the backend. Perhaps this can be changed in the future.
 # field_to_order_by is the field to order your select by. It defaults to None which converts to item_name_field_name.
 #       Note that you can add "-" in front of the field_to_order_by to make it descending order.
+# is_used_only_for_maced_fields is used to signal that this will not be used on the page directly, but as a part of
+#       another maced item as a maced field. Defaults to False since this is less common. If you need to use it as both
+#       a maced item and a maced field for another maced item, then keep this as False and all will be fine.
 def add_item_to_context(context, item_name, item_html_name, item_model, item_name_field_name, field_list,
-                        name_of_app_with_urls, current_item_id, allow_empty=True, field_to_order_by=None):
+                        name_of_app_with_urls, current_item_id, allow_empty=True, field_to_order_by=None,
+                        is_used_only_for_maced_field=False):
     if not isinstance(context, dict):
         raise TypeError("Please provide a valid context")
 
@@ -96,7 +100,9 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     if item_name in maced_data["item_names"]:
         raise ValueError("Duplicate item var name of " + str(item_name))
 
-    maced_data["item_names"].append(item_name)
+    if not is_used_only_for_maced_fields:
+        maced_data["item_names"].append(item_name)
+
     initialize_fields_for_item_in_maced_data(maced_data=maced_data, item_name=item_name)
     context[item_name + "_dependencies"] = []
 
