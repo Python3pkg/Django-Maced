@@ -11,3 +11,4 @@ Add new merge buttons to copy from the left or right panel into the middle panel
 Add support for multi-selects for the items and for their fields. (ie on page and on modal)
 Add example for using is_used_only_for_maced_fields.
 Change parameter comments for add_item_to_context() to be formal docstrings. Ughhhhhh.
+Move the TODO list to github as issues.
