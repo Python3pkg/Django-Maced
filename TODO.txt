@@ -9,4 +9,4 @@ Convert action views into a class based view so that it can be easily overridden
 Reimplement the spinners for the modals.
 Add new merge buttons to copy from the left or right panel into the middle panel.
 Add support for multi-selects for the items and for their fields. (ie on page and on modal)
-Make get_item cause the edit buttons for maced fields to be available on the edit modal.
+Add example for using is_used_only_for_maced_fields.
