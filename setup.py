@@ -11,7 +11,8 @@ setup(
     license='MIT License',
     author='Keith Hostetler',
     author_email='khostetl@nd.edu',
-    description='Django app designed to help with easy database record manipulation/creation. It is called Maced for Merge Add Clone Edit Delete.',
+    description='Django app designed to help with easy database record manipulation/creation through a frontend '
+                'interface. It is called Maced for Merge Add Clone Edit Delete.',
     classifiers=[
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: MIT License",

@@ -5,7 +5,7 @@
 
 <img src=maced_green.png width=300 />
 
-Django app designed to help with easy database record manipulation/creation on the frontend. It is called MACED for Merge Add Clone Edit Delete.
+Django app designed to help with easy database record manipulation/creation through a frontend interface. It is called MACED for Merge Add Clone Edit Delete.
 If you want to report any bugs, you can use the github issue tracker. If you have comments, please email me at khostetl@nd.edu.
 
 # Requirements
