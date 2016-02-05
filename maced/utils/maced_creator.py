@@ -49,7 +49,7 @@ from maced.utils.misc import validate_select_options
 #       a maced item and a maced field for another maced item, then keep this as False and all will be fine.
 def add_item_to_context(context, item_name, item_html_name, item_model, item_name_field_name, field_list,
                         name_of_app_with_urls, current_item_id, allow_empty=True, field_to_order_by=None,
-                        is_used_only_for_maced_field=False):
+                        is_used_only_for_maced_fields=False):
     if not isinstance(context, dict):
         raise TypeError("Please provide a valid context")
 
