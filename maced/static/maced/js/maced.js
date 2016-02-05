@@ -409,7 +409,7 @@ function get_item(item_name)
     {
         alert(
             "The select with id \"" + item_name + "-select\" is not on the page. Perhaps the id is wrong or it was" +
-            " removed from the page dynamically."
+            " removed from the page dynamically or you didn't set is_used_only_for_maced_fields to True."
         );
         return;
     }
