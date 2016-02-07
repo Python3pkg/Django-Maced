@@ -325,9 +325,9 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
 
             if field["maced_name"] + "_item" not in context:
                 raise ValueError(
-                    "Field named " + str(field["name"]) + " in field_list for " + str(item_name) +
-                    " is set as type \"maced\" and is referencing " + str(field["maced_name"]) + " but it is not in " +
-                    "the context. Please make sure you have created a maced item for it and ensure that it is " +
+                    "Field named " + str(field["name"]) + " in field_list for \"" + str(item_name) + "\"" +
+                    " is set as type \"maced\" and is referencing \"" + str(field["maced_name"]) + "\" but it is not " +
+                    "in the context. Please make sure you have created a maced item for it and ensure that it is " +
                     "created prior to this one. If you are trying to use an object with a name different from the " +
                     "name given for \"name\" for this field, please use \"maced_name\" to specify the name you want. " +
                     "By default, \"name\" is used."
@@ -335,17 +335,17 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
 
             if field["maced_name"] + "_maced_modal" not in context:
                 raise RuntimeError(
-                    "Field named " + str(field["name"]) + " in field_list for " + str(item_name) +
-                    " is set as type \"maced\" and is referencing " + str(field["maced_name"]) + ". " +
-                    str(field["maced_name"]) + "_item is in the context, but " + str(field["maced_name"]) +
-                    "_maced_modal isn't. This is likely a programming error with django-maced."
+                    "Field named \"" + str(field["name"]) + "\" in field_list for \"" + str(item_name) + "\"" +
+                    " is set as type \"maced\" and is referencing \"" + str(field["maced_name"]) + "\". \"" +
+                    str(field["maced_name"]) + "_item\" is in the context, but \"" + str(field["maced_name"]) +
+                    "_maced_modal\" isn't. This is likely a programming error with django-maced."
                 )
 
             if item_name + "_dependencies" not in context:
-                raise RuntimeError(item_name + "_dependencies was not in the context. Did you overwrite it?")
+                raise RuntimeError("\"" + item_name + "_dependencies\" was not in the context. Did you overwrite it?")
 
             if field["maced_name"] + "_builder" not in context:
-                raise RuntimeError(item_name + "_builder was not in the context. Did you overwrite it?")
+                raise RuntimeError("\"" + item_name + "_builder\" was not in the context. Did you overwrite it?")
 
             # Add this maced item as a dependency of the main item
             dependency = {}

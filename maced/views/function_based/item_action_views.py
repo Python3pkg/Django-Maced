@@ -24,7 +24,7 @@ def add_item_view(request, **kwargs):
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     result = authenticate_and_validate_kwargs_view(request, **kwargs)
 
-    # This will be a tuple as long as it succeeded, otherwise it will be a HttpResponse
+    # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
     if not isinstance(result, tuple):
         return result
 
@@ -35,7 +35,7 @@ def add_item_view(request, **kwargs):
 
     result = get_fields_and_item_name_from_post_view(request, item_model, item_name_field_name)
 
-    # This will be a tuple as long as it succeeded, otherwise it will be a HttpResponse
+    # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
     if not isinstance(result, tuple):
         return result
 
@@ -44,7 +44,7 @@ def add_item_view(request, **kwargs):
 
     result = convert_foreign_keys_to_objects(fields_to_save, select_object_models_info)
 
-    # This will be a bool as long as it succeeded, otherwise it will be a HttpResponse. Since there are no safe
+    # This will be a bool as long as it succeeded, otherwise it will be an HttpResponse. Since there are no safe
     # failures for this, there will never need to be a False returned.
     if not isinstance(result, bool):
         return result
@@ -80,7 +80,7 @@ def edit_item_view(request, item_id, **kwargs):
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     result = authenticate_and_validate_kwargs_view(request, **kwargs)
 
-    # This will be a tuple as long as it succeeded, otherwise it will be a HttpResponse
+    # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
     if not isinstance(result, tuple):
         return result
 
@@ -91,7 +91,7 @@ def edit_item_view(request, item_id, **kwargs):
 
     result = get_fields_and_item_name_from_post_view(request, item_model, item_name_field_name)
 
-    # This will be a tuple as long as it succeeded, otherwise it will be a HttpResponse
+    # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
     if not isinstance(result, tuple):
         return result
 
@@ -102,7 +102,7 @@ def edit_item_view(request, item_id, **kwargs):
 
     result = convert_foreign_keys_to_objects(fields_to_save, select_object_models_info)
 
-    # This will be a bool as long as it succeeded, otherwise it will be a HttpResponse. Since there are no safe
+    # This will be a bool as long as it succeeded, otherwise it will be an HttpResponse. Since there are no safe
     # failures for this, there will never need to be a False returned.
     if not isinstance(result, bool):
         return result
@@ -135,7 +135,7 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     result = authenticate_and_validate_kwargs_view(request, **kwargs)
 
-    # This will be a tuple as long as it succeeded, otherwise it will be a HttpResponse
+    # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
     if not isinstance(result, tuple):
         return result
 
@@ -146,7 +146,7 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
 
     result = get_fields_and_item_name_from_post_view(request, item_model, item_name_field_name)
 
-    # This will be a tuple as long as it succeeded, otherwise it will be a HttpResponse
+    # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
     if not isinstance(result, tuple):
         return result
 
@@ -155,7 +155,7 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
 
     result = convert_foreign_keys_to_objects(fields_to_save, select_object_models_info)
 
-    # This will be a bool as long as it succeeded, otherwise it will be a HttpResponse. Since there are no safe
+    # This will be a bool as long as it succeeded, otherwise it will be an HttpResponse. Since there are no safe
     # failures for this, there will never need to be a False returned.
     if not isinstance(result, bool):
         return result
@@ -212,7 +212,7 @@ def delete_item_view(request, item_id, **kwargs):
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     result = authenticate_and_validate_kwargs_view(request, **kwargs)
 
-    # This will be a tuple as long as it succeeded, otherwise it will be a HttpResponse
+    # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
     if not isinstance(result, tuple):
         return result
 
@@ -239,7 +239,7 @@ def get_item_view(request, item_id, **kwargs):
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     result = authenticate_and_validate_kwargs_view(request, **kwargs)
 
-    # This will be a tuple as long as it succeeded, otherwise it will be a HttpResponse
+    # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
     if not isinstance(result, tuple):
         return result
 
