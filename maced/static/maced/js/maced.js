@@ -11,6 +11,7 @@ var maced_ACTION_TYPES = [maced_ADD, maced_EDIT, maced_MERGE, maced_DELETE, mace
 var maced_item_names = maced_data["item_names"];
 var maced_field_names = JSON.parse(maced_data["field_names"]);
 var maced_field_identifiers = JSON.parse(maced_data["field_identifiers"]);
+var maced_item_names_with_ignored_alerts = JSON.parse(maced_data["item_names_with_ignored_alerts"]);
 var maced_get_urls = JSON.parse(maced_data["get_urls"]);
 var maced_login_url = JSON.parse(maced_data["login_url"]);
 
@@ -407,11 +408,17 @@ function get_item(item_name)
     // This suggests we have the wrong name for the select. Alternatively it was removed some how.
     if (item_select.length == 0)
     {
-        alert(
-            "The select with id \"" + item_name + "-select\" is not on the page. Perhaps the id is wrong or it was " +
-            "removed from the page dynamically or you didn't set is_used_only_for_maced_fields to True or it was " +
-            "just simply forgotten."
-        );
+        // There are cases where the message is irrelevant and so we will check the alert ignore list, and if it is in
+        // the list, we won't send an alert.
+        if (!maced_item_names_with_ignored_alerts.contains(item_name))
+        {
+            alert(
+                "The select with id \"" + item_name + "-select\" is not on the page. Perhaps the id is wrong or it was " +
+                "removed from the page dynamically or you didn't set is_used_only_for_maced_fields to True or it was " +
+                "just simply forgotten."
+            );
+        }
+
         return;
     }
 

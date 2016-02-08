@@ -97,6 +97,9 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     if "get_urls" not in maced_data:
         maced_data["get_urls"] = {}
 
+    if "item_names_with_ignored_alerts" not in maced_data:
+        maced_data["item_names_with_ignored_alerts"] = []
+
     if item_name in maced_data["item_names"]:
         raise ValueError("Duplicate item var name of " + str(item_name))
 
@@ -192,6 +195,7 @@ def finalize_context_for_items(context, login_url=None):
     maced_data["get_urls"] = json.dumps(maced_data["get_urls"])
     maced_data["field_names"] = json.dumps(maced_data["field_names"])
     maced_data["field_identifiers"] = json.dumps(maced_data["field_identifiers"])
+    maced_data["item_names_with_ignored_alerts"] = json.dumps(maced_data["item_names_with_ignored_alerts"])
     maced_data["login_url"] = json.dumps(login_url)
 
 
@@ -346,6 +350,9 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
 
             if field["maced_name"] + "_builder" not in context:
                 raise RuntimeError("\"" + item_name + "_builder\" was not in the context. Did you overwrite it?")
+
+            if field["maced_name"] not in maced_data["item_names_with_ignored_alerts"]:
+                maced_data["item_names_with_ignored_alerts"].append(field["maced_name"])
 
             # Add this maced item as a dependency of the main item
             dependency = {}
