@@ -410,7 +410,8 @@ function get_item(item_name)
     {
         // There are cases where the message is irrelevant and so we will check the alert ignore list, and if it is in
         // the list, we won't send an alert.
-        if (!maced_item_names_with_ignored_alerts.contains(item_name))
+        // http://stackoverflow.com/questions/237104/array-containsobj-in-javascript
+        if ($.inArray(item_name, maced_item_names_with_ignored_alerts) == -1)  // If not in ignore list
         {
             alert(
                 "The select with id \"" + item_name + "-select\" is not on the page. Perhaps the id is wrong or it was " +
