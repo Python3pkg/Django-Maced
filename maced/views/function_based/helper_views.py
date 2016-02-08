@@ -7,7 +7,7 @@ from maced.utils.misc import MissingFromPost, is_item_name_valid, \
     get_bad_item_name_characters_in_string
 
 
-def authenticate_and_validate_kwargs_view(request, **kwargs):
+def authenticate_and_validate_kwargs_view(request, action_type, **kwargs):
     data = {}
 
     if "need_authentication" in kwargs:
@@ -18,7 +18,7 @@ def authenticate_and_validate_kwargs_view(request, **kwargs):
     else:
         need_authentication = True
 
-    if request.user.is_authenticated() or not need_authentication:
+    if request.user.is_authenticated() or not need_authentication or action_type == "get":
         data["authenticated"] = True
     else:
         data["authenticated"] = False

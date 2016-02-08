@@ -22,7 +22,7 @@ def add_item_view(request, **kwargs):
     #       something else.
     # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
-    result = authenticate_and_validate_kwargs_view(request, **kwargs)
+    result = authenticate_and_validate_kwargs_view(request, "add", **kwargs)
 
     # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
     if not isinstance(result, tuple):
@@ -84,7 +84,7 @@ def edit_item_view(request, item_id, **kwargs):
     #       something else.
     # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
-    result = authenticate_and_validate_kwargs_view(request, **kwargs)
+    result = authenticate_and_validate_kwargs_view(request, "edit", **kwargs)
 
     # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
     if not isinstance(result, tuple):
@@ -145,7 +145,7 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
     #       something else.
     # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
-    result = authenticate_and_validate_kwargs_view(request, **kwargs)
+    result = authenticate_and_validate_kwargs_view(request, "merge", **kwargs)
 
     # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
     if not isinstance(result, tuple):
@@ -228,7 +228,7 @@ def delete_item_view(request, item_id, **kwargs):
     # need_authentication is a bool that defaults to True and is used to determined whether a login is required
     # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
-    result = authenticate_and_validate_kwargs_view(request, **kwargs)
+    result = authenticate_and_validate_kwargs_view(request, "delete", **kwargs)
 
     # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
     if not isinstance(result, tuple):
@@ -261,7 +261,7 @@ def get_item_view(request, item_id, **kwargs):
     #       something else.
     # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
-    result = authenticate_and_validate_kwargs_view(request, **kwargs)
+    result = authenticate_and_validate_kwargs_view(request, "get", **kwargs)
 
     # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
     if not isinstance(result, tuple):
