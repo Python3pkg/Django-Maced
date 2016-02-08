@@ -6,7 +6,7 @@ from django.db import IntegrityError, transaction
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from maced.utils.misc import make_random_id
+from maced.utils.misc import make_random_id, serialize_item_action_data
 from maced.utils.model_merging import merge_model_objects
 from maced.views.function_based.helper_views import \
     authenticate_and_validate_kwargs_view, get_fields_and_item_name_from_post_view, convert_foreign_keys_to_objects, \
@@ -66,7 +66,13 @@ def add_item_view(request, **kwargs):
     data["id"] = item.id
     data["name"] = item_name
 
-    return HttpResponse(content=json.dumps(data))
+    data_json_string = serialize_item_action_data(data)
+
+    # This will be a string as long as it succeeded, otherwise it will be an HttpResponse
+    if not isinstance(data_json_string, (str, unicode)):
+        return data_json_string
+
+    return HttpResponse(content=data_json_string)
 
 
 @transaction.atomic
@@ -121,7 +127,13 @@ def edit_item_view(request, item_id, **kwargs):
             status=500
         )
 
-    return HttpResponse(content=json.dumps(data))
+    data_json_string = serialize_item_action_data(data)
+
+    # This will be a string as long as it succeeded, otherwise it will be an HttpResponse
+    if not isinstance(data_json_string, (str, unicode)):
+        return data_json_string
+
+    return HttpResponse(content=data_json_string)
 
 
 @transaction.atomic
@@ -201,7 +213,13 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
     data["name"] = item_name
     data["id"] = item1_id
 
-    return HttpResponse(json.dumps(data))
+    data_json_string = serialize_item_action_data(data)
+
+    # This will be a string as long as it succeeded, otherwise it will be an HttpResponse
+    if not isinstance(data_json_string, (str, unicode)):
+        return data_json_string
+
+    return HttpResponse(content=data_json_string)
 
 
 @transaction.atomic
@@ -226,7 +244,13 @@ def delete_item_view(request, item_id, **kwargs):
     except ProtectedError as error:
         return HttpResponse(content="This object is in use: " + str(error), status=500)
 
-    return HttpResponse(json.dumps(data))
+    data_json_string = serialize_item_action_data(data)
+
+    # This will be a string as long as it succeeded, otherwise it will be an HttpResponse
+    if not isinstance(data_json_string, (str, unicode)):
+        return data_json_string
+
+    return HttpResponse(content=data_json_string)
 
 
 @csrf_exempt
@@ -263,4 +287,10 @@ def get_item_view(request, item_id, **kwargs):
 
     data["fields"] = fields_to_load
 
-    return HttpResponse(content=json.dumps(data))
+    data_json_string = serialize_item_action_data(data)
+
+    # This will be a string as long as it succeeded, otherwise it will be an HttpResponse
+    if not isinstance(data_json_string, (str, unicode)):
+        return data_json_string
+
+    return HttpResponse(content=data_json_string)

@@ -1,7 +1,9 @@
 import collections
 import random
 import string
+import json
 
+from django.http import HttpResponse
 
 BAD_ITEM_NAME_CHARACTERS = (
     "!", '"', "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", ".", "/", ":", ";", "<", "=", ">", "?", "@", "[", "\\",
@@ -112,3 +114,19 @@ def validate_select_options(extra_info, field, item_name, select_type):
 
 def make_random_id(size):
     return "".join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(size))
+
+
+def serialize_item_action_data(data):
+    try:
+        return json.dumps(data)
+    except TypeError as error:
+        return HttpResponse(
+            content="There was a problem serializing the item action data. This likely caused by something missing in "
+                    "select_object_models_info. Raised error: " + str(error),
+            status=500
+        )
+    except Exception as error:
+        return HttpResponse(
+            content="There was a problem serializing the item action data. Raised error: " + str(error),
+            status=500
+        )
