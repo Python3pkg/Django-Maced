@@ -140,7 +140,7 @@ def convert_foreign_keys_to_objects(fields_to_save, select_object_models_info, a
         field_name1 = select_object_model_info[0]
 
         # If this entry is for inheritance and we are not doing a get_item call
-        if (select_object_model_info[2] and action_type != "get"):
+        if (len(select_object_model_info) == 3 and action_type != "get"):
             continue
 
         for field_name2, field_value in fields_to_save.iteritems():
