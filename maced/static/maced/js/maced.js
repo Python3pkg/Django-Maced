@@ -506,6 +506,8 @@ function get_item(item_name)
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
+            alert(XMLHttpRequest.responseText);
+
             edit_spinner.css("display", "none");
             edit_error_div.text(XMLHttpRequest.responseText);
             edit_error_div.css("display", "");

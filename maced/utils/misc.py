@@ -121,8 +121,9 @@ def serialize_item_action_data(data):
         return json.dumps(data)
     except TypeError as error:
         return HttpResponse(
-            content="There was a problem serializing the item action data. This likely caused by something missing in "
-                    "select_object_models_info. Raised error: " + str(error),
+            content="There was a problem serializing the item action data. This likely caused by something missing " +
+                    "in select_object_models_info. If this maced item is a child of another model, be sure to " +
+                    "include the _ptr for the parent class. Raised error: " + str(error),
             status=500
         )
     except Exception as error:
