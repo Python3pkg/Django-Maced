@@ -140,8 +140,7 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     )
 
     context[item_name + "_item"] = maced_html_code
-    context[item_name + "_maced_modal"] = maced_modal_html_code
-    context["maced_modals"] += context[item_name + "_maced_modal"]
+    context["maced_modals"] += maced_modal_html_code
     context[item_name + "_item_options_list"] = item_options_list
 
 
@@ -198,6 +197,12 @@ def finalize_context_for_items(context, login_url=None):
     maced_data["field_identifiers"] = json.dumps(maced_data["field_identifiers"])
     maced_data["item_names_with_ignored_alerts"] = json.dumps(maced_data["item_names_with_ignored_alerts"])
     maced_data["login_url"] = json.dumps(login_url)
+
+    delete_list = ("_builder", "_item_options_list", "_dependencies")
+
+    for key in context.keys():
+        if any(delete_item in key for delete_item in delete_list):
+            del context[key]
 
 
 # original_dictionary is the dictionary that is being built up for a particular maced_item object.
@@ -339,14 +344,6 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
                     "By default, \"name\" is used."
                 )
 
-            if field["maced_name"] + "_maced_modal" not in context:  # This is probably going away
-                raise RuntimeError(
-                    "Field named \"" + str(field["name"]) + "\" in field_list for \"" + str(item_name) + "\"" +
-                    " is set as type \"maced\" and is referencing \"" + str(field["maced_name"]) + "\". \"" +
-                    str(field["maced_name"]) + "_item\" is in the context, but \"" + str(field["maced_name"]) +
-                    "_maced_modal\" isn't. This is likely a programming error with django-maced."
-                )
-
             if item_name + "_dependencies" not in context:
                 raise RuntimeError("\"" + item_name + "_dependencies\" was not in the context. Did you overwrite it?")
 
@@ -444,11 +441,6 @@ def build_templates(builder, html_code_dictionary, item_id):
     maced_modal_html_code = render(request=None, template_name="maced/modal_list.html", context=subcontext).content
 
     return maced_html_code, maced_modal_html_code
-
-
-    # context[item_name + "_item"] = render(request=None, template_name="maced/container.html", context=subcontext).content
-    # context[item_name + "_maced_modal"] = render(request=None, template_name="maced/modal_list.html", context=subcontext).content
-    # context["maced_modals"] += context[item_name + "_maced_modal"]
 
 
 
@@ -691,8 +683,7 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
         html_code_to_return += maced_html_code
 
         # Add the modal the the list of modals
-        context[action_type + "_type-" + grandchild_item_path + "_maced_modal"] = maced_modal_html_code  # This will probably go away later
-        context["maced_modals"] += context[action_type + "_type-" + grandchild_item_path + "_maced_modal"]
+        context["maced_modals"] += maced_modal_html_code
 
         # Add the other pieces to the context. maced_data is a part of the context
         maced_data["item_names"].append(full_grandchild_name)
@@ -725,8 +716,7 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
     html_code_to_return += maced_html_code
 
     # Add the modal the the list of modals
-    context[full_child_name + "_maced_modal"] = maced_modal_html_code  # This will probably go away later
-    context["maced_modals"] += context[full_child_name + "_maced_modal"]
+    context["maced_modals"] += maced_modal_html_code
 
     # Add the other pieces to the context. maced_data is part of the context
     maced_data["item_names"].append(full_child_name)
