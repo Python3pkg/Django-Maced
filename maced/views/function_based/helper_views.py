@@ -49,10 +49,25 @@ def authenticate_and_validate_kwargs_view(request, action_type, **kwargs):
 
             for select_object_model_info in select_object_models_info:
                 if isinstance(select_object_model_info, tuple):
-                    if len(select_object_model_info) == 2:
+                    if len(select_object_model_info) == 2 or len(select_object_model_info) == 3:
                         if isinstance(select_object_model_info[0], (str, unicode)):
                             # This should really be checking if it is a model, not a class.
-                            if not inspect.isclass(select_object_model_info[1]):
+                            if inspect.isclass(select_object_model_info[1]):
+                                if len(select_object_model_info) == 3:
+                                    if isinstance(select_object_model_info[2], bool):
+                                        if not select_object_model_info[2]:
+                                            return HttpResponse(
+                                                content="Select object model number " + str(count) +
+                                                        "'s tuple's inheritance bool must not be False.",
+                                                status=500
+                                            )
+                                    else:
+                                        return HttpResponse(
+                                            content="Select object model number " + str(count) +
+                                                    "'s tuple's inheritance bool is not a bool.",
+                                            status=500
+                                        )
+                            else:
                                 return HttpResponse(
                                     content="Select object model number " + str(count) +
                                             "'s tuple's model is not a class.",
@@ -67,7 +82,9 @@ def authenticate_and_validate_kwargs_view(request, action_type, **kwargs):
                     else:
                         return HttpResponse(
                             content="Select object model number " + str(count) + " is a tuple of size " +
-                                    str(len(select_object_model_info)) + " but should be size of 2. (field_name, class).",
+                                    str(len(select_object_model_info)) + " but should be size of 2 like this " +
+                                    "(field_name, class), or a size of 3 like this " +
+                                    "(pointer_field_name, parent_class, True)",
                             status=500
                         )
                 else:
@@ -115,12 +132,16 @@ def get_fields_and_item_name_from_post_view(request, item_model, item_name_field
 
 # It is assumed that select_object_models_info has been validated by this point.
 # Should have been done in authenticate_and_validate_kwargs_view().
-def convert_foreign_keys_to_objects(fields_to_save, select_object_models_info):
+def convert_foreign_keys_to_objects(fields_to_save, select_object_models_info, action_type):
     if select_object_models_info is None:
         return True  # True just means it succeeded (there was nothing to do).
 
     for select_object_model_info in select_object_models_info:
         field_name1 = select_object_model_info[0]
+
+        # If this entry is for inheritance and we are not doing a get_item call
+        if (select_object_model_info[2] and action_type != "get"):
+            continue
 
         for field_name2, field_value in fields_to_save.iteritems():
             if field_name2 == field_name1:
