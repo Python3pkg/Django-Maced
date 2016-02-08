@@ -142,6 +142,7 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     context[item_name + "_item"] = maced_html_code
     context[item_name + "_maced_modal"] = maced_modal_html_code
     context["maced_modals"] += context[item_name + "_maced_modal"]
+    context[item_name + "_item_options_list"] = item_options_list
 
 
 
@@ -254,6 +255,7 @@ def get_items(item_model, field_to_order_by=None):
 
 
 
+
 def build_html_code(context, item_options_list, item_name, item_html_name, field_list):
     maced_data = context["maced_data"]
     html_code_dictionary = {}
@@ -298,8 +300,8 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
 
         if field["type"] not in VALID_INPUT_TYPES:
             raise ValueError(
-                "Field named " + str(field["name"]) + " in field_list for " + str(item_name) + " has a type of " +
-                str(field["type"]) + " which is invalid"
+                "Field named \"" + str(field["name"]) + "\" in field_list for \"" + str(item_name) + "\" has a type " +
+                "of \"" + str(field["type"]) + "\" which is invalid"
             )
 
         if field["type"] == "select":
@@ -308,8 +310,8 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
 
             if field["select_type"] not in VALID_SELECT_TYPES:
                 raise ValueError(
-                    "The select for the field named " + str(field["name"]) + " has a type of " +
-                    str(field["select_type"]) + " which is invalid"
+                    "The select for the field named \"" + str(field["name"]) + "\" has a type of \"" +
+                    str(field["select_type"]) + "\" which is invalid"
                 )
 
             if "options" in field:
@@ -319,8 +321,8 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
                 validate_select_options(extra_info, field, item_name, field["select_type"])
             else:
                 raise ValueError(
-                    "Field " + str(field["name"]) + " in field_list for " + str(item_name) +
-                    " is set to type \"select\", but doesn't have \"options\""
+                    "Field \"" + str(field["name"]) + "\" in field_list for \"" + str(item_name) + "\" " +
+                    "is set to type \"select\", but doesn't have \"options\""
                 )
 
         if field["type"] == "maced":
@@ -329,7 +331,7 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
 
             if field["maced_name"] + "_item" not in context:
                 raise ValueError(
-                    "Field named " + str(field["name"]) + " in field_list for \"" + str(item_name) + "\"" +
+                    "Field named \"" + str(field["name"]) + "\" in field_list for \"" + str(item_name) + "\"" +
                     " is set as type \"maced\" and is referencing \"" + str(field["maced_name"]) + "\" but it is not " +
                     "in the context. Please make sure you have created a maced item for it and ensure that it is " +
                     "created prior to this one. If you are trying to use an object with a name different from the " +
@@ -337,7 +339,7 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
                     "By default, \"name\" is used."
                 )
 
-            if field["maced_name"] + "_maced_modal" not in context:
+            if field["maced_name"] + "_maced_modal" not in context:  # This is probably going away
                 raise RuntimeError(
                     "Field named \"" + str(field["name"]) + "\" in field_list for \"" + str(item_name) + "\"" +
                     " is set as type \"maced\" and is referencing \"" + str(field["maced_name"]) + "\". \"" +
@@ -372,18 +374,6 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
             # extra_info = extra_info["html_code"].replace(old_row_name_th, new_row_name_th)
 
             # field["select_type"] = "object"  # This is used for clone, merge, delete, and info since they are just selects
-
-            # if "options" in field:
-            #     extra_info = field["options"]
-            #
-            #     # Will raise errors if invalid, else it move on
-            #     validate_select_options(extra_info, field, item_name, field["select_type"])
-            # else:
-            #     raise ValueError(
-            #         "Field " + str(field["name"]) + " in field_list for " + str(item_name) +
-            #         " is set to type \"maced\", but doesn't have \"options\". This still needs options for merge, " +
-            #         "clone, delete, and info modals."
-            #     )
 
         if "html_name" not in field:
             field["html_name"] = prettify_string(field["name"])
@@ -485,8 +475,10 @@ def build_templates(builder, html_code_dictionary, item_id):
 
 # MACED
 def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
+    context = maced_info["context"]
+    item_options_list = context[maced_info["maced_name"] + "_item_options_list"]
+
     if action_type == "add" or action_type == "edit":
-        context = maced_info["context"]
         maced_name = maced_info["maced_name"]
         maced_data = context["maced_data"]
         item_path = item_name + "-" + field_name
@@ -499,11 +491,11 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
             action_type=action_type, item_path=item_path
         )
     elif action_type == "merge":
-        options_html_code = ""  # get_html_code_for_options(options_info)
+        options_html_code = get_html_code_for_options(item_options_list)
 
         html_code = get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code)
     else:
-        options_html_code = ""  # get_html_code_for_options(options_info)
+        options_html_code = get_html_code_for_options(item_options_list)
 
         html_code = '<b class="maced">' + field_html_name + ': </b>'
         html_code += '<select class="maced form-control" id="' + action_type + '-' + item_name + '-' + field_name + '-input" '
