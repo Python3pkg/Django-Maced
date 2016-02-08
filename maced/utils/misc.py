@@ -131,3 +131,9 @@ def serialize_item_action_data(data):
             content="There was a problem serializing the item action data. Raised error: " + str(error),
             status=500
         )
+
+
+def prettify_string(ugly_string):
+    pretty_string = ugly_string.title().replace("_", " ")
+
+    return pretty_string

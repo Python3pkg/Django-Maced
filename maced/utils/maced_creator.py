@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
 from maced.utils.constants import ACTION_TYPES, VALID_INPUT_TYPES, VALID_SELECT_TYPES
-from maced.utils.misc import validate_select_options
+from maced.utils.misc import validate_select_options, prettify_string
 
 
 # The main function to craft html code for each item. This is the only function that should be called directly besides
@@ -386,7 +386,7 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
             #     )
 
         if "html_name" not in field:
-            field["html_name"] = field["name"].title()
+            field["html_name"] = prettify_string(field["name"])
 
         # Form the html based on the info from field
         insert_items_html_code(html_code_dictionary, item_name, field["type"], field["html_name"], field["name"], extra_info)
