@@ -15,6 +15,17 @@ If you want to report any bugs, you can use the github issue tracker. If you hav
 * django-bootstrap3 >= ? (I am using 6.2.2)
 * jQuery >= ? (I am using 1.12.0)
 
+# Notes
+
+This django app adds font-awesome 4.4.0 when using maced items. If you are using a different version of font-awesome,
+do one of the following:
+
+* Use 4.4.0
+* Change your local copy of django-maced to use your version (replace in modal.html and container.html)
+* Don't do anything. This may not actually cause any problems for you depending on the situation.
+
+I do plan on fixing this situation at some point, but considering the rarity of the problem, it is pretty low priority.
+
 # Recommendations
 
 Use bootstrap3 theme for bolder buttons. Just include this on your page:
