@@ -614,7 +614,10 @@ def get_merge_html_code_for_select(item_name, field_html_name, field_name, optio
     # Create left panel
     html_code += \
         '<td class="maced">' \
-            '<select class="maced form-control" id="merge-' + item_name + '1-' + field_name + '-input" readonly >' + options_html_code + '</select>' \
+            '<select class="maced form-control" id="merge-' + item_name + '1-' + field_name + '-input" readonly ' \
+                'onfocus="this.defaultIndex=this.selectedIndex;" onchange="this.selectedIndex=this.defaultIndex;">' + \
+                options_html_code + \
+            '</select>' \
         '</td>'
 
     # Create middle panel
@@ -626,7 +629,10 @@ def get_merge_html_code_for_select(item_name, field_html_name, field_name, optio
     # Create right panel for merge
     html_code += \
         '<td class="maced">' \
-            '<select class="maced form-control" id="merge-' + item_name + '2-' + field_name + '-input" readonly >' + options_html_code + '</select>' \
+            '<select class="maced form-control" id="merge-' + item_name + '2-' + field_name + '-input" readonly ' \
+                'onfocus="this.defaultIndex=this.selectedIndex;" onchange="this.selectedIndex=this.defaultIndex;">' + \
+                options_html_code + \
+            '</select>' \
         '</td>'
 
     html_code += '</tr>'
