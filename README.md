@@ -15,6 +15,13 @@ If you want to report any bugs, you can use the github issue tracker. If you hav
 * django-bootstrap3 >= ? (I am using 6.2.2)
 * jQuery >= ? (I am using 1.12.0)
 
+# Recommendations
+
+Use bootstrap3 theme for bolder buttons. Just include this on your page:
+```html
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+```
+
 # Installation
 
 Install the latest release using pip:
