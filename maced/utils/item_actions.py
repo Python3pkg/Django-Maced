@@ -5,9 +5,9 @@ from django.db.models import ProtectedError
 from django.http import HttpResponse
 from django.db import IntegrityError
 
+from maced.utils.item_action_helpers import convert_objects_to_foreign_keys
 from maced.utils.misc import make_random_id, is_authenticated
 from maced.utils.model_merging import merge_model_objects
-from maced.views.function_based.helper_views import convert_objects_to_foreign_keys
 
 
 def merge_item(item_model, fields_to_save, item_name, item1_id, item2_id, item_name_field_name):

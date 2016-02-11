@@ -638,7 +638,7 @@ function authenticate(authenticated, type)
 {
     if (!authenticated && type != maced_GET)
     {
-        alert("Please login to maced items.");
+        alert("Please login to use maced items.");
 
         if (!(maced_login_url === null))
         {
