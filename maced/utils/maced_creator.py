@@ -95,8 +95,8 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     if "field_identifiers" not in maced_data:
         maced_data["field_identifiers"] = {}
 
-    if "get_urls" not in maced_data:
-        maced_data["get_urls"] = {}
+    if "urls" not in maced_data:
+        maced_data["urls"] = {}
 
     if "item_names_with_ignored_alerts" not in maced_data:
         maced_data["item_names_with_ignored_alerts"] = []
@@ -187,13 +187,13 @@ def finalize_context_for_items(context, login_url=None):
 
     maced_data = context["maced_data"]
 
-    if "get_urls" not in maced_data or "field_names" not in maced_data or "field_identifiers" not in maced_data:
+    if "urls" not in maced_data or "field_names" not in maced_data or "field_identifiers" not in maced_data:
         raise RuntimeError(
-            "ERROR: maced_items is not configured correctly. Please check why get_urls and/or field_names and/or "
+            "ERROR: maced_items is not configured correctly. Please check why urls and/or field_names and/or "
             "field_identifiers is missing from the context."
         )
 
-    maced_data["get_urls"] = json.dumps(maced_data["get_urls"])
+    maced_data["urls"] = json.dumps(maced_data["urls"])
     maced_data["field_names"] = json.dumps(maced_data["field_names"])
     maced_data["field_identifiers"] = json.dumps(maced_data["field_identifiers"])
     maced_data["item_names_with_ignored_alerts"] = json.dumps(maced_data["item_names_with_ignored_alerts"])
