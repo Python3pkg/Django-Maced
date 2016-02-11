@@ -69,7 +69,7 @@ class SomeView(TemplateView):
         
         add_item_to_context(
             context=context, item_name="example", item_html_name="Example", item_model=Example,
-            item_name_field_name="name", field_list=example_field_list, name_of_app_with_urls="example_app"
+            item_name_field_name="name", field_list=example_field_list, name_of_app_with_url="example_app"
             current_item_id=0
         )
         
@@ -143,7 +143,7 @@ else:
 
 add_item_to_context(
     context=context, item_name="example", item_html_name="Example", item_model=Example,
-    item_name_field_name="name", field_list=example_field_list, name_of_app_with_urls="example_app",
+    item_name_field_name="name", field_list=example_field_list, name_of_app_with_url="example_app",
     current_item_id=example_id
 )
 
@@ -161,7 +161,7 @@ example_field_list = [
 ]
 add_item_to_context(
     context=context, item_name="example", item_html_name="Example", item_model=Example,
-    item_name_field_name="name", field_list=example_field_list, name_of_app_with_urls="example_app",
+    item_name_field_name="name", field_list=example_field_list, name_of_app_with_url="example_app",
     current_item_id=get_current_item_id(example_parent, "example")
 )
 
@@ -185,7 +185,7 @@ def add_maced_items(context, example_parent):
     ]
     add_item_to_context(
         context=context, item_name=item_name, item_html_name="Example", item_model=Example,
-        item_name_field_name="name", field_list=field_list, name_of_app_with_urls=app_name,
+        item_name_field_name="name", field_list=field_list, name_of_app_with_url=app_name,
         current_item_id=get_current_item_id(example_parent, item_name)
     )
 
@@ -196,7 +196,7 @@ def add_maced_items(context, example_parent):
     ]
     add_item_to_context(
         context=context, item_name=item_name, item_html_name="Example2", item_model=Example2,
-        item_name_field_name="name", field_list=field_list, name_of_app_with_urls=app_name,
+        item_name_field_name="name", field_list=field_list, name_of_app_with_url=app_name,
         current_item_id=get_current_item_id(example_parent, item_name)
     )
 
@@ -224,7 +224,7 @@ def add_maced_items(context, house):
     ]
     add_item_to_context(
         context=context, item_name=item_name, item_html_name="Door", item_model=Door,
-        item_name_field_name="name", field_list=field_list, name_of_app_with_urls=app_name,
+        item_name_field_name="name", field_list=field_list, name_of_app_with_url=app_name,
         current_item_id=get_current_item_id(house, item_name)
     )
 
@@ -258,7 +258,7 @@ def add_maced_items(context, subject):
         denomination_id = 0
     add_item_to_context(
         context=context, item_name=item_name, item_html_name="Denomination", item_model=Denomination,
-        item_name_field_name="name", field_list=denomination_field_list, name_of_app_with_urls=app_name,
+        item_name_field_name="name", field_list=denomination_field_list, name_of_app_with_url=app_name,
         current_item_id=denomination_id
     )
 

@@ -24,10 +24,10 @@ from maced.utils.misc import validate_select_options, prettify_string
 #       could be called anything so it is required to be able to identify the object on the frontend.
 # field_list is the specially formatted list of fields and their info. For more information please refer to the
 #       README.md file.
-# name_of_app_with_urls is the name of the app that has the urls that will be used for performing all of the actions
-#       from maced. Please note that url names should be named according to AppName.Action_ItemName. Example:
-#       App name is component_manager and the item is component. The url names should be
-#       "component_manager.add_component", "component_manager.edit_component", etc
+# name_of_app_with_url is the name of the app that has the urls that will be used for performing all of the actions
+#       from maced. Please note that url names should be named according to AppName.maced_ItemName. Example:
+#       App name is component_manager and the item is component. The url name should be
+#       "component_manager.maced_component"
 # current_item_id is the id of the item that will be selected by default on the frontend when you first land on the
 #       page. If you do not need one preselected, use 0. Since it can be tedious to get the current_item_id for each
 #       object if you have several for a page, you can simply use the get_current_item_id(model_instance, field_name)
@@ -49,7 +49,7 @@ from maced.utils.misc import validate_select_options, prettify_string
 #       another maced item as a maced field. Defaults to False since this is less common. If you need to use it as both
 #       a maced item and a maced field for another maced item, then keep this as False and all will be fine.
 def add_item_to_context(context, item_name, item_html_name, item_model, item_name_field_name, field_list,
-                        name_of_app_with_urls, current_item_id, allow_empty=True, field_to_order_by=None,
+                        name_of_app_with_url, current_item_id, allow_empty=True, field_to_order_by=None,
                         is_used_only_for_maced_fields=False):
     if not isinstance(context, dict):
         raise TypeError("Please provide a valid context")
@@ -66,8 +66,8 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     if not isinstance(field_list, list):
         raise TypeError("field_list must be a list")
 
-    if not isinstance(name_of_app_with_urls, (str, unicode)):
-        raise TypeError("name_of_app_with_urls must be a string")
+    if not isinstance(name_of_app_with_url, (str, unicode)):
+        raise TypeError("name_of_app_with_url must be a string")
 
     if not isinstance(allow_empty, bool):
         raise TypeError("allow_empty must be a bool")
@@ -117,16 +117,16 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     # be used in the merge function.
     item_options_list = [(item.id, getattr(item, item_name_field_name)) for item in items]
 
-    # Constructs urls
-    urls = build_urls(item_name=item_name, name_of_app_with_urls=name_of_app_with_urls, maced_data=maced_data)
+    # Constructs url
+    url = build_url(item_name=item_name, name_of_app_with_url=name_of_app_with_url)
 
     # Add the get url to the context
-    maced_data["get_urls"][item_name] = urls["get_url"]
+    maced_data["urls"][item_name] = url
 
     # Make a builder so we can reuse it later for maced fields
     context[item_name + "_builder"] = build_builder(
         item_name=item_name, item_html_name=item_html_name, item_model=item_model, field_to_order_by=field_to_order_by,
-        urls=urls, item_options_list=item_options_list, field_list=field_list, allow_empty=allow_empty
+        url=url, item_options_list=item_options_list, field_list=field_list, allow_empty=allow_empty
     )
 
     # All the special html that is built in python
@@ -389,40 +389,21 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
     return html_code_dictionary
 
 
-def build_urls(item_name, name_of_app_with_urls, maced_data):
-    add_base_url = name_of_app_with_urls + ".add_" + item_name
-    edit_base_url = name_of_app_with_urls + ".edit_" + item_name
-    merge_base_url = name_of_app_with_urls + ".merge_" + item_name
-    delete_base_url = name_of_app_with_urls + ".delete_" + item_name
-    get_base_url = name_of_app_with_urls + ".get_" + item_name
+def build_url(item_name, name_of_app_with_url):
+    url_name = name_of_app_with_url + ".maced_" + item_name
+    url = reverse(url_name)
 
-    add_url = reverse(add_base_url)
-    edit_url = reverse(edit_base_url, args=["0"])[:-2]  # A number is required to get the url, then we cut it off with [:-2]  # noqa
-    merge_url = reverse(merge_base_url, args=["0", "0"])[:-4]  # A number is required to get the url, then we cut it off with [:-4]  # noqa
-    delete_url = reverse(delete_base_url, args=["0"])[:-2]  # A number is required to get the url, then we cut it off with [:-2]  # noqa
-    get_url = reverse(get_base_url, args=["0"])[:-2]  # A number is required to get the url, then we cut it off with [:-2]  # noqa
-
-    urls = {}
-    urls["add_url"] = add_url
-    urls["edit_url"] = edit_url
-    urls["merge_url"] = merge_url
-    urls["delete_url"] = delete_url
-    urls["get_url"] = get_url
-
-    return urls
+    return url
 
 
-def build_builder(item_name, item_html_name, item_model, field_to_order_by, urls, item_options_list, field_list, allow_empty):
+def build_builder(item_name, item_html_name, item_model, field_to_order_by, url, item_options_list, field_list, allow_empty):
     builder = {}
     builder["item_name"] = item_name
     builder["item_html_name"] = item_html_name
     builder["items"] = get_items(item_model, field_to_order_by)
     builder["item_options_list"] = item_options_list
     builder["field_list"] = field_list
-    builder["add_url"] = urls["add_url"]
-    builder["edit_url"] = urls["edit_url"]
-    builder["merge_url"] = urls["merge_url"]
-    builder["delete_url"] = urls["delete_url"]
+    builder["url"] = url
     builder["allow_empty"] = allow_empty
 
     return builder
