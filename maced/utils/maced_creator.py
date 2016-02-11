@@ -459,10 +459,9 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
         full_item_name = get_prefixed_item_path(action_type, item_path)
         initialize_fields_for_item_in_maced_data(maced_data, full_item_name)
 
-        # This function will handle the field_name, field_identifier, item_name, and get_url additions to the context
-        html_code = get_html_code_for_child_maced_fields(
-            context=context, parent_name=item_name, child_name=maced_name, parents_name_for_child=field_name,
-            action_type=action_type, item_path=item_path
+        # This function will handle the field_name, field_identifier, item_name, and url additions to the context
+        html_code = get_html_code_for_maced_fields(
+            context=context, maced_name=maced_name, action_type=action_type, item_path=item_path
         )
     elif action_type == MERGE:
         options_html_code = get_html_code_for_options(item_options_list)
@@ -639,32 +638,32 @@ def get_html_code_for_options(options_list, selected_index=None):
 
 # OTHER
 # Search dependencies and change their ids to the full path
-def get_html_code_for_child_maced_fields(context, parent_name, child_name, parents_name_for_child, action_type, item_path):
-    dependencies = context[child_name + "_dependencies"]
+def get_html_code_for_maced_fields(context, maced_name, action_type, item_path):
+    dependencies = context[maced_name + "_dependencies"]
     maced_data = context["maced_data"]
     html_code_to_return = ""
 
     for dependency in dependencies:
-        grandchild_name = dependency["maced_name"]
-        childs_name_for_child = dependency["parents_name_for_child"]
-        grandchild_builder = deepcopy(dependency["builder"])
-        grandchild_item_path = item_path + "-" + childs_name_for_child
+        childs_maced_name = dependency["maced_name"]
+        parents_name_for_child = dependency["parents_name_for_child"]
+        child_builder = deepcopy(dependency["builder"])  # Let's build some children. :)
+        child_item_path = item_path + "-" + parents_name_for_child
 
         # Modify the item_name to the complex path
-        full_grandchild_name = get_prefixed_item_path(action_type, grandchild_item_path)
-        initialize_fields_for_item_in_maced_data(maced_data, full_grandchild_name)
-        grandchild_builder["item_name"] = full_grandchild_name
+        full_child_name = get_prefixed_item_path(action_type, child_item_path)
+        initialize_fields_for_item_in_maced_data(maced_data, full_child_name)
+        child_builder["item_name"] = full_child_name
 
         # Build the special python-html
         html_code_dictionary = build_html_code(
-            context=context, item_options_list=grandchild_builder["item_options_list"],
-            item_name=grandchild_builder["item_name"], item_html_name=grandchild_builder["item_html_name"],
-            field_list=grandchild_builder["field_list"]
+            context=context, item_options_list=child_builder["item_options_list"],
+            item_name=child_builder["item_name"], item_html_name=child_builder["item_html_name"],
+            field_list=child_builder["field_list"]
         )
 
         # Build the templates
         maced_html_code, maced_modal_html_code = build_templates(
-            builder=grandchild_builder, html_code_dictionary=html_code_dictionary, item_id=0
+            builder=child_builder, html_code_dictionary=html_code_dictionary, item_id=0
         )
 
         # Add the template to the blob
@@ -674,30 +673,30 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
         context["maced_modals"] += maced_modal_html_code
 
         # Add the other pieces to the context. maced_data is a part of the context
-        maced_data["item_names"].append(full_grandchild_name)
-        maced_data["get_urls"][full_grandchild_name] = maced_data["get_urls"][grandchild_name]
+        maced_data["item_names"].append(full_child_name)
+        maced_data["urls"][full_child_name] = maced_data["urls"][childs_maced_name]
 
         # Now go recursive and go down a child generation and add it to the blob
-        html_code_to_return += get_html_code_for_child_maced_fields(
-            context=context, parent_name=child_name, child_name=grandchild_name,
-            parents_name_for_child=childs_name_for_child, action_type=action_type, item_path=grandchild_item_path
+        html_code_to_return += get_html_code_for_maced_fields(
+            context=context, maced_name=childs_maced_name, action_type=action_type,
+            item_path=child_item_path
         )
 
-    child_builder = deepcopy(context[child_name + "_builder"])  # Let's build some children. :)
+    builder = deepcopy(context[maced_name + "_builder"])
 
     # Modify the item_name to the complex path
-    full_child_name = get_prefixed_item_path(action_type, item_path)
-    child_builder["item_name"] = full_child_name
+    full_name = get_prefixed_item_path(action_type, item_path)
+    builder["item_name"] = full_name
 
     # Build the special python-html
     html_code_dictionary = build_html_code(
-        context=context, item_options_list=child_builder["item_options_list"], item_name=child_builder["item_name"],
-        item_html_name=child_builder["item_html_name"], field_list=child_builder["field_list"]
+        context=context, item_options_list=builder["item_options_list"], item_name=builder["item_name"],
+        item_html_name=builder["item_html_name"], field_list=builder["field_list"]
     )
 
     # Build the templates
     maced_html_code, maced_modal_html_code = build_templates(
-        builder=child_builder, html_code_dictionary=html_code_dictionary, item_id=0
+        builder=builder, html_code_dictionary=html_code_dictionary, item_id=0
     )
 
     # Add the template to the blob
@@ -707,8 +706,8 @@ def get_html_code_for_child_maced_fields(context, parent_name, child_name, paren
     context["maced_modals"] += maced_modal_html_code
 
     # Add the other pieces to the context. maced_data is part of the context
-    maced_data["item_names"].append(full_child_name)
-    maced_data["get_urls"][full_child_name] = maced_data["get_urls"][child_name]
+    maced_data["item_names"].append(full_name)
+    maced_data["urls"][full_name] = maced_data["urls"][maced_name]
 
     return html_code_to_return
 
