@@ -1,10 +1,13 @@
 // maced_data comes in via django and must be set before including this file
 
-var maced_ADD = "add";
-var maced_EDIT = "edit";
 var maced_MERGE = "merge";
+var maced_ADD = "add";
+var maced_CLONE = "clone";
+var maced_EDIT = "edit";
 var maced_DELETE = "delete";
 var maced_GET = "get";
+var maced_INFO = "info";
+var maced_AUTHENTICATE = "authenticate";
 
 var maced_ACTION_TYPES = [maced_ADD, maced_EDIT, maced_MERGE, maced_DELETE, maced_GET];
 

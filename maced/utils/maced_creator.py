@@ -8,7 +8,8 @@ from copy import deepcopy
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
-from maced.utils.constants import ACTION_TYPES, VALID_INPUT_TYPES, VALID_SELECT_TYPES
+from maced.utils.constants import PRIMARY_ACTION_TYPES, VALID_INPUT_TYPES, VALID_SELECT_TYPES, ADD, EDIT, MERGE, DELETE, \
+    CLONE, INFO
 from maced.utils.misc import validate_select_options, prettify_string
 
 
@@ -216,16 +217,16 @@ def finalize_context_for_items(context, login_url=None):
 #   Example: Select uses extra_info for options information
 def insert_items_html_code(original_dictionary, item_name, field_type, field_html_name, field_name, extra_info=None):
     if field_type == "maced":
-        for action_type in ACTION_TYPES:
+        for action_type in PRIMARY_ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, extra_info)
     elif field_type == "text":
-        for action_type in ACTION_TYPES:
+        for action_type in PRIMARY_ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_text(item_name, action_type, field_html_name, field_name)
     elif field_type == "color":
-        for action_type in ACTION_TYPES:
+        for action_type in PRIMARY_ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_color(item_name, action_type, field_html_name, field_name)
     elif field_type == "select":
-        for action_type in ACTION_TYPES:
+        for action_type in PRIMARY_ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, extra_info)
     else:
         raise TypeError("field_type of " + str(field_type) + " is not supported yet. (maced_items.py:insert_items_html_code())")
@@ -266,13 +267,13 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
     html_code_dictionary = {}
     html_code_dictionary[item_name] = {}
 
-    for action_type in ACTION_TYPES:
+    for action_type in PRIMARY_ACTION_TYPES:
         html_code_dictionary[item_name][action_type] = ""
 
     maced_object_option_html_code = get_html_code_for_options(item_options_list)
 
     # Merge has special html before the regular html
-    html_code_dictionary[item_name]["merge"] = \
+    html_code_dictionary[item_name][MERGE] = \
         '<table class="maced table">' + \
             '<tr class="maced">' + \
                 '<th class="maced"></th>' + \
@@ -383,7 +384,7 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
         maced_data["field_identifiers"][item_name].append(field["name"])
 
     # Merge has special html after the regular html
-    html_code_dictionary[item_name]["merge"] += "</table>"
+    html_code_dictionary[item_name][MERGE] += "</table>"
 
     return html_code_dictionary
 
@@ -432,10 +433,10 @@ def build_templates(builder, html_code_dictionary, item_id):
     item_name = subcontext["item_name"]
 
     subcontext["item_id"] = item_id
-    subcontext["add_html_code"] = html_code_dictionary[item_name]["add"]
-    subcontext["edit_html_code"] = html_code_dictionary[item_name]["edit"]
-    subcontext["merge_html_code"] = html_code_dictionary[item_name]["merge"]
-    subcontext["delete_html_code"] = html_code_dictionary[item_name]["delete"]
+    subcontext["add_html_code"] = html_code_dictionary[item_name][ADD]
+    subcontext["edit_html_code"] = html_code_dictionary[item_name][EDIT]
+    subcontext["merge_html_code"] = html_code_dictionary[item_name][MERGE]
+    subcontext["delete_html_code"] = html_code_dictionary[item_name][DELETE]
 
     maced_html_code = render(request=None, template_name="maced/container.html", context=subcontext).content
     maced_modal_html_code = render(request=None, template_name="maced/modal_list.html", context=subcontext).content
@@ -470,7 +471,7 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
     context = maced_info["context"]
     item_options_list = context[maced_info["maced_name"] + "_item_options_list"]
 
-    if action_type == "add" or action_type == "edit":
+    if action_type == ADD or action_type == EDIT:
         maced_name = maced_info["maced_name"]
         maced_data = context["maced_data"]
         item_path = item_name + "-" + field_name
@@ -482,7 +483,7 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
             context=context, parent_name=item_name, child_name=maced_name, parents_name_for_child=field_name,
             action_type=action_type, item_path=item_path
         )
-    elif action_type == "merge":
+    elif action_type == MERGE:
         options_html_code = get_html_code_for_options(item_options_list)
 
         html_code = get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code)
@@ -492,7 +493,7 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
         html_code = '<b class="maced">' + field_html_name + ': </b>'
         html_code += '<select class="maced form-control" id="' + action_type + '-' + item_name + '-' + field_name + '-input" '
 
-        if action_type == "delete" or action_type == "clone" or action_type == "info":
+        if action_type == DELETE or action_type == CLONE or action_type == INFO:
             html_code += 'disabled '
 
         html_code += '>' + options_html_code + '</select>'
@@ -502,13 +503,13 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
 
 # TEXT
 def get_items_html_code_for_text(item_name, action_type, field_html_name, field_name):
-    if action_type == "merge":
+    if action_type == MERGE:
         return get_merge_html_code_for_text(item_name, field_html_name, field_name)
 
     html_code = '<b class="maced">' + field_html_name + ': </b>'
     html_code += '<input type="text" class="maced form-control" id="' + action_type + '-' + item_name + '-' + field_name + '-input" '
 
-    if action_type == "delete" or action_type == "clone" or action_type == "info":
+    if action_type == DELETE or action_type == CLONE or action_type == INFO:
         html_code += 'disabled '
 
     html_code += '/>'
@@ -546,13 +547,13 @@ def get_merge_html_code_for_text(item_name, field_html_name, field_name):
 
 # COLOR
 def get_items_html_code_for_color(item_name, action_type, field_html_name, field_name):
-    if action_type == "merge":
+    if action_type == MERGE:
         return get_merge_html_code_for_color(item_name, field_html_name, field_name)
 
     html_code = '<b class="maced">' + field_html_name + ': </b>'
     html_code += '<input type="color" class="maced form-control" id="' + action_type + '-' + item_name + '-' + field_name + '-input" value="#00FF00" '
 
-    if action_type == "delete" or action_type == "clone" or action_type == "info":
+    if action_type == DELETE or action_type == CLONE or action_type == INFO:
         html_code += 'disabled '
 
     html_code += '/>'
@@ -592,13 +593,13 @@ def get_merge_html_code_for_color(item_name, field_html_name, field_name):
 def get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, options_info):
     options_html_code = get_html_code_for_options(options_info)
 
-    if action_type == "merge":
+    if action_type == MERGE:
         return get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code)
 
     html_code = '<b class="maced">' + field_html_name + ': </b>'
     html_code += '<select class="maced form-control" id="' + action_type + '-' + item_name + '-' + field_name + '-input" '
 
-    if action_type == "delete" or action_type == "clone" or action_type == "info":
+    if action_type == DELETE or action_type == CLONE or action_type == INFO:
         html_code += 'disabled '
 
     html_code += '>' + options_html_code + '</select>'

@@ -1,0 +1,2 @@
+class MacedProgrammingError(Exception):
+    pass

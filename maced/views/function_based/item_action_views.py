@@ -5,6 +5,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError, transaction
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from maced.utils.constants import ADD, EDIT, MERGE, GET, DELETE, AUTHENTICATE, ALL_ACTION_TYPES, CLONE, INFO
+from maced.utils.errors import MacedProgrammingError
 
 from maced.utils.misc import make_random_id, serialize_item_action_data
 from maced.utils.model_merging import merge_model_objects
@@ -15,6 +17,53 @@ from maced.views.function_based.helper_views import \
 
 @transaction.atomic
 @csrf_exempt
+def maced_view(request, **kwargs):
+    if "need_authentication" in kwargs:
+        need_authentication = kwargs["need_authentication"]
+
+        if not isinstance(need_authentication, bool):
+            return HttpResponse(content="need_authentication must be a bool. Please check your kwargs.", status=500)
+    else:
+        need_authentication = True
+
+    if "action_type" not in request.POST:
+        return HttpResponse(content="action_type is missing from the post.", status=500)
+
+    action_type = request.POST["action_type"]
+
+    if action_type not in ALL_ACTION_TYPES:
+        return HttpResponse(content="action_type of \"" + str(action_type) + "\" is not valid.", status=500)
+
+    data = {}
+
+    if action_type == MERGE:
+        pass
+    elif action_type == ADD:
+        pass
+    elif action_type == CLONE:
+        return HttpResponse(content="Clone is not supported yet", status=500)
+    elif action_type == EDIT:
+        pass
+    elif action_type == DELETE:
+        pass
+    elif action_type == GET:
+        pass
+    elif action_type == INFO:
+        return HttpResponse(content="Info is not supported yet", status=500)
+    elif action_type == AUTHENTICATE:
+        if request.user.is_authenticated() or not need_authentication:
+            data["authenticated"] = True
+        else:
+            data["authenticated"] = False
+
+        return HttpResponse(content=json.dumps(data))
+    else:
+        raise MacedProgrammingError(
+            "action_type is valid but is not being supported. This is a problem with maced. Please notify us at " +
+            "https://github.com/Macainian/Django-Maced/issues"
+        )
+
+
 def add_item_view(request, **kwargs):
     # need_authentication is a bool that defaults to True and is used to determined whether a login is required
     # item_name_field_name is what the name value will correspond to in the database. This defaults to name.
@@ -22,7 +71,7 @@ def add_item_view(request, **kwargs):
     #       something else.
     # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
-    action_type = "add"
+    action_type = ADD
 
     result = authenticate_and_validate_kwargs_view(request, action_type, **kwargs)
 
@@ -86,7 +135,7 @@ def edit_item_view(request, item_id, **kwargs):
     #       something else.
     # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
-    action_type = "edit"
+    action_type = EDIT
 
     result = authenticate_and_validate_kwargs_view(request, action_type, **kwargs)
 
@@ -149,7 +198,7 @@ def merge_item_view(request, item1_id, item2_id, **kwargs):
     #       something else.
     # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
-    action_type = "merge"
+    action_type = MERGE
 
     result = authenticate_and_validate_kwargs_view(request, action_type, **kwargs)
 
@@ -234,7 +283,7 @@ def delete_item_view(request, item_id, **kwargs):
     # need_authentication is a bool that defaults to True and is used to determined whether a login is required
     # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
-    action_type = "delete"
+    action_type = DELETE
 
     result = authenticate_and_validate_kwargs_view(request, action_type, **kwargs)
 
@@ -269,7 +318,7 @@ def get_item_view(request, item_id, **kwargs):
     #       something else.
     # item_model is the model that the item is referring to. This is the class, not an instance.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
-    action_type = "get"
+    action_type = GET
 
     result = authenticate_and_validate_kwargs_view(request, action_type, **kwargs)
 

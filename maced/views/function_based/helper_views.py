@@ -3,6 +3,7 @@ import json
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
+from maced.utils.constants import GET
 from maced.utils.misc import MissingFromPost, is_item_name_valid, \
     get_bad_item_name_characters_in_string
 
@@ -18,7 +19,7 @@ def authenticate_and_validate_kwargs_view(request, action_type, **kwargs):
     else:
         need_authentication = True
 
-    if request.user.is_authenticated() or not need_authentication or action_type == "get":
+    if request.user.is_authenticated() or not need_authentication or action_type == GET:
         data["authenticated"] = True
     else:
         data["authenticated"] = False
@@ -140,7 +141,7 @@ def convert_foreign_keys_to_objects(fields_to_save, select_object_models_info, a
         field_name1 = select_object_model_info[0]
 
         # If this entry is for inheritance and we are not doing a get_item call
-        if (len(select_object_model_info) == 3 and action_type != "get"):
+        if (len(select_object_model_info) == 3 and action_type != GET):
             continue
 
         for field_name2, field_value in fields_to_save.iteritems():
