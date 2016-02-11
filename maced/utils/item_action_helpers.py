@@ -1,16 +1,13 @@
 import inspect
-import json
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
+
 from maced.utils.constants import GET
-from maced.utils.misc import MissingFromPost, is_item_name_valid, \
-    get_bad_item_name_characters_in_string
+from maced.utils.misc import MissingFromPost, is_item_name_valid, get_bad_item_name_characters_in_string
 
 
-def authenticate_and_validate_kwargs_view(request, action_type, **kwargs):
-    data = {}
-
+def get_and_validate_kwargs(**kwargs):
     if "need_authentication" in kwargs:
         need_authentication = kwargs["need_authentication"]
 
@@ -18,13 +15,6 @@ def authenticate_and_validate_kwargs_view(request, action_type, **kwargs):
             return HttpResponse(content="need_authentication must be a bool", status=500)
     else:
         need_authentication = True
-
-    if request.user.is_authenticated() or not need_authentication or action_type == GET:
-        data["authenticated"] = True
-    else:
-        data["authenticated"] = False
-
-        return HttpResponse(content=json.dumps(data))
 
     if "item_name_field_name" in kwargs:
         item_name_field_name = kwargs["item_name_field_name"]
@@ -100,10 +90,10 @@ def authenticate_and_validate_kwargs_view(request, action_type, **kwargs):
     else:
         select_object_models_info = None
 
-    return (data, item_name_field_name, item_model, select_object_models_info)
+    return need_authentication, item_name_field_name, item_model, select_object_models_info
 
 
-def get_fields_and_item_name_from_post_view(request, item_model, item_name_field_name):
+def get_post_data(request, item_model, item_name_field_name):
     # Get all fields on the model
     fields = item_model._meta.fields
 
@@ -128,7 +118,16 @@ def get_fields_and_item_name_from_post_view(request, item_model, item_name_field
     elif not is_item_name_valid(item_name):
         return HttpResponse(content=str(item_name_field_name) + " name must not contain " + get_bad_item_name_characters_in_string(), status=500)
 
-    return (fields_to_save, item_name)
+    item_id = None
+    item2_id = None
+
+    if "item_id" in request.POST:
+        item_id = request.POST["item_id"]
+
+    if "item2_id" in request.POST:
+        item2_id = request.POST["item2_id"]
+
+    return fields_to_save, item_name, item_id, item2_id
 
 
 # It is assumed that select_object_models_info has been validated by this point.
