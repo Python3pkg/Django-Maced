@@ -15,7 +15,7 @@ var maced_item_names = maced_data["item_names"];
 var maced_field_names = JSON.parse(maced_data["field_names"]);
 var maced_field_identifiers = JSON.parse(maced_data["field_identifiers"]);
 var maced_item_names_with_ignored_alerts = JSON.parse(maced_data["item_names_with_ignored_alerts"]);
-var maced_get_urls = JSON.parse(maced_data["get_urls"]);
+var maced_urls = JSON.parse(maced_data["urls"]);
 var maced_login_url = JSON.parse(maced_data["login_url"]);
 
 $(document).ready(function()
@@ -95,7 +95,7 @@ $(document).ready(function()
     }
 });
 
-function add_item(item_name, url)
+function add_item(item_name)
 {
     var action_type = maced_ADD;
     var modal = $("#" + action_type + "-" + item_name + "-modal");
@@ -105,6 +105,7 @@ function add_item(item_name, url)
     var merge_item1_select = $("#" + maced_MERGE + "-" + item_name + "1-input");
     var merge_item2_select = $("#" + maced_MERGE + "-" + item_name + "2-input");
     var data = {};
+    var url = maced_urls[item_name];
     var field_name;
     var field_identifier;
     var i;
@@ -167,7 +168,7 @@ function add_item(item_name, url)
     });
 }
 
-function edit_item(item_name, base_url)
+function edit_item(item_name)
 {
     var action_type = maced_EDIT;
     var modal = $("#" + action_type + "-" + item_name + "-modal");
@@ -178,7 +179,7 @@ function edit_item(item_name, base_url)
     var merge_item2_select = $("#" + maced_MERGE + "-" + item_name + "2-input");
     var data = {};
     var item_id = item_select.val();
-    var url = base_url + item_id + "/";
+    var url = maced_urls[item_name];
     var field_name;
     var field_identifier;
     var i;
@@ -188,6 +189,9 @@ function edit_item(item_name, base_url)
         return;
     }
 
+    spinner.css("display", "");
+    error_div.css("display", "none");
+
     for (i = 0; i < maced_field_names[item_name].length; i++)
     {
         field_name = maced_field_names[item_name][i];
@@ -195,8 +199,7 @@ function edit_item(item_name, base_url)
         data[field_name] = get_input_item(action_type, item_name, field_identifier);
     }
 
-    spinner.css("display", "");
-    error_div.css("display", "none");
+    data["item_id"] = item_id;
 
     $.ajax(
     {
@@ -237,7 +240,7 @@ function edit_item(item_name, base_url)
     });
 }
 
-function merge_item(item_name, base_url)
+function merge_item(item_name)
 {
     var action_type = maced_MERGE;
     var modal = $("#" + action_type + "-" + item_name + "-modal");
@@ -249,7 +252,7 @@ function merge_item(item_name, base_url)
     var data = {};
     var item1_id = merge_item1_select.val();
     var item2_id = merge_item2_select.val();
-    var url = base_url + item1_id + "/" + item2_id + "/";
+    var url = maced_urls[item_name];
     var field_name;
     var field_identifier;
     var i;
@@ -264,6 +267,9 @@ function merge_item(item_name, base_url)
         return;
     }
 
+    spinner.css("display", "");
+    error_div.css("display", "none");
+
     for (i = 0; i < maced_field_names[item_name].length; i++)
     {
         field_name = maced_field_names[item_name][i];
@@ -271,8 +277,8 @@ function merge_item(item_name, base_url)
         data[field_name] = get_input_item(action_type, item_name, field_identifier);
     }
 
-    spinner.css("display", "");
-    error_div.css("display", "none");
+    data["item_id"] = item1_id;
+    data["item2_id"] = item2_id;
 
     $.ajax(
     {
@@ -322,7 +328,7 @@ function merge_item(item_name, base_url)
     });
 }
 
-function delete_item(item_name, base_url)
+function delete_item(item_name)
 {
     var action_type = maced_DELETE;
     var modal = $("#" + action_type + "-" + item_name + "-modal");
@@ -332,16 +338,23 @@ function delete_item(item_name, base_url)
     var merge_item1_select = $("#" + maced_MERGE + "-" + item_name + "1-input");
     var merge_item2_select = $("#" + maced_MERGE + "-" + item_name + "2-input");
     var item_id = item_select.val();
-    var url = base_url + item_id + "/";
+    var url = maced_urls[item_name];
+    var data = {};
 
     if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
     {
         return;
     }
 
+    spinner.css("display", "");
+    error_div.css("display", "none");
+
+    data["item_id"] = item_id;
+
     $.ajax(
     {
-        type: "maced_GET",
+        data: data,
+        type: "POST",
         url: url,
 
         success: function(out_data)
@@ -393,8 +406,8 @@ function get_item(item_name)
     var merge_declination_button = $("#" + maced_MERGE + "-" + item_name + "-declination-button");
     var item_select = $("#" + item_name + "-select");
     var item_id = item_select.val();
-    var url = maced_get_urls[item_name] + item_id + "/";
-    var field_name;
+    var url = maced_urls[item_name];
+    var data = {};
     var field_identifier;
     var i;
 
@@ -443,9 +456,12 @@ function get_item(item_name)
         return;
     }
 
+    data["item_id"] = item_id;
+
     $.ajax(
     {
-        type: "GET",
+        data: data,
+        type: "POST",
         url: url,
 
         success: function(out_data)
@@ -537,8 +553,8 @@ function get_item2_for_merge(item_name)
     var merge_declination_button = $("#" + maced_MERGE + "-" + item_name + "-declination-button");
     var item_select = $("#" + maced_MERGE + "-" + item_name + "2-input");  // 2 is for the right select. The left has already been filled.
     var item_id = item_select.val();
-    var url = maced_get_urls[item_name] + item_id + "/";
-    var field_name;
+    var url = maced_urls[item_name];
+    var data = {};
     var field_identifier;
     var i;
 
@@ -561,9 +577,12 @@ function get_item2_for_merge(item_name)
         return;
     }
 
+    data["item_id"] = item_id;
+
     $.ajax(
     {
-        type: "GET",
+        data: data,
+        type: "POST",
         url: url,
 
         success: function(out_data)
