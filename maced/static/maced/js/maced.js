@@ -545,8 +545,6 @@ function get_item(item_name)
 
             // Force this to reload
             get_item2_for_merge(item_name);
-
-            reenable_buttons(item_name);
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
@@ -617,6 +615,8 @@ function get_item2_for_merge(item_name)
             }
 
             alert("Part 8");
+
+            reenable_buttons(item_name);
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
