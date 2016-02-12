@@ -5,8 +5,9 @@
 
 <img src=maced_green.png width=300 />
 
-Django app designed to help with easy database record manipulation/creation through a frontend interface. It is called MACED for Merge Add Clone Edit Delete.
-If you want to report any bugs, you can use the github issue tracker. If you have comments, please email me at khostetl@nd.edu.
+Django app designed to help with easy database record manipulation/creation through a frontend interface. It is called 
+MACED for Merge Add Clone Edit Delete. If you want to report any bugs, you can use the github issue tracker. If you 
+have comments, please email me at khostetl@nd.edu.
 
 # Requirements
 
@@ -39,9 +40,9 @@ Install the latest release using pip:
 
 `pip install django-maced`
 
-Development version can installed using `pip install git+https://github.com/Macainian/Django-Maced.git`
-
-Alternatively, you can download or clone this repo and call `pip install -e ..`
+Development version can installed using `pip install git+https://github.com/Macainian/Django-Maced.git`, though be
+warned that I don't guarantee anything about the development version. Sometimes it is completely broken because I am
+in the middle of major code changes and swapping from one machine to another.
 
 # Usage example
 
