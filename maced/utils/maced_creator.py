@@ -48,9 +48,9 @@ from maced.utils.misc import validate_select_options, prettify_string
 # is_used_only_for_maced_fields is used to signal that this will not be used on the page directly, but as a part of
 #       another maced item as a maced field. Defaults to False since this is less common. If you need to use it as both
 #       a maced item and a maced field for another maced item, then keep this as False and all will be fine.
-def add_item_to_context(context, item_name, item_html_name, item_model, item_name_field_name, field_list,
-                        name_of_app_with_url, current_item_id, allow_empty=True, field_to_order_by=None,
-                        is_used_only_for_maced_fields=False):
+def add_item_to_context(context, item_name, item_model, item_name_field_name, field_list,
+                        name_of_app_with_url, current_item_id, item_html_name=None, allow_empty=True,
+                        field_to_order_by=None, is_used_only_for_maced_fields=False):
     if not isinstance(context, dict):
         raise TypeError("Please provide a valid context")
 
@@ -69,14 +69,22 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     if not isinstance(name_of_app_with_url, (str, unicode)):
         raise TypeError("name_of_app_with_url must be a string")
 
+    if not isinstance(current_item_id, int):
+        raise TypeError("current_item_id must be a integer")
+
+    if not isinstance(item_html_name, (str, unicode)) and item_html_name is not None:
+        raise TypeError("item_html_name must be a string or None")
+
     if not isinstance(allow_empty, bool):
         raise TypeError("allow_empty must be a bool")
 
-    if field_to_order_by is None:
-        field_to_order_by = item_name_field_name
+    if not isinstance(field_to_order_by, (str, unicode)) and field_to_order_by is not None:
+        raise TypeError(
+            "field_to_order_by must be a string that is the name of the field you want to order your objects by or None"
+        )
 
-    if not isinstance(field_to_order_by, (str, unicode)):
-        raise TypeError("field_to_order_by must be a string that is the name of the field you want to order your objects by")
+    if not isinstance(is_used_only_for_maced_fields, bool):
+        raise TypeError("is_used_only_for_maced_fields must be a bool")
 
     if "maced_data" not in context:
         context["maced_data"] = {}
@@ -106,6 +114,12 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
 
     if not is_used_only_for_maced_fields:
         maced_data["item_names"].append(item_name)
+
+    if item_html_name is None:
+        item_html_name = prettify_string(item_name)
+
+    if field_to_order_by is None:
+        field_to_order_by = item_name_field_name
 
     initialize_fields_for_item_in_maced_data(maced_data=maced_data, item_name=item_name)
     context[item_name + "_dependencies"] = []
@@ -143,7 +157,6 @@ def add_item_to_context(context, item_name, item_html_name, item_model, item_nam
     context[item_name + "_item"] = maced_html_code
     context["maced_modals"] += maced_modal_html_code
     context[item_name + "_item_options_list"] = item_options_list
-
 
 
 # A nice helper function to simplify code for whoever is using this app. Since current_item_id is required, this makes
