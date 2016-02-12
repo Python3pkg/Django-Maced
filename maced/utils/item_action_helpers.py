@@ -118,6 +118,8 @@ def get_post_data(request, item_model, item_name_field_name, action_type):
             return HttpResponse(content=str(item_name_field_name) + " is required.", status=500)
         elif not is_item_name_valid(item_name):
             return HttpResponse(content=str(item_name_field_name) + " name must not contain " + get_bad_item_name_characters_in_string(), status=500)
+    else:
+        item_name = None
 
     item_id = None
     item2_id = None
