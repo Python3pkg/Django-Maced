@@ -152,7 +152,6 @@ function merge_item(item_name)
 
     $.ajax(
     {
-        async: false,
         data: data,
         type: "POST",
         url: url,
@@ -220,7 +219,6 @@ function add_item(item_name)
 
     $.ajax(
     {
-        async: false,
         data: data,
         type: "POST",
         url: url,
@@ -295,7 +293,6 @@ function clone_item(item_name)
     //
     //$.ajax(
     //{
-    //    async: false,
     //    data: data,
     //    type: "POST",
     //    url: url,
@@ -365,7 +362,6 @@ function edit_item(item_name)
 
     $.ajax(
     {
-        async: false,
         data: data,
         type: "POST",
         url: url,
@@ -421,7 +417,6 @@ function delete_item(item_name)
 
     $.ajax(
     {
-        async: false,
         data: data,
         type: "POST",
         url: url,
@@ -513,7 +508,6 @@ function get_item(item_name)
 
     $.ajax(
     {
-        async: false,
         data: data,
         type: "POST",
         url: url,
@@ -590,7 +584,6 @@ function get_item2_for_merge(item_name)
 
     $.ajax(
     {
-        async: false,
         data: data,
         type: "POST",
         url: url,
