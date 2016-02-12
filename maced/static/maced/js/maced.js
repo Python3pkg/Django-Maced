@@ -440,7 +440,12 @@ function delete_item(item_name)
             merge_item2_select.find("option[value=" + item_id + "]").remove();  // Not using select for these since it can't be guaranteed that is the selected one
 
             // Fill modals with this with data from whatever is the new selection
-            get_item(item_name);
+            var got_item = get_item(item_name);
+
+            if (!got_item)
+            {
+                reenable_buttons(item_name);
+            }
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
@@ -483,7 +488,7 @@ function get_item(item_name)
             );
         }
 
-        return;
+        return false;  // Signifies that item was not gotten
     }
 
     // Fill the modals with appropriate content
@@ -500,7 +505,7 @@ function get_item(item_name)
             set_input_item(maced_DELETE, item_name, field_identifier, "", null);
         }
 
-        return;
+        return false;  // Signifies that item was not gotten
     }
 
     data["action_type"] = action_type;
@@ -539,11 +544,14 @@ function get_item(item_name)
 
             // Force this to reload
             get_item2_for_merge(item_name);
+
+            return true;  // Signifies that item was gotten
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
             alert(XMLHttpRequest.responseText);
+            return false;  // Signifies that item was not gotten
         }
     });
 }
