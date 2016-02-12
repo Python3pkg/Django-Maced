@@ -525,10 +525,10 @@ function get_item(item_name)
                 set_input_item(maced_DELETE, item_name, field_identifier, fields[field_name], null);
             }
 
-            reenable_buttons(item_name);
-
             // Force this to reload
             get_item2_for_merge(item_name);
+
+            reenable_buttons(item_name);
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
@@ -592,8 +592,6 @@ function get_item2_for_merge(item_name)
 
                 set_input_item(maced_MERGE, item_name, field_identifier, fields[field_name], 2);  // Fill in the right panel
             }
-
-            reenable_buttons(item_name);
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
