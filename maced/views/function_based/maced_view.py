@@ -59,53 +59,58 @@ def maced_view(request, **kwargs):
     if action_type not in ALL_ACTION_TYPES:
         return HttpResponse(content="action_type of \"" + str(action_type) + "\" is not valid.", status=500)
 
-    # Get all the fields that were given in the post, along with the item_name (the value associated with the
-    # item_name_field_name)
-    fields_result = get_post_data(request, item_model, item_name_field_name)
-
-    # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
-    if not isinstance(fields_result, tuple):
-        return fields_result
-
-    fields_to_save = fields_result[0]
-    item_name = fields_result[1]
-    item_id = fields_result[2]
-    item2_id = fields_result[3]
-
-    # If merging, adding, or editing, we ned to convert the number values for foreign keys into their actual objects
-    if action_type == MERGE or action_type == ADD or action_type == EDIT:
-        conversion_result = convert_foreign_keys_to_objects(fields_to_save, select_object_models_info, action_type)
-
-        # This will be a bool as long as it succeeded, otherwise it will be an HttpResponse. Since there are no safe
-        # failures for this, there will never need to be a False returned.
-        if not isinstance(conversion_result, bool):
-            return conversion_result
-
-    # Branch off to whichever action we are performing
-    if action_type == MERGE:
-        action_result = merge_item(
-            item_model=item_model, fields_to_save=fields_to_save, item_name=item_name, item1_id=item_id,
-            item2_id=item2_id, item_name_field_name=item_name_field_name
-        )
-    elif action_type == ADD:
-        action_result = add_item(item_model=item_model, fields_to_save=fields_to_save, item_name=item_name)
-    elif action_type == CLONE:
-        action_result = clone_item()
-    elif action_type == EDIT:
-        action_result = edit_item(item_model=item_model, fields_to_save=fields_to_save, item_name=item_name, item_id=item_id)
-    elif action_type == DELETE:
-        action_result = delete_item(item_model=item_model, item_id=item_id)
-    elif action_type == GET:
-        action_result = get_item(item_model, select_object_models_info=select_object_models_info, item_id=item_id)
-    elif action_type == INFO:
-        action_result = info_item()
-    elif action_type == AUTHENTICATE:
+    if action_type == AUTHENTICATE:
         action_result = get_authentication(request=request, need_authentication=need_authentication)
     else:
-        raise MacedProgrammingError(
-            "action_type is valid but is not being supported. This is a problem with maced. Please notify us at " +
-            "https://github.com/Macainian/Django-Maced/issues"
+        # Get all the fields that were given in the post, along with the item_name (the value associated with the
+        # item_name_field_name)
+        fields_result = get_post_data(
+            request=request, item_model=item_model, item_name_field_name=item_name_field_name, action_type=action_type
         )
+
+        # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
+        if not isinstance(fields_result, tuple):
+            return fields_result
+
+        fields_to_save = fields_result[0]
+        item_name = fields_result[1]
+        item_id = fields_result[2]
+        item2_id = fields_result[3]
+
+        # If merging, adding, or editing, we ned to convert the number values for foreign keys into their actual objects
+        if action_type == MERGE or action_type == ADD or action_type == EDIT:
+            conversion_result = convert_foreign_keys_to_objects(fields_to_save, select_object_models_info, action_type)
+
+            # This will be a bool as long as it succeeded, otherwise it will be an HttpResponse. Since there are no safe
+            # failures for this, there will never need to be a False returned.
+            if not isinstance(conversion_result, bool):
+                return conversion_result
+
+        # Branch off to whichever action we are performing
+        if action_type == MERGE:
+            action_result = merge_item(
+                item_model=item_model, fields_to_save=fields_to_save, item_name=item_name, item1_id=item_id,
+                item2_id=item2_id, item_name_field_name=item_name_field_name
+            )
+        elif action_type == ADD:
+            action_result = add_item(item_model=item_model, fields_to_save=fields_to_save, item_name=item_name)
+        elif action_type == CLONE:
+            action_result = clone_item()
+        elif action_type == EDIT:
+            action_result = edit_item(
+                item_model=item_model, fields_to_save=fields_to_save, item_name=item_name, item_id=item_id
+            )
+        elif action_type == DELETE:
+            action_result = delete_item(item_model=item_model, item_id=item_id)
+        elif action_type == GET:
+            action_result = get_item(item_model, select_object_models_info=select_object_models_info, item_id=item_id)
+        elif action_type == INFO:
+            action_result = info_item()
+        else:
+            raise MacedProgrammingError(
+                "action_type is valid but is not being supported. This is a problem with maced. Please notify us at " +
+                "https://github.com/Macainian/Django-Maced/issues"
+            )
 
     # This will be a dictionary as long as it succeeded, otherwise it will be an HttpResponse
     if not isinstance(action_result, dict):
