@@ -855,3 +855,8 @@ function change_item_visibility(item_name, should_turn_on)
         item_tr.css("display", "none");
     }
 }
+
+function maced_is_loaded()
+{
+    alert("DONE");
+}
