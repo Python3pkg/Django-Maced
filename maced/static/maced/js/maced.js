@@ -160,7 +160,7 @@ function merge_item(item_name)
             modal.modal("hide");
             $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
 
-            // For the following finds, which option is used to remove and which is used to set to doesn't matter
+            // For the following "finds", which option is used to remove and which is used to set to doesn't matter
 
             // Remove the old option
             item_select.find("option[value=" + item2_id + "]").remove();
@@ -202,6 +202,8 @@ function add_item(item_name)
 
     get_authentication(item_name, action_type);
 
+    alert("Part 3");
+
     for (i = 0; i < maced_field_names[item_name].length; i++)
     {
         field_name = maced_field_names[item_name][i];
@@ -239,8 +241,12 @@ function add_item(item_name)
                 set_input_item(action_type, item_name, field_identifier, "", null);
             }
 
+            alert("Part 4");
+
             // Fill modals with this new data
             get_item(item_name);
+
+            alert("Part 11");
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
@@ -250,6 +256,8 @@ function add_item(item_name)
             error_div.css("display", "");
         }
     });
+
+    alert("Part 12");
 }
 
 function clone_item(item_name)
@@ -452,6 +460,8 @@ function get_item(item_name)
     var field_identifier;
     var i;
 
+    alert("Part 5");
+
     get_authentication(item_name);
 
     // Fill the hidden value with the new value. This is what is sent to the backend on post.
@@ -525,6 +535,8 @@ function get_item(item_name)
                 set_input_item(maced_DELETE, item_name, field_identifier, fields[field_name], null);
             }
 
+            alert("Part 6");
+
             // Force this to reload
             get_item2_for_merge(item_name);
 
@@ -536,6 +548,8 @@ function get_item(item_name)
             alert(XMLHttpRequest.responseText);
         }
     });
+
+    alert("Part 10");
 }
 
 // Special get action function for item2 on the merge modal
@@ -550,6 +564,8 @@ function get_item2_for_merge(item_name)
     var data = {};
     var field_identifier;
     var i;
+
+    alert("Part 7");
 
     get_authentication(item_name);
 
@@ -592,6 +608,8 @@ function get_item2_for_merge(item_name)
 
                 set_input_item(maced_MERGE, item_name, field_identifier, fields[field_name], 2);  // Fill in the right panel
             }
+
+            alert("Part 8");
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
@@ -601,6 +619,8 @@ function get_item2_for_merge(item_name)
             merge_error_div.css("display", "");
         }
     });
+
+    alert("Part 9");
 }
 
 function info_item(item_name)
@@ -616,6 +636,8 @@ function get_authentication(item_name, main_action_type)
     var item_select = $("#" + item_name + "-select");
     var url = maced_urls[item_name];
     var data = {};
+
+    alert("Part 1");
 
     // Disable buttons. Re-enabling occurs by whatever called this function.
     disable_buttons(item_name);
@@ -653,6 +675,8 @@ function get_authentication(item_name, main_action_type)
         {
             var out_data_json = JSON.parse(out_data);
             var authenticated = out_data_json["authenticated"];
+
+            alert("Part 2");
 
             if (!authenticated)
             {
