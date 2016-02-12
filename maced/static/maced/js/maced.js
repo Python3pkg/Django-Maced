@@ -207,6 +207,8 @@ function add_item(item_name)
     var field_identifier;
     var i;
 
+    disable_buttons(item_name);
+
     for (i = 0; i < maced_field_names[item_name].length; i++)
     {
         field_name = maced_field_names[item_name][i];
@@ -666,7 +668,7 @@ function get_authentication(item_name, main_action_type)
 
             if (!authenticated)
             {
-                alert("Please login to use maced items.");
+                //alert("Please login to use maced items.");
 
                 if (!(maced_login_url === null))
                 {
@@ -793,6 +795,17 @@ function reenable_buttons(item_name)
     var info_button = $("#" + maced_INFO + "-" + item_name + "-button");
     var merge_select1 = $("#" + maced_MERGE + "-" + item_name + "1-input");
     var merge_select2 = $("#" + maced_MERGE + "-" + item_name + "2-input");
+    var item_select = $("#" + item_name + "-select");
+    var item_id = item_select.val();
+
+    // Enable buttons that should always be available
+    merge_declination_button.prop("disabled", false);
+    add_button.prop("disabled", false);
+
+    if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
+    {
+        return;
+    }
 
     // If there is more than 1 item to merge, re-enable the merge button
     if (merge_select1.find("option").length > 1)
@@ -800,8 +813,7 @@ function reenable_buttons(item_name)
         merge_button.prop("disabled", false);
     }
 
-    // Re-enable the declination button
-    merge_declination_button.prop("disabled", false);
+
 
     // If both selects have the same thing in them, aka trying to merge with itself.
     if (merge_select1.val() == merge_select2.val())
@@ -814,7 +826,6 @@ function reenable_buttons(item_name)
     }
 
     // Enable the rest of the buttons
-    add_button.prop("disabled", false);
     clone_button.prop("disabled", false);
     edit_button.prop("disabled", false);
     delete_button.prop("disabled", false);
