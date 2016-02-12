@@ -3,7 +3,7 @@ import inspect
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
-from maced.utils.constants import GET
+from maced.utils.constants import GET, MERGE, ADD, EDIT
 from maced.utils.misc import MissingFromPost, is_item_name_valid, get_bad_item_name_characters_in_string
 
 
@@ -93,7 +93,7 @@ def get_and_validate_kwargs(**kwargs):
     return need_authentication, item_name_field_name, item_model, select_object_models_info
 
 
-def get_post_data(request, item_model, item_name_field_name):
+def get_post_data(request, item_model, item_name_field_name, action_type):
     # Get all fields on the model
     fields = item_model._meta.fields
 
@@ -108,15 +108,16 @@ def get_post_data(request, item_model, item_name_field_name):
             missing_field_names.append(field.name)
             fields_to_save.pop(field.name, None)
 
-    item_name = fields_to_save[item_name_field_name]
+    if action_type == MERGE or action_type == ADD or action_type == EDIT:
+        item_name = fields_to_save[item_name_field_name]
 
-    if item_name.__class__ is MissingFromPost:
-        return HttpResponse(content=str(item_name_field_name) + " was not in the post but is set as the name field for this object", status=500)
+        if item_name.__class__ is MissingFromPost:
+            return HttpResponse(content=str(item_name_field_name) + " was not in the post but is set as the name field for this object", status=500)
 
-    if item_name == "":
-        return HttpResponse(content=str(item_name_field_name) + " is required.", status=500)
-    elif not is_item_name_valid(item_name):
-        return HttpResponse(content=str(item_name_field_name) + " name must not contain " + get_bad_item_name_characters_in_string(), status=500)
+        if item_name == "":
+            return HttpResponse(content=str(item_name_field_name) + " is required.", status=500)
+        elif not is_item_name_valid(item_name):
+            return HttpResponse(content=str(item_name_field_name) + " name must not contain " + get_bad_item_name_characters_in_string(), status=500)
 
     item_id = None
     item2_id = None
