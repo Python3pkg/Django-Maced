@@ -826,10 +826,10 @@ function reenable_buttons(item_name)
     }
 
     // Enable the rest of the buttons
-    clone_button.prop("disabled", false);
+    //clone_button.prop("disabled", false);
     edit_button.prop("disabled", false);
     delete_button.prop("disabled", false);
-    info_button.prop("disabled", false);
+    //info_button.prop("disabled", false);
 }
 
 function disable_buttons(item_name)

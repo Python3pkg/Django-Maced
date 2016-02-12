@@ -2,6 +2,9 @@
 # Some modifications were made by Keith Hostetler to reflect django changes since the original version was written
 # and a few minor bug fixes and edge cases.
 
+# Notes:  Django 1.10 is going to deprecate get_all_related_objects() so it will have to be changed for that.
+#       This goes into more detail https://github.com/tomchristie/django-rest-framework/pull/3511
+
 from django.db import transaction
 from django.apps import apps
 from django.db.models import Model
