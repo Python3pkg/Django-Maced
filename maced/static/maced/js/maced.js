@@ -60,19 +60,25 @@ $(document).ready(function()
     for (i = 0; i < maced_item_names.length; i++)
     {
         item_name = maced_item_names[i];
-        item_select = $("#" + item_name + "-select");
-        get_item(item_name);
-
-        $("#" + item_name + "-hidden").val(item_select.val());
 
         // Add click events for all buttons to remove success divs
+        // Run authentication to set initial button states.
         for (var action_type in maced_ACTION_TYPES)
         {
             $("#" + maced_ACTION_TYPES[action_type] + "-" + item_name + "-button").click({item_name: item_name}, function(event)
             {
                 remove_success_divs(event.data.item_name);
             });
+
+            get_authentication(item_name, action_type);
         }
+
+        // Get the info for the pre-selected item. If none, then skip.
+        item_select = $("#" + item_name + "-select");
+        get_item(item_name);
+
+        // Set the value that will be sent to the backend as the current item's value. If None, then None.
+        $("#" + item_name + "-hidden").val(item_select.val());
 
         // Add click events for all selects to remove success divs
         item_select.click({item_name: item_name}, function(event)
@@ -131,7 +137,7 @@ function merge_item(item_name)
         return;
     }
 
-    get_authentication(item_name, action_type);
+    disable_buttons(item_name);
 
     for (i = 0; i < maced_field_names[item_name].length; i++)
     {
@@ -201,10 +207,6 @@ function add_item(item_name)
     var field_identifier;
     var i;
 
-    get_authentication(item_name, action_type);
-
-    alert("Part 3");
-
     for (i = 0; i < maced_field_names[item_name].length; i++)
     {
         field_name = maced_field_names[item_name][i];
@@ -243,12 +245,8 @@ function add_item(item_name)
                 set_input_item(action_type, item_name, field_identifier, "", null);
             }
 
-            alert("Part 4");
-
             // Fill modals with this new data
             get_item(item_name);
-
-            alert("Part 11");
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
@@ -258,8 +256,6 @@ function add_item(item_name)
             error_div.css("display", "");
         }
     });
-
-    alert("Part 12");
 }
 
 function clone_item(item_name)
@@ -283,7 +279,7 @@ function clone_item(item_name)
     //    return;
     //}
     //
-    //get_authentication(item_name, action_type);
+    //disable_buttons(item_name);
     //
     //for (i = 0; i < maced_field_names[item_name].length; i++)
     //{
@@ -353,7 +349,7 @@ function edit_item(item_name)
         return;
     }
 
-    get_authentication(item_name, action_type);
+    disable_buttons(item_name);
 
     for (i = 0; i < maced_field_names[item_name].length; i++)
     {
@@ -416,7 +412,7 @@ function delete_item(item_name)
         return;
     }
 
-    get_authentication(item_name, action_type);
+    disable_buttons(item_name);
 
     data["action_type"] = action_type;
     data["item_id"] = item_id;
@@ -465,9 +461,7 @@ function get_item(item_name)
     var field_identifier;
     var i;
 
-    alert("Part 5");
-
-    get_authentication(item_name);
+    disable_buttons(item_name);
 
     // Fill the hidden value with the new value. This is what is sent to the backend on post.
     item_hidden.val(item_select.val());
@@ -541,8 +535,6 @@ function get_item(item_name)
                 set_input_item(maced_DELETE, item_name, field_identifier, fields[field_name], null);
             }
 
-            alert("Part 6");
-
             // Force this to reload
             get_item2_for_merge(item_name);
         },
@@ -552,8 +544,6 @@ function get_item(item_name)
             alert(XMLHttpRequest.responseText);
         }
     });
-
-    alert("Part 10");
 }
 
 // Special get action function for item2 on the merge modal
@@ -569,9 +559,7 @@ function get_item2_for_merge(item_name)
     var field_identifier;
     var i;
 
-    alert("Part 7");
-
-    get_authentication(item_name);
+    disable_buttons(item_name);
 
     // Fill the merge modal's right panel with with appropriate content
     if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
@@ -614,8 +602,6 @@ function get_item2_for_merge(item_name)
                 set_input_item(maced_MERGE, item_name, field_identifier, fields[field_name], 2);  // Fill in the right panel
             }
 
-            alert("Part 8");
-
             reenable_buttons(item_name);
         },
 
@@ -626,8 +612,6 @@ function get_item2_for_merge(item_name)
             merge_error_div.css("display", "");
         }
     });
-
-    alert("Part 9");
 }
 
 function info_item(item_name)
@@ -644,9 +628,6 @@ function get_authentication(item_name, main_action_type)
     var url = maced_urls[item_name];
     var data = {};
 
-    alert("Part 1");
-
-    // Disable buttons. Re-enabling occurs by whatever called this function.
     disable_buttons(item_name);
 
     // This suggests we have the wrong name for the select. Alternatively it was removed some how.
@@ -674,7 +655,6 @@ function get_authentication(item_name, main_action_type)
 
     $.ajax(
     {
-        async: false,
         data: data,
         type: "POST",
         url: url,
@@ -683,8 +663,6 @@ function get_authentication(item_name, main_action_type)
         {
             var out_data_json = JSON.parse(out_data);
             var authenticated = out_data_json["authenticated"];
-
-            alert("Part 2");
 
             if (!authenticated)
             {
@@ -695,6 +673,8 @@ function get_authentication(item_name, main_action_type)
                     window.location.href = maced_login_url;
                 }
             }
+
+            reenable_buttons(item_name);
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
