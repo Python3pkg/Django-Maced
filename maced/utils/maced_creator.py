@@ -299,7 +299,7 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
             '<tr class="maced">' + \
                 '<th class="maced"></th>' + \
                 '<th>' + \
-                    '<select class="maced form-control" id="merge-' + item_name + '1-input" disabled >' + maced_object_option_html_code + '</select>' + \
+                    '<select class="maced form-control" id="merge-' + item_name + '1-input">' + maced_object_option_html_code + '</select>' + \
                 '</th>' + \
                 '<th class="maced" style="background-color: #F7D358;"></th>' + \
                 '<th>' + \
