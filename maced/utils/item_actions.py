@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import ProtectedError
@@ -10,14 +11,18 @@ from maced.utils.misc import make_random_id, is_authenticated
 from maced.utils.model_merging import merge_model_objects
 
 
+logger = logging.getLogger("maced")
+
+
 def merge_item(item_model, fields_to_save, item_name, item1_id, item2_id, item_name_field_name):
     data = {}
 
     # Check that item1 exists
     if not item_model.objects.filter(id=item1_id).exists():
-        return HttpResponse(
-            content="The item with id \"" + str(item1_id) + "\" does not exist. Did someone delete it?", status=500
-        )
+        message = "The item with id \"" + str(item1_id) + "\" does not exist. Did someone delete it?"
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
 
     # Load item2
     try:
@@ -30,24 +35,26 @@ def merge_item(item_model, fields_to_save, item_name, item1_id, item2_id, item_n
         setattr(item2, item_name_field_name, random_name)
         item2.save()
     except ObjectDoesNotExist:
-        return HttpResponse(
-            content="The item with id \"" + str(item1_id) + "\" does not exist. Did someone delete it?", status=500
-        )
+        message = "The item with id \"" + str(item1_id) + "\" does not exist. Did someone delete it?"
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
 
     # Fill item1 with whatever came from the frontend. This will be the primary item.
     try:
         item_model.objects.filter(id=item1_id).update(**fields_to_save)
     except IntegrityError as error:
-        return HttpResponse(
-            content="An object related to this already exists or there is a problem with this item: " + str(error),
-            status=500
-        )
+        message = "An object related to this already exists or there is a problem with this item. Reported error: " + \
+                  str(error)
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
     except ValueError as error:
-        return HttpResponse(
-            content="An invalid value was received for a field, if you are using select-object, be sure to supply the "
-                    "select_object_models_info list in the kwargs. Reported error: " + str(error),
-            status=500
-        )
+        message = "An invalid value was received for a field, if you are using select-object, be sure to supply " + \
+                  "the select_object_models_info list in the kwargs. Reported error: " + str(error),
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
 
     # Load item1
     item1 = item_model.objects.get(id=item1_id)
@@ -67,16 +74,17 @@ def add_item(item_model, fields_to_save, item_name):
     try:
         item = item_model.objects.create(**fields_to_save)
     except IntegrityError as error:
-        return HttpResponse(
-            content="An object related to this already exists or there is a problem with this item: " + str(error),
-            status=500
-        )
+        message = "An object related to this already exists or there is a problem with this item. Reported error: " + \
+                  str(error),
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
     except ValueError as error:
-        return HttpResponse(
-            content="An invalid value was received for a field, if you are using select-object, be sure to supply the "
-                    "select_object_models_info list in the kwargs. Reported error: " + str(error),
-            status=500
-        )
+        message = "An invalid value was received for a field, if you are using select-object, be sure to supply " + \
+                  "the select_object_models_info list in the kwargs. Reported error: " + str(error),
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
 
     data["id"] = item.id
     data["name"] = item_name
@@ -85,7 +93,10 @@ def add_item(item_model, fields_to_save, item_name):
 
 
 def clone_item():
-    return HttpResponse(content="Clone is not supported yet", status=500)
+    message = "Clone is not supported yet"
+    logger.error(message)
+
+    return HttpResponse(content=message, status=500)
 
 
 def edit_item(item_model, fields_to_save, item_name, item_id):
@@ -96,16 +107,17 @@ def edit_item(item_model, fields_to_save, item_name, item_id):
     try:
         item_model.objects.filter(id=item_id).update(**fields_to_save)
     except IntegrityError as error:
-        return HttpResponse(
-            content="An object related to this already exists or there is a problem with this item: " + str(error),
-            status=500
-        )
+        message = "An object related to this already exists or there is a problem with this item. Reported error: " + \
+                  str(error),
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
     except ValueError as error:
-        return HttpResponse(
-            content="An invalid value was received for a field, if you are using select-object, be sure to supply the "
-                    "select_object_models_info list in the kwargs. Reported error: " + str(error),
-            status=500
-        )
+        message = "An invalid value was received for a field, if you are using select-object, be sure to supply " + \
+                  "the select_object_models_info list in the kwargs. Reported error: " + str(error),
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
 
     return data
 
@@ -116,7 +128,10 @@ def delete_item(item_model, item_id):
     try:
         item_model.objects.get(id=item_id).delete()
     except ProtectedError as error:
-        return HttpResponse(content="This object is in use: " + str(error), status=500)
+        message = "This object is in use. Reported error: " + str(error)
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
 
     return data
 
@@ -125,9 +140,10 @@ def get_item(item_model, select_object_models_info, item_id):
     data = {}
 
     if not item_model.objects.filter(id=item_id).exists():
-        return HttpResponse(
-            content="The item with id \"" + str(item_id) + "\" does not exist. Did someone delete it?", status=500
-        )
+        message = "The item with id \"" + str(item_id) + "\" does not exist. Did someone delete it?"
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
 
     item = item_model.objects.get(id=item_id)
 
@@ -162,7 +178,10 @@ def get_item(item_model, select_object_models_info, item_id):
 #       John: Sweet. Can I also have the office on the corner that I...
 #       Boss: John, you're fired. Sam, my man, our competitors have just released a new product for cleaning toilets.
 def info_item():
-    return HttpResponse(content="Info is not supported yet", status=500)
+    message = "Info is not supported yet"
+    logger.error(message)
+
+    return HttpResponse(content=message, status=500)
 
 
 def get_authentication(request, need_authentication):

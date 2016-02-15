@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.db import transaction
 from django.http import HttpResponse
@@ -10,6 +11,9 @@ from maced.utils.item_action_helpers import get_and_validate_kwargs, get_post_da
 from maced.utils.item_actions import merge_item, add_item, clone_item, edit_item, delete_item, get_item, info_item, \
     get_authentication
 from maced.utils.misc import serialize_item_action_data
+
+
+logger = logging.getLogger("maced")
 
 
 @transaction.atomic
@@ -52,12 +56,18 @@ def maced_view(request, **kwargs):
 
     # Get the action_type
     if "action_type" not in request.POST:
-        return HttpResponse(content="action_type is missing from the post.", status=500)
+        message = "action_type is missing from the post."
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
 
     action_type = request.POST["action_type"]
 
     if action_type not in ALL_ACTION_TYPES:
-        return HttpResponse(content="action_type of \"" + str(action_type) + "\" is not valid.", status=500)
+        message = "action_type of \"" + str(action_type) + "\" is not valid."
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
 
     if action_type == AUTHENTICATE:
         action_result = get_authentication(request=request, need_authentication=need_authentication)
