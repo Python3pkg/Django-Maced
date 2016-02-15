@@ -483,23 +483,13 @@ function get_item(item_name, merge_select_number)
     switch (merge_select_number)
     {
         case 0:  // Regular get
-            var item_hidden = $("#" + item_name + "-hidden");
             item_select = $("#" + item_name + "-select");
-            item_id = item_select.val();
-
-            // Fill the hidden value with the new value. This is what is sent to the backend on post.
-            item_hidden.val(item_select.val());
-
-            // 1 is for the merge modal left select. Setting it to the new id
-            merge_select1.find("option[value=" + item_id + "]").attr("selected", true);
             break;
         case 1:  // Left merge select get
             item_select = merge_select1;
-            item_id = item_select.val();
             break;
         case 2:  // Right merge select get
             item_select = $("#" + maced_MERGE + "-" + item_name + "2-input");  // 2 is for the left select
-            item_id = item_select.val();
             break;
         default:
             alert(
@@ -529,6 +519,14 @@ function get_item(item_name, merge_select_number)
 
     disable_buttons(item_name);
 
+    item_id = item_select.val();
+
+    if (merge_select_number == 0)  // Regular get
+    {
+        // Fill the hidden value with the new value. This is what is sent to the backend on post.
+        $("#" + item_name + "-hidden").val(item_id);
+    }
+
     // Fill the modals with appropriate content
     if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
     {
@@ -552,6 +550,12 @@ function get_item(item_name, merge_select_number)
         }
 
         return false;  // Signifies that item was not gotten
+    }
+
+    if (merge_select_number == 0)  // Regular get
+    {
+        // 1 is for the merge modal left select. Setting it to the new id
+        merge_select1.find("option[value=" + item_id + "]").attr("selected", true);
     }
 
     data["action_type"] = action_type;
@@ -631,8 +635,6 @@ function get_authentication(item_name, main_action_type)
     var url = maced_urls[item_name];
     var data = {};
 
-    disable_buttons(item_name);
-
     // This suggests we have the wrong name for the select. Alternatively it was removed some how.
     if (item_select.length == 0)
     {
@@ -650,6 +652,8 @@ function get_authentication(item_name, main_action_type)
 
         return;
     }
+
+    disable_buttons(item_name);
 
     spinner.css("display", "");
     error_div.css("display", "none");
@@ -813,8 +817,6 @@ function reenable_buttons(item_name)
     {
         merge_button.prop("disabled", false);
     }
-
-
 
     // If both selects have the same thing in them, aka trying to merge with itself.
     if (merge_select1.val() == merge_select2.val())
