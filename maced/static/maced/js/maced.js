@@ -441,12 +441,7 @@ function delete_item(item_name)
             merge_item2_select.find("option[value=" + item_id + "]").remove();  // Not using select for these since it can't be guaranteed that is the selected one
 
             // Fill modals with this with data from whatever is the new selection
-            var got_item = get_item(item_name, 0);
-
-            if (!got_item)
-            {
-                reenable_buttons(item_name);
-            }
+            get_item(item_name, 0);
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
@@ -548,6 +543,8 @@ function get_item(item_name, merge_select_number)
                 set_input_item(maced_MERGE, item_name, field_identifier, "", merge_select_number);
             }
         }
+
+        reenable_buttons(item_name);
 
         return false;  // Signifies that item was not gotten
     }
