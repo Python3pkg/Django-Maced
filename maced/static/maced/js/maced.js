@@ -14,7 +14,6 @@ var maced_ACTION_TYPES = [maced_ADD, maced_EDIT, maced_MERGE, maced_DELETE, mace
 var maced_item_names = maced_data["item_names"];
 var maced_field_names = JSON.parse(maced_data["field_names"]);
 var maced_field_identifiers = JSON.parse(maced_data["field_identifiers"]);
-var maced_item_names_with_ignored_alerts = JSON.parse(maced_data["item_names_with_ignored_alerts"]);
 var maced_urls = JSON.parse(maced_data["urls"]);
 var maced_login_url = JSON.parse(maced_data["login_url"]);
 
@@ -578,17 +577,11 @@ function get_item(item_name, merge_select_number)
     // This suggests we have the wrong name for the select. Alternatively it was removed some how.
     if (item_select.length == 0)
     {
-        // There are cases where the message is irrelevant and so we will check the alert ignore list, and if it is in
-        // the list, we won't send an alert.
-        // http://stackoverflow.com/questions/237104/array-containsobj-in-javascript
-        if ($.inArray(item_name, maced_item_names_with_ignored_alerts) == -1)  // If not in ignore list
-        {
-            alert(
-                "The select with id \"" + item_name + "-select\" is not on the page. Perhaps the id is wrong or it " +
-                "was removed from the page dynamically or you didn't set is_used_only_for_maced_fields to True or it " +
-                "was just simply forgotten."
-            );
-        }
+        alert(
+            "The select with id \"" + item_name + "-select\" is not on the page. Perhaps the id is wrong or it " +
+            "was removed from the page dynamically or you didn't set is_used_only_for_maced_fields to True or it " +
+            "was just simply forgotten."
+        );
 
         return false;  // Signifies that item was not gotten
     }

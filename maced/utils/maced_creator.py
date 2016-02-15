@@ -92,10 +92,16 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     if "maced_modals" not in context:
         context["maced_modals"] = ""
 
+    if "individual_maced_modals" not in context:
+        context["individual_maced_modals"] = {}
+
     maced_data = context["maced_data"]
 
     if "item_names" not in maced_data:
         maced_data["item_names"] = []
+
+    if "items_to_remove" not in maced_data:
+        maced_data["items_to_remove"] = []
 
     if "field_names" not in maced_data:
         maced_data["field_names"] = {}
@@ -112,7 +118,9 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     if item_name in maced_data["item_names"]:
         raise ValueError("Duplicate item var name of " + str(item_name))
 
-    if not is_used_only_for_maced_fields:
+    if is_used_only_for_maced_fields:
+        maced_data["items_to_remove"].append(item_name)
+    else:
         maced_data["item_names"].append(item_name)
 
     if item_html_name is None:
@@ -155,7 +163,7 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     )
 
     context[item_name + "_item"] = maced_html_code
-    context["maced_modals"] += maced_modal_html_code
+    context["individual_maced_modals"][item_name] = maced_modal_html_code  # This will be added to "maced_modals" later
     context[item_name + "_item_options_list"] = item_options_list
 
 
@@ -209,7 +217,6 @@ def finalize_context_for_items(context, login_url=None):
     maced_data["urls"] = json.dumps(maced_data["urls"])
     maced_data["field_names"] = json.dumps(maced_data["field_names"])
     maced_data["field_identifiers"] = json.dumps(maced_data["field_identifiers"])
-    maced_data["item_names_with_ignored_alerts"] = json.dumps(maced_data["item_names_with_ignored_alerts"])
     maced_data["login_url"] = json.dumps(login_url)
 
     delete_list = ("_builder", "_item_options_list", "_dependencies")
@@ -217,6 +224,13 @@ def finalize_context_for_items(context, login_url=None):
     for key in context.keys():
         if any(delete_item in key for delete_item in delete_list):
             del context[key]
+
+    for item_name in maced_data["items_to_remove"]:
+        del context[item_name + "_item"]
+        del context["individual_maced_modals"][item_name]
+
+    for item_name in context["individual_maced_modals"]:
+        context["maced_modals"] += context["individual_maced_modals"][item_name]
 
 
 # original_dictionary is the dictionary that is being built up for a particular maced_item object.
@@ -363,9 +377,6 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
 
             if field["maced_name"] + "_builder" not in context:
                 raise RuntimeError("\"" + item_name + "_builder\" was not in the context. Did you overwrite it?")
-
-            if field["maced_name"] not in maced_data["item_names_with_ignored_alerts"]:
-                maced_data["item_names_with_ignored_alerts"].append(field["maced_name"])
 
             # Add this maced item as a dependency of the main item
             dependency = {}
