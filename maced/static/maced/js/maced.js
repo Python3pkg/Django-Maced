@@ -188,6 +188,7 @@ function merge_item(item_name)
             var out_data_json = JSON.parse(out_data);
             var name = out_data_json["name"];
             var id = out_data_json["id"];
+            var field_identifier;
 
             this.spinner.css("display", "none");
             this.modal.modal("hide");
@@ -204,6 +205,17 @@ function merge_item(item_name)
             this.item_select.find("option[value=" + this.item1_id + "]").attr("value", id).prop("selected", true).text(name);
             this.merge_item1_select.find("option[value=" + this.item1_id + "]").attr("value", id).prop("selected", true).text(name);
             this.merge_item2_select.find("option[value=" + this.item1_id + "]").attr("value", id).prop("selected", true).text(name);
+
+            // Reset the modal for the next item merge
+            for (i = 0; i < maced_field_names[this.item_name].length; i++)
+            {
+                field_identifier = maced_field_identifiers[this.item_name][i];
+
+                // Sending in "" for merge_panel_number so that it finds the middle panel, which doesn't have a number.
+                // This should probably be changed to 0 or something, but it would cause other issues. This is the
+                // easiest solution.
+                set_input_item(this.action_type, this.item_name, field_identifier, "", "");
+            }
 
             // Fill modals with this new data
             get_item(this.item_name, 0);
