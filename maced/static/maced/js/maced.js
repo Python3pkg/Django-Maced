@@ -73,9 +73,12 @@ $(document).ready(function()
             get_authentication(item_name, action_type);
         }
 
-        // Get the info for the pre-selected item. If none, then skip.
+        // Get the info for the pre-selected item. If none, then skip. Do the same for merge selects on merge modal.
+        // 0 represents a regular get, 1 is left merge select, 2 is right merge select.
         item_select = $("#" + item_name + "-select");
         get_item(item_name, 0);
+        get_item(item_name, 1);
+        get_item(item_name, 2);
 
         // Set the value that will be sent to the backend as the current item's value. If None, then None.
         $("#" + item_name + "-hidden").val(item_select.val());
@@ -906,15 +909,15 @@ function reenable_buttons(item_name)
     merge_declination_button.prop("disabled", false);
     add_button.prop("disabled", false);
 
-    if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
-    {
-        return;
-    }
-
     // If there is more than 1 item to merge, re-enable the merge button
     if (merge_select1.find("option").length > 1)
     {
         merge_button.prop("disabled", false);
+    }
+
+    if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
+    {
+        return;
     }
 
     // If both selects have the same thing in them, aka trying to merge with itself.
