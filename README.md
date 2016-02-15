@@ -83,21 +83,12 @@ In the urls for example_app:
 ```python
 from django.conf.urls import url
 
-from maced.views.function_based.item_action_views import add_item_view, \
-    edit_item_view, merge_item_view, delete_item_view, get_item_view
+from maced.views.function_based.maced_view import maced_view
 
 from website.apps.example_app.models import Example
 
 urlpatterns = [
-    url(r"^add_example/$", add_item_view, name="example_app.add_example",
-        kwargs={"item_model": Example}),
-    url(r"^edit_example/(?P<item_id>\d+)/$", edit_item_view, name="example_app.edit_example",
-        kwargs={"item_model": Example}),
-    url(r"^merge_example/(?P<item1_id>\d+)/(?P<item2_id>\d+)/$", merge_item_view, name="example_app.merge_example",
-        kwargs={"item_model": Example}),
-    url(r"^delete_example/(?P<item_id>\d+)/$", delete_item_view, name="example_app.delete_example",
-        kwargs={"item_model": Example}),
-    url(r"^get_example/(?P<item_id>\d+)/$", get_item_view, name="example_app.get_example",
+    url(r"^maced_example/$", maced_view, name="example_app.maced_example",
         kwargs={"item_model": Example}),
 ]
 ```
