@@ -75,7 +75,7 @@ $(document).ready(function()
 
         // Get the info for the pre-selected item. If none, then skip.
         item_select = $("#" + item_name + "-select");
-        get_item(item_name);
+        get_item(item_name, 0);
 
         // Set the value that will be sent to the backend as the current item's value. If None, then None.
         $("#" + item_name + "-hidden").val(item_select.val());
@@ -90,13 +90,19 @@ $(document).ready(function()
         item_select.change({item_name: item_name}, function(event)
         {
             // Get the data
-            get_item(event.data.item_name);
+            get_item(event.data.item_name, 0);
         });
 
-        // Add change event for merge modal right select. Using "input" because it was copied and I'm too lazy to fix right now. :)
+        // Add change event for merge modal left select. Using "input" because all input fields on modals use "input".
+        $("#merge-" + item_name + "1-input").change({item_name: item_name}, function(event)
+        {
+            get_item(event.data.item_name, 1);
+        });
+
+        // Add change event for merge modal right select. Using "input" because all input fields on modals use "input".
         $("#merge-" + item_name + "2-input").change({item_name: item_name}, function(event)
         {
-            get_item2_for_merge(event.data.item_name);
+            get_item(event.data.item_name, 2);
         });
     }
 
@@ -179,7 +185,7 @@ function merge_item(item_name)
             merge_item2_select.find("option[value=" + item1_id + "]").attr("value", id).prop("selected", true).text(name);
 
             // Fill modals with this new data
-            get_item(item_name);
+            get_item(item_name, 0);
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
@@ -246,7 +252,7 @@ function add_item(item_name)
             }
 
             // Fill modals with this new data
-            get_item(item_name);
+            get_item(item_name, 0);
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
@@ -313,7 +319,7 @@ function clone_item(item_name)
     //        merge_item2_select.append($("<option></option>").attr("value", id).text(name));  // Select 2 doesn't need to have its selection overridden
     //
     //        // Fill modals with this new data
-    //        get_item(item_name);
+    //        get_item(item_name, 0);
     //    },
     //
     //    error: function(XMLHttpRequest, textStatus, errorThrown)
@@ -381,7 +387,7 @@ function edit_item(item_name)
             merge_item2_select.find("option[value=" + item_id + "]").text(name);  // Not using select for these since it can't be guaranteed that is the selected one
 
             // Fill modals with this new data
-            get_item(item_name);
+            get_item(item_name, 0);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
@@ -435,7 +441,7 @@ function delete_item(item_name)
             merge_item2_select.find("option[value=" + item_id + "]").remove();  // Not using select for these since it can't be guaranteed that is the selected one
 
             // Fill modals with this with data from whatever is the new selection
-            var got_item = get_item(item_name);
+            var got_item = get_item(item_name, 0);
 
             if (!got_item)
             {
@@ -452,21 +458,56 @@ function delete_item(item_name)
     });
 }
 
-function get_item(item_name)
+// merge_select_number is used to allow more rounds of "getting" without having to make separate functions that do
+// almost all the same work. This value will be 0 for a regular get, 1 for a merge 1 get, and 2 for a merge 2
+// get.
+// Please note that a regular get will also fill the merge 1 select and thus will not need a merge 1 get, but it will
+// not fill the merge 2 select. Although a regular get won't fill the merge 2 select, it will refresh it in case that
+// merge is not up to date. A regular get refreshes the merge 2 select by forcing a merge 2 get. For these reasons,
+// a regular get will empty the merge 1 select, but not the merge 2 select and will call for a merge 2 get but not a
+// merge 1 get. Hope that makes sense. :)
+function get_item(item_name, merge_select_number)
 {
     var action_type = maced_GET;
-    var item_hidden = $("#" + item_name + "-hidden");
-    var item_select = $("#" + item_name + "-select");
-    var item_id = item_select.val();
     var url = maced_urls[item_name];
+    var merge_select1 = $("#" + maced_MERGE + "-" + item_name + "1-input");  // 1 is for the left select
+    var merge_spinner = $("#" + maced_MERGE + "-" + item_name + "-spinner");
+    var merge_error_div = $("#" + maced_MERGE + "-" + item_name + "-error-div");
     var data = {};
     var field_identifier;
     var i;
+    var item_select;
+    var item_id;
 
-    disable_buttons(item_name);
+    // This switch serves as a error catch (makes sure it is 0-2 so that the rest can assume).
+    switch (merge_select_number)
+    {
+        case 0:  // Regular get
+            var item_hidden = $("#" + item_name + "-hidden");
+            item_select = $("#" + item_name + "-select");
+            item_id = item_select.val();
 
-    // Fill the hidden value with the new value. This is what is sent to the backend on post.
-    item_hidden.val(item_select.val());
+            // Fill the hidden value with the new value. This is what is sent to the backend on post.
+            item_hidden.val(item_select.val());
+
+            // 1 is for the merge modal left select. Setting it to the new id
+            merge_select1.find("option[value=" + item_id + "]").attr("selected", true);
+            break;
+        case 1:  // Left merge select get
+            item_select = merge_select1;
+            item_id = item_select.val();
+            break;
+        case 2:  // Right merge select get
+            item_select = $("#" + maced_MERGE + "-" + item_name + "2-input");  // 2 is for the left select
+            item_id = item_select.val();
+            break;
+        default:
+            alert(
+                "Invalid merge_select_number of \"" + merge_select_number + "\". This is probably a problem with " +
+                "django-maced."
+            );
+            return false;
+    }
 
     // This suggests we have the wrong name for the select. Alternatively it was removed some how.
     if (item_select.length == 0)
@@ -486,6 +527,8 @@ function get_item(item_name)
         return false;  // Signifies that item was not gotten
     }
 
+    disable_buttons(item_name);
+
     // Fill the modals with appropriate content
     if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
     {
@@ -494,10 +537,18 @@ function get_item(item_name)
             field_identifier = maced_field_identifiers[item_name][i];
 
             // Empty all the modals out for this item
-            set_input_item(maced_EDIT, item_name, field_identifier, "", null);
-            set_input_item(maced_MERGE, item_name, field_identifier, "", 1);
-            set_input_item(maced_MERGE, item_name, field_identifier, "", 2);
-            set_input_item(maced_DELETE, item_name, field_identifier, "", null);
+            if (merge_select_number == 0)
+            {
+                set_input_item(maced_MERGE, item_name, field_identifier, "", 1);
+                set_input_item(maced_CLONE, item_name, field_identifier, "", null);
+                set_input_item(maced_EDIT, item_name, field_identifier, "", null);
+                set_input_item(maced_DELETE, item_name, field_identifier, "", null);
+                set_input_item(maced_INFO, item_name, field_identifier, "", null);
+            }
+            else  // If not 0, merge_select_number must be 1 or 2
+            {
+                set_input_item(maced_MERGE, item_name, field_identifier, "", merge_select_number);
+            }
         }
 
         return false;  // Signifies that item was not gotten
@@ -519,10 +570,6 @@ function get_item(item_name)
             var field_name;
             var field_identifier;
             var i;
-            var merge_select1 = $("#" + maced_MERGE + "-" + item_name + "1-input");
-
-            // 1 is for the merge modal left select. Setting it to the new id
-            merge_select1.find("option[value=" + item_id + "]").attr("selected", true);
 
             // Fill the modals with appropriate content
             for (i = 0; i < maced_field_names[item_name].length; i++)
@@ -530,89 +577,42 @@ function get_item(item_name)
                 field_name = maced_field_names[item_name][i];
                 field_identifier = maced_field_identifiers[item_name][i];
 
-                set_input_item(maced_EDIT, item_name, field_identifier, fields[field_name], null);
-                set_input_item(maced_MERGE, item_name, field_identifier, fields[field_name], 1);  // Fill in the left panel
-                set_input_item(maced_MERGE, item_name, field_identifier, "", 2);  // But empty the right panel
-                set_input_item(maced_DELETE, item_name, field_identifier, fields[field_name], null);
+                if (merge_select_number == 0)
+                {
+                    // Send another get request but for merge select 2. This will force a reload in case it is out
+                    // of date. Also, since a regular get calls a merge 2 get, we don't need to re-enable the
+                    // buttons here.
+                    get_item(item_name, 2);
+                    set_input_item(maced_MERGE, item_name, field_identifier, fields[field_name], 1);  // Fill in the left panel
+                    set_input_item(maced_CLONE, item_name, field_identifier, fields[field_name], null);
+                    set_input_item(maced_EDIT, item_name, field_identifier, fields[field_name], null);
+                    set_input_item(maced_DELETE, item_name, field_identifier, fields[field_name], null);
+                    set_input_item(maced_INFO, item_name, field_identifier, fields[field_name], null);
+                }
+                else  // If not 0, merge_select_number must be 1 or 2
+                {
+                    set_input_item(maced_MERGE, item_name, field_identifier, fields[field_name], merge_select_number);
+                    reenable_buttons(item_name);
+                }
             }
-
-            // Force this to reload
-            get_item2_for_merge(item_name);
 
             return true;  // Signifies that item was gotten
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
-            alert(XMLHttpRequest.responseText);
-            return false;  // Signifies that item was not gotten
-        }
-    });
-}
-
-// Special get action function for item2 on the merge modal
-function get_item2_for_merge(item_name)
-{
-    var action_type = maced_GET;
-    var merge_spinner = $("#" + maced_MERGE + "-" + item_name + "-spinner");
-    var merge_error_div = $("#" + maced_MERGE + "-" + item_name + "-error-div");
-    var item_select = $("#" + maced_MERGE + "-" + item_name + "2-input");  // 2 is for the right select. The left has already been filled.
-    var item_id = item_select.val();
-    var url = maced_urls[item_name];
-    var data = {};
-    var field_identifier;
-    var i;
-
-    disable_buttons(item_name);
-
-    // Fill the merge modal's right panel with with appropriate content
-    if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
-    {
-        for (i = 0; i < maced_field_names[item_name].length; i++)
-        {
-            field_identifier = maced_field_identifiers[item_name][i];
-
-            // Empty the merge modal's right panel for this item
-            set_input_item(maced_MERGE, item_name, field_identifier, "", 2);
-        }
-
-        return;
-    }
-
-    data["action_type"] = action_type;
-    data["item_id"] = item_id;
-
-    $.ajax(
-    {
-        data: data,
-        type: "POST",
-        url: url,
-
-        success: function(out_data)
-        {
-            var out_data_json = JSON.parse(out_data);
-            var fields = out_data_json["fields"];
-            var field_name;
-            var field_identifier;
-            var i;
-
-            // Fill the modals with appropriate content
-            for (i = 0; i < maced_field_names[item_name].length; i++)
+            if (merge_select_number == 1 || merge_select_number == 2)
             {
-                field_name = maced_field_names[item_name][i];
-                field_identifier = maced_field_identifiers[item_name][i];
-
-                set_input_item(maced_MERGE, item_name, field_identifier, fields[field_name], 2);  // Fill in the right panel
+                merge_spinner.css("display", "none");
+                merge_error_div.text(XMLHttpRequest.responseText);
+                merge_error_div.css("display", "");
+            }
+            else
+            {
+                alert(XMLHttpRequest.responseText);
             }
 
-            reenable_buttons(item_name);
-        },
-
-        error: function(XMLHttpRequest, textStatus, errorThrown)
-        {
-            merge_spinner.css("display", "none");
-            merge_error_div.text(XMLHttpRequest.responseText);
-            merge_error_div.css("display", "");
+            return false;  // Signifies that item was not gotten
         }
     });
 }
@@ -711,7 +711,7 @@ function get_input_item(action_type, item_name, field_identifier)
 
         if (action_type == maced_EDIT)
         {
-            get_item(action_type + "_type-" + item_name + "-" + field_identifier);
+            get_item(action_type + "_type-" + item_name + "-" + field_identifier, 0);
         }
     }
 
