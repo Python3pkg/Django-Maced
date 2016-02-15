@@ -190,6 +190,8 @@ function merge_item(item_name)
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
+            reenable_buttons(item_name);
+
             spinner.css("display", "none");
             error_div.text(XMLHttpRequest.responseText);
             error_div.css("display", "");
@@ -257,6 +259,8 @@ function add_item(item_name)
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
+            reenable_buttons(item_name);
+
             spinner.css("display", "none");
             error_div.text(XMLHttpRequest.responseText);
             error_div.css("display", "");
@@ -324,6 +328,7 @@ function clone_item(item_name)
     //
     //    error: function(XMLHttpRequest, textStatus, errorThrown)
     //    {
+    //        reenable_buttons(item_name);
     //        spinner.css("display", "none");
     //        error_div.text(XMLHttpRequest.responseText);
     //        error_div.css("display", "");
@@ -391,6 +396,8 @@ function edit_item(item_name)
         },
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
+            reenable_buttons(item_name);
+
             spinner.css("display", "none");
             error_div.text(XMLHttpRequest.responseText);
             error_div.css("display", "");
@@ -446,6 +453,8 @@ function delete_item(item_name)
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
+            reenable_buttons(item_name);
+
             spinner.css("display", "none");
             error_div.text(XMLHttpRequest.responseText);
             error_div.css("display", "");
@@ -602,6 +611,8 @@ function get_item(item_name, merge_select_number)
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
+            reenable_buttons(item_name);
+
             if (merge_select_number == 1 || merge_select_number == 2)
             {
                 merge_spinner.css("display", "none");
@@ -684,6 +695,8 @@ function get_authentication(item_name, main_action_type)
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
             alert(XMLHttpRequest.responseText);
+
+            reenable_buttons(item_name);
 
             spinner.css("display", "none");
             error_div.text(XMLHttpRequest.responseText);
