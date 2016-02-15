@@ -13,7 +13,7 @@ from maced.utils.model_merging import merge_model_objects
 def merge_item(item_model, fields_to_save, item_name, item1_id, item2_id, item_name_field_name):
     data = {}
 
-    # Check that item1 exists.
+    # Check that item1 exists
     if not item_model.objects.filter(id=item1_id).exists():
         return HttpResponse(
             content="The item with id \"" + str(item1_id) + "\" does not exist. Did someone delete it?", status=500
