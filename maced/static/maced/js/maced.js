@@ -624,15 +624,8 @@ function get_item(item_name, merge_select_number)
 
     if (merge_select_number == 0)  // Regular get
     {
-        var before = merge_select1.val();
         // 1 is for the merge modal left select. Setting it to the new id
-        merge_select1.find("option[value=" + item_id + "]").attr("selected", true);
-        var after = merge_select1.val();
-
-        if (before == after)
-        {
-            alert("val = " + merge_select1.val() + "\nid = " + item_id);
-        }
+        merge_select1.find("option[value=" + item_id + "]").prop("selected", true);
     }
 
     data["action_type"] = action_type;
