@@ -596,7 +596,7 @@ function get_item(item_name, merge_select_number)
         $("#" + item_name + "-hidden").val(item_id);
     }
 
-    // Fill the modals with appropriate content
+    // Empty the modals since this item_id is invalid/blank
     if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
     {
         for (i = 0; i < maced_field_names[item_name].length; i++)
@@ -606,7 +606,6 @@ function get_item(item_name, merge_select_number)
             // Empty all the modals out for this item
             if (merge_select_number == 0)
             {
-                set_input_item(maced_MERGE, item_name, field_identifier, "", 1);
                 //set_input_item(maced_CLONE, item_name, field_identifier, "", null);
                 set_input_item(maced_EDIT, item_name, field_identifier, "", null);
                 set_input_item(maced_DELETE, item_name, field_identifier, "", null);
@@ -625,8 +624,15 @@ function get_item(item_name, merge_select_number)
 
     if (merge_select_number == 0)  // Regular get
     {
+        var before = merge_select1.val();
         // 1 is for the merge modal left select. Setting it to the new id
         merge_select1.find("option[value=" + item_id + "]").attr("selected", true);
+        var after = merge_select1.val();
+
+        if (before == after)
+        {
+            alert("val = " + merge_select1.val() + "\nid = " + item_id);
+        }
     }
 
     data["action_type"] = action_type;
