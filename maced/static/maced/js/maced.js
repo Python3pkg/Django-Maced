@@ -59,17 +59,15 @@ $(document).ready(function()
     for (i = 0; i < maced_item_names.length; i++)
     {
         item_name = maced_item_names[i];
+        get_authentication(item_name);  // Run authentication to set initial button states
 
         // Add click events for all buttons to remove success divs
-        // Run authentication to set initial button states.
         for (var action_type in maced_ACTION_TYPES)
         {
             $("#" + maced_ACTION_TYPES[action_type] + "-" + item_name + "-button").click({item_name: item_name}, function(event)
             {
                 remove_success_divs(event.data.item_name);
             });
-
-            get_authentication(item_name, action_type);
         }
 
         // Get the info for the pre-selected item. If none, then skip. Do the same for merge selects on merge modal.
@@ -711,11 +709,9 @@ function info_item(item_name)
     alert("Info is not implemented yet.");
 }
 
-function get_authentication(item_name, main_action_type)
+function get_authentication(item_name)
 {
     var action_type = maced_AUTHENTICATE;
-    var spinner = $("#" + main_action_type + "-" + item_name + "-spinner");
-    var error_div = $("#" + main_action_type + "-" + item_name + "-error-div");
     var item_select = $("#" + item_name + "-select");
     var url = maced_urls[item_name];
     var data = {};
@@ -734,9 +730,6 @@ function get_authentication(item_name, main_action_type)
 
     disable_buttons(item_name);
 
-    spinner.css("display", "");
-    error_div.css("display", "none");
-
     data["action_type"] = action_type;
 
     $.ajax(
@@ -744,8 +737,6 @@ function get_authentication(item_name, main_action_type)
         data: data,
         type: "POST",
         url: url,
-        spinner: spinner,
-        error_div: error_div,
         item_name: item_name,
 
         success: function(out_data)
@@ -771,10 +762,6 @@ function get_authentication(item_name, main_action_type)
             alert(XMLHttpRequest.responseText);
 
             reenable_buttons(this.item_name);
-
-            this.spinner.css("display", "none");
-            this.error_div.text(XMLHttpRequest.responseText);
-            this.error_div.css("display", "");
         }
     });
 }
