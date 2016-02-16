@@ -17,6 +17,10 @@ var maced_field_identifiers = JSON.parse(maced_data["field_identifiers"]);
 var maced_urls = JSON.parse(maced_data["urls"]);
 var maced_login_url = JSON.parse(maced_data["login_url"]);
 
+// This ridiculously named variable is used as a cheap way to be able to know when we are getting the last item. If we
+// are getting the last item, we will call maced_callback if it exists. Then we will set it to "" again.
+var maced_item_name_of_last_item_to_load = "";
+
 $(document).ready(function()
 {
     var i;
@@ -54,6 +58,8 @@ $(document).ready(function()
         modal_backdrops.not(".maced-stacked").css("z-index", 1039 + (10 * index));
         modal_backdrops.not(".maced-stacked").addClass("maced-stacked");
     });
+
+    maced_item_name_of_last_item_to_load = maced_item_names[maced_item_names.length - 1];
 
     // Loop through all items and add "click" and "change" events and load any initial data if any exists.
     for (i = 0; i < maced_item_names.length; i++)
@@ -104,15 +110,6 @@ $(document).ready(function()
         {
             get_item(event.data.item_name, 2);
         });
-    }
-
-    // This is a callback function to signal that maced is all done on the page. This is provided by you in order to
-    // allow specialized code that doesn't start until maced is done. For instance, if you would like to show a spinner
-    // while maced is loading, you can do so by using this function to shut it off. If this function is missing, it
-    // will not fire.
-    if ($.isFunction("maced_is_loaded"))
-    {
-        maced_is_loaded();
     }
 });
 
@@ -681,6 +678,20 @@ function get_item(item_name, merge_select_number)
                 reenable_buttons(this.item_name);
             }
 
+            if (this.item_name == maced_item_name_of_last_item_to_load && this.merge_select_number == 2)
+            {
+                maced_item_name_of_last_item_to_load = "";
+
+                // This is a callback function to signal that maced is all done on the page. This is provided by you in order to
+                // allow specialized code that doesn't start until maced is done. For instance, if you would like to show a spinner
+                // while maced is loading, you can do so by using this function to shut it off. If this function is missing, it
+                // will not fire.
+                if (typeof maced_callback !== typeof undefined && maced_callback !== null && typeof maced_callback === "function")
+                {
+                    maced_callback();
+                }
+            }
+
             return true;  // Signifies that item was gotten
         },
 
@@ -888,11 +899,6 @@ function reenable_buttons(item_name)
         merge_button.prop("disabled", false);
     }
 
-    if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
-    {
-        return;
-    }
-
     // If both selects have the same thing in them, aka trying to merge with itself.
     if (merge_select1.val() == merge_select2.val())
     {
@@ -901,6 +907,11 @@ function reenable_buttons(item_name)
     else
     {
         merge_confirmation_button.prop("disabled", false);
+    }
+
+    if (item_id == "" || typeof item_id === typeof undefined || item_id === null)
+    {
+        return;
     }
 
     // Enable the rest of the buttons
@@ -943,9 +954,4 @@ function change_item_visibility(item_name, should_turn_on)
     {
         item_tr.css("display", "none");
     }
-}
-
-function maced_is_loaded()
-{
-    alert("DONE");
 }
