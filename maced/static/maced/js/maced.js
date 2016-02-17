@@ -169,16 +169,6 @@ function merge_item(item_name)
         data: data,
         type: "POST",
         url: url,
-        spinner: spinner,
-        error_div: error_div,
-        modal: modal,
-        action_type: action_type,
-        item_name: item_name,
-        item_select: item_select,
-        merge_item1_select: merge_item1_select,
-        merge_item2_select: merge_item2_select,
-        item1_id: item1_id,
-        item2_id: item2_id,
 
         success: function(out_data)
         {
@@ -187,44 +177,44 @@ function merge_item(item_name)
             var id = out_data_json["id"];
             var field_identifier;
 
-            this.spinner.css("display", "none");
-            this.modal.modal("hide");
-            $("#" + this.action_type + "-" + this.item_name + "-success-div").css("display", "");
+            spinner.css("display", "none");
+            modal.modal("hide");
+            $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
 
             // For the following "finds", which option is used to remove and which is used to set to doesn't matter
 
             // Remove the old option
-            this.item_select.find("option[value=" + this.item2_id + "]").remove();
-            this.merge_item1_select.find("option[value=" + this.item2_id + "]").remove();
-            this.merge_item2_select.find("option[value=" + this.item2_id + "]").remove();
+            item_select.find("option[value=" + item2_id + "]").remove();
+            merge_item1_select.find("option[value=" + item2_id + "]").remove();
+            merge_item2_select.find("option[value=" + item2_id + "]").remove();
 
             // Turn the other option into the new merged option and select it
-            this.item_select.find("option[value=" + this.item1_id + "]").attr("value", id).prop("selected", true).text(name);
-            this.merge_item1_select.find("option[value=" + this.item1_id + "]").attr("value", id).prop("selected", true).text(name);
-            this.merge_item2_select.find("option[value=" + this.item1_id + "]").attr("value", id).prop("selected", true).text(name);
+            item_select.find("option[value=" + item1_id + "]").attr("value", id).prop("selected", true).text(name);
+            merge_item1_select.find("option[value=" + item1_id + "]").attr("value", id).prop("selected", true).text(name);
+            merge_item2_select.find("option[value=" + item1_id + "]").attr("value", id).prop("selected", true).text(name);
 
             // Reset the modal for the next item merge
-            for (i = 0; i < maced_field_names[this.item_name].length; i++)
+            for (i = 0; i < maced_field_names[item_name].length; i++)
             {
-                field_identifier = maced_field_identifiers[this.item_name][i];
+                field_identifier = maced_field_identifiers[item_name][i];
 
                 // Sending in "" for merge_panel_number so that it finds the middle panel, which doesn't have a number.
                 // This should probably be changed to 0 or something, but it would cause other issues. This is the
                 // easiest solution.
-                set_input_item(this.action_type, this.item_name, field_identifier, "", "");
+                set_input_item(action_type, item_name, field_identifier, "", "");
             }
 
             // Fill modals with this new data
-            get_item(this.item_name, 0);
+            get_item(item_name, 0);
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
-            reenable_buttons(this.item_name);
+            reenable_buttons(item_name);
 
-            this.spinner.css("display", "none");
-            this.error_div.text(XMLHttpRequest.responseText);
-            this.error_div.css("display", "");
+            spinner.css("display", "none");
+            error_div.text(XMLHttpRequest.responseText);
+            error_div.css("display", "");
         }
     });
 }
@@ -260,14 +250,6 @@ function add_item(item_name)
         data: data,
         type: "POST",
         url: url,
-        spinner: spinner,
-        error_div: error_div,
-        modal: modal,
-        action_type: action_type,
-        item_name: item_name,
-        item_select: item_select,
-        merge_item1_select: merge_item1_select,
-        merge_item2_select: merge_item2_select,
 
         success: function(out_data)
         {
@@ -276,33 +258,33 @@ function add_item(item_name)
             var name = out_data_json["name"];
             var field_identifier;
 
-            this.spinner.css("display", "none");
-            this.modal.modal("hide");
-            $("#" + this.action_type + "-" + this.item_name + "-success-div").css("display", "");
+            spinner.css("display", "none");
+            modal.modal("hide");
+            $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
 
             // Add the new option to the select and select it
-            this.item_select.append($("<option selected></option>").attr("value", id).text(name));
-            this.merge_item1_select.append($("<option selected></option>").attr("value", id).text(name));
-            this.merge_item2_select.append($("<option></option>").attr("value", id).text(name));  // Select 2 doesn't need to have its selection overridden
+            item_select.append($("<option selected></option>").attr("value", id).text(name));
+            merge_item1_select.append($("<option selected></option>").attr("value", id).text(name));
+            merge_item2_select.append($("<option></option>").attr("value", id).text(name));  // Select 2 doesn't need to have its selection overridden
 
             // Reset the modal for the next item addition
-            for (i = 0; i < maced_field_names[this.item_name].length; i++)
+            for (i = 0; i < maced_field_names[item_name].length; i++)
             {
-                field_identifier = maced_field_identifiers[this.item_name][i];
-                set_input_item(this.action_type, this.item_name, field_identifier, "", null);
+                field_identifier = maced_field_identifiers[item_name][i];
+                set_input_item(action_type, item_name, field_identifier, "", null);
             }
 
             // Fill modals with this new data
-            get_item(this.item_name, 0);
+            get_item(item_name, 0);
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
-            reenable_buttons(this.item_name);
+            reenable_buttons(item_name);
 
-            this.spinner.css("display", "none");
-            this.error_div.text(XMLHttpRequest.responseText);
-            this.error_div.css("display", "");
+            spinner.css("display", "none");
+            error_div.text(XMLHttpRequest.responseText);
+            error_div.css("display", "");
         }
     });
 }
@@ -345,14 +327,6 @@ function clone_item(item_name)
     //    data: data,
     //    type: "POST",
     //    url: url,
-    //    spinner: spinner,
-    //    error_div: error_div,
-    //    modal: modal,
-    //    action_type: action_type,
-    //    item_name: item_name,
-    //    item_select: item_select,
-    //    merge_item1_select: merge_item1_select,
-    //    merge_item2_select: merge_item2_select,
     //
     //    success: function(out_data)
     //    {
@@ -360,26 +334,26 @@ function clone_item(item_name)
     //        var id = out_data_json["id"];
     //        var name = out_data_json["name"];
     //
-    //        this.spinner.css("display", "none");
-    //        this.modal.modal("hide");
-    //        $("#" + this.action_type + "-" + this.item_name + "-success-div").css("display", "");
+    //        spinner.css("display", "none");
+    //        modal.modal("hide");
+    //        $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
     //
     //        // Add the new option to the select and select it
-    //        this.item_select.append($("<option selected></option>").attr("value", id).text(name));
-    //        this.merge_item1_select.append($("<option selected></option>").attr("value", id).text(name));
-    //        this.merge_item2_select.append($("<option></option>").attr("value", id).text(name));  // Select 2 doesn't need to have its selection overridden
+    //        item_select.append($("<option selected></option>").attr("value", id).text(name));
+    //        merge_item1_select.append($("<option selected></option>").attr("value", id).text(name));
+    //        merge_item2_select.append($("<option></option>").attr("value", id).text(name));  // Select 2 doesn't need to have its selection overridden
     //
     //        // Fill modals with this new data
-    //        get_item(this.item_name, 0);
+    //        get_item(item_name, 0);
     //    },
     //
     //    error: function(XMLHttpRequest, textStatus, errorThrown)
     //    {
-    //        reenable_buttons(this.item_name);
+    //        reenable_buttons(item_name);
     //
-    //        this.spinner.css("display", "none");
-    //        this.error_div.text(XMLHttpRequest.responseText);
-    //        this.error_div.css("display", "");
+    //        spinner.css("display", "none");
+    //        error_div.text(XMLHttpRequest.responseText);
+    //        error_div.css("display", "");
     //    }
     //});
 
@@ -424,40 +398,31 @@ function edit_item(item_name)
         data: data,
         type: "POST",
         url: url,
-        spinner: spinner,
-        error_div: error_div,
-        modal: modal,
-        action_type: action_type,
-        item_name: item_name,
-        item_select: item_select,
-        merge_item1_select: merge_item1_select,
-        merge_item2_select: merge_item2_select,
-        item_id: item_id,
 
         success: function(out_data)
         {
             var out_data_json = JSON.parse(out_data);
             var name = out_data_json["name"];
 
-            this.spinner.css("display", "none");
-            this.modal.modal("hide");
-            $("#" + this.action_type + "-" + this.item_name + "-success-div").css("display", "");
+            spinner.css("display", "none");
+            modal.modal("hide");
+            $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
 
             // Update the option with the new name (could be the same name though)
-            this.item_select.find(":selected").text(name);  // Using selected because it is probably faster
-            this.merge_item1_select.find("option[value=" + this.item_id + "]").text(name);  // Not using selected for these since it can't be guaranteed that is the selected one
-            this.merge_item2_select.find("option[value=" + this.item_id + "]").text(name);  // Not using selected for these since it can't be guaranteed that is the selected one
+            item_select.find(":selected").text(name);  // Using selected because it is probably faster
+            merge_item1_select.find("option[value=" + item_id + "]").text(name);  // Not using selected for these since it can't be guaranteed that is the selected one
+            merge_item2_select.find("option[value=" + item_id + "]").text(name);  // Not using selected for these since it can't be guaranteed that is the selected one
 
             // Fill modals with this new data
-            get_item(this.item_name, 0);
+            get_item(item_name, 0);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
-            reenable_buttons(this.item_name);
+            reenable_buttons(item_name);
 
-            this.spinner.css("display", "none");
-            this.error_div.text(XMLHttpRequest.responseText);
-            this.error_div.css("display", "");
+            spinner.css("display", "none");
+            error_div.text(XMLHttpRequest.responseText);
+            error_div.css("display", "");
         }
     });
 }
@@ -490,40 +455,31 @@ function delete_item(item_name)
         data: data,
         type: "POST",
         url: url,
-        spinner: spinner,
-        error_div: error_div,
-        modal: modal,
-        action_type: action_type,
-        item_name: item_name,
-        item_select: item_select,
-        merge_item1_select: merge_item1_select,
-        merge_item2_select: merge_item2_select,
-        item_id: item_id,
 
         success: function(out_data)
         {
             var out_data_json = JSON.parse(out_data);
 
-            this.spinner.css("display", "none");
-            this.modal.modal("hide");
-            $("#" + this.action_type + "-" + this.item_name + "-success-div").css("display", "");
+            spinner.css("display", "none");
+            modal.modal("hide");
+            $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
 
             // Remove the option from the select
-            this.item_select.find(":selected").remove();  // Using selected because it is probably faster
-            this.merge_item1_select.find("option[value=" + this.item_id + "]").remove();  // Not using selected for these since it can't be guaranteed that is the selected one
-            this.merge_item2_select.find("option[value=" + this.item_id + "]").remove();  // Not using selected for these since it can't be guaranteed that is the selected one
+            item_select.find(":selected").remove();  // Using selected because it is probably faster
+            merge_item1_select.find("option[value=" + item_id + "]").remove();  // Not using selected for these since it can't be guaranteed that is the selected one
+            merge_item2_select.find("option[value=" + item_id + "]").remove();  // Not using selected for these since it can't be guaranteed that is the selected one
 
             // Fill modals with this with data from whatever is the new selection
-            get_item(this.item_name, 0);
+            get_item(item_name, 0);
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
-            reenable_buttons(this.item_name);
+            reenable_buttons(item_name);
 
-            this.spinner.css("display", "none");
-            this.error_div.text(XMLHttpRequest.responseText);
-            this.error_div.css("display", "");
+            spinner.css("display", "none");
+            error_div.text(XMLHttpRequest.responseText);
+            error_div.css("display", "");
         }
     });
 }
@@ -566,7 +522,7 @@ function get_item(item_name, merge_select_number)
                 "Invalid merge_select_number of \"" + merge_select_number + "\". This is probably a problem with " +
                 "django-maced."
             );
-            return false;
+            return;
     }
 
     // This suggests we have the wrong name for the select. Alternatively it was removed some how.
@@ -578,7 +534,7 @@ function get_item(item_name, merge_select_number)
             "was just simply forgotten."
         );
 
-        return false;  // Signifies that item was not gotten
+        return;
     }
 
     disable_buttons(item_name);
@@ -614,7 +570,7 @@ function get_item(item_name, merge_select_number)
 
         reenable_buttons(item_name);
 
-        return false;  // Signifies that item was not gotten
+        return;
     }
 
     if (merge_select_number == 0)  // Regular get
@@ -631,13 +587,6 @@ function get_item(item_name, merge_select_number)
         data: data,
         type: "POST",
         url: url,
-        merge_spinner: merge_spinner,
-        merge_error_div: merge_error_div,
-        action_type: action_type,
-        item_name: item_name,
-        item_select: item_select,
-        item_id: item_id,
-        merge_select_number: merge_select_number,
 
         success: function(out_data)
         {
@@ -648,37 +597,37 @@ function get_item(item_name, merge_select_number)
             var i;
 
             // Fill the modals with appropriate content
-            for (i = 0; i < maced_field_names[this.item_name].length; i++)
+            for (i = 0; i < maced_field_names[item_name].length; i++)
             {
-                field_name = maced_field_names[this.item_name][i];
-                field_identifier = maced_field_identifiers[this.item_name][i];
+                field_name = maced_field_names[item_name][i];
+                field_identifier = maced_field_identifiers[item_name][i];
 
-                if (this.merge_select_number == 0)
+                if (merge_select_number == 0)
                 {
-                    set_input_item(maced_MERGE, this.item_name, field_identifier, fields[field_name], 1);  // Fill in the left panel
-                    //set_input_item(maced_CLONE, this.item_name, field_identifier, fields[field_name], null);
-                    set_input_item(maced_EDIT, this.item_name, field_identifier, fields[field_name], null);
-                    set_input_item(maced_DELETE, this.item_name, field_identifier, fields[field_name], null);
-                    //set_input_item(maced_INFO, this.item_name, field_identifier, fields[field_name], null);
+                    set_input_item(maced_MERGE, item_name, field_identifier, fields[field_name], 1);  // Fill in the left panel
+                    //set_input_item(maced_CLONE, item_name, field_identifier, fields[field_name], null);
+                    set_input_item(maced_EDIT, item_name, field_identifier, fields[field_name], null);
+                    set_input_item(maced_DELETE, item_name, field_identifier, fields[field_name], null);
+                    //set_input_item(maced_INFO, item_name, field_identifier, fields[field_name], null);
                 }
                 else  // If not 0, merge_select_number must be 1 or 2
                 {
-                    set_input_item(maced_MERGE, this.item_name, field_identifier, fields[field_name], this.merge_select_number);
+                    set_input_item(maced_MERGE, item_name, field_identifier, fields[field_name], merge_select_number);
                 }
             }
 
-            if (this.merge_select_number == 0)
+            if (merge_select_number == 0)
             {
                 // Send another get request but for merge select 2. This will force a reload in case it is out of date.
                 // Also, since a regular get calls a merge 2 get, we don't need to re-enable the buttons here.
-                get_item(this.item_name, 2);
+                get_item(item_name, 2);
             }
             else
             {
-                reenable_buttons(this.item_name);
+                reenable_buttons(item_name);
             }
 
-            if (this.item_name == maced_item_name_of_last_item_to_load && this.merge_select_number == 2)
+            if (item_name == maced_item_name_of_last_item_to_load && merge_select_number == 2)
             {
                 maced_item_name_of_last_item_to_load = "";
 
@@ -691,26 +640,22 @@ function get_item(item_name, merge_select_number)
                     maced_callback();
                 }
             }
-
-            return true;  // Signifies that item was gotten
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
-            reenable_buttons(this.item_name);
+            reenable_buttons(item_name);
 
-            if (this.merge_select_number == 1 || this.merge_select_number == 2)
+            if (merge_select_number == 1 || merge_select_number == 2)
             {
-                this.merge_spinner.css("display", "none");
-                this.merge_error_div.text(XMLHttpRequest.responseText);
-                this.merge_error_div.css("display", "");
+                merge_spinner.css("display", "none");
+                merge_error_div.text(XMLHttpRequest.responseText);
+                merge_error_div.css("display", "");
             }
             else
             {
                 alert(XMLHttpRequest.responseText);
             }
-
-            return false;  // Signifies that item was not gotten
         }
     });
 }
@@ -748,7 +693,6 @@ function get_authentication(item_name)
         data: data,
         type: "POST",
         url: url,
-        item_name: item_name,
 
         success: function(out_data)
         {
@@ -765,14 +709,14 @@ function get_authentication(item_name)
                 }
             }
 
-            reenable_buttons(this.item_name);
+            reenable_buttons(item_name);
         },
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
             alert(XMLHttpRequest.responseText);
 
-            reenable_buttons(this.item_name);
+            reenable_buttons(item_name);
         }
     });
 }
