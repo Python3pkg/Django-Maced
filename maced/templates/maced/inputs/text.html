@@ -1,0 +1,6 @@
+<b class="maced"> {{ field_html_name }}: </b>
+<input type="text" class="maced form-control" id="{{ action_type }}-{{ item_name }}-{{ field_name }}-input"
+    {% if action_type == "delete" or action_type == "clone" or action_type == "info" %}
+        disabled
+    {% endif %}
+/>
