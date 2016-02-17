@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
 from maced.utils.constants import PRIMARY_ACTION_TYPES, VALID_INPUT_TYPES, VALID_SELECT_TYPES, ADD, EDIT, MERGE, DELETE, \
-    CLONE, INFO
+    CLONE, INFO, COLOR, TEXT
 from maced.utils.misc import validate_select_options, prettify_string
 
 
@@ -135,9 +135,10 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     # Get all items of this type
     items = get_items(item_model=item_model, field_to_order_by=field_to_order_by)
 
-    # Create an item_options_list which is a list of tuples defined as (id_of_the_item, name_of_the_item). This will
+    # Create an option_tuple_list which is a list of tuples defined as (id_of_the_item, name_of_the_item). This will
     # be used in the merge function.
-    item_options_list = [(item.id, getattr(item, item_name_field_name)) for item in items]
+    option_tuple_list = [(item.id, getattr(item, item_name_field_name)) for item in items]
+    options_html_code = get_html_code_for_options(option_tuple_list)
 
     # Constructs url
     url = build_url(item_name=item_name, name_of_app_with_url=name_of_app_with_url)
@@ -148,12 +149,12 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     # Make a builder so we can reuse it later for maced fields
     context[item_name + "_builder"] = build_builder(
         item_name=item_name, item_html_name=item_html_name, item_model=item_model, field_to_order_by=field_to_order_by,
-        url=url, item_options_list=item_options_list, field_list=field_list, allow_empty=allow_empty
+        url=url, options_html_code=options_html_code, field_list=field_list, allow_empty=allow_empty
     )
 
     # All the special html that is built in python
     html_code_dictionary = build_html_code(
-        context=context, item_options_list=item_options_list, item_name=item_name, item_html_name=item_html_name,
+        context=context, options_html_code=options_html_code, item_name=item_name, item_html_name=item_html_name,
         field_list=field_list
     )
 
@@ -164,7 +165,7 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
 
     context[item_name + "_item"] = maced_html_code
     context["individual_maced_modals"][item_name] = maced_modal_html_code  # This will be added to "maced_modals" later
-    context[item_name + "_item_options_list"] = item_options_list
+    context[item_name + "_options_html_code"] = options_html_code
 
 
 # A nice helper function to simplify code for whoever is using this app. Since current_item_id is required, this makes
@@ -219,7 +220,7 @@ def finalize_context_for_items(context, login_url=None):
     maced_data["field_identifiers"] = json.dumps(maced_data["field_identifiers"])
     maced_data["login_url"] = json.dumps(login_url)
 
-    delete_list = ("_builder", "_item_options_list", "_dependencies")
+    delete_list = ("_builder", "_options_html_code", "_dependencies")
 
     for key in context.keys():
         if any(delete_item in key for delete_item in delete_list):
@@ -289,7 +290,7 @@ def get_items(item_model, field_to_order_by=None):
 
 
 
-def build_html_code(context, item_options_list, item_name, item_html_name, field_list):
+def build_html_code(context, options_html_code, item_name, item_html_name, field_list):
     maced_data = context["maced_data"]
     html_code_dictionary = {}
     html_code_dictionary[item_name] = {}
@@ -297,13 +298,11 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
     for action_type in PRIMARY_ACTION_TYPES:
         html_code_dictionary[item_name][action_type] = ""
 
-    maced_object_option_html_code = get_html_code_for_options(option_tuple_list=item_options_list)
-
     # Merge has special html before the regular html
     merge_context = {}
     merge_context["item_name"] = item_name
     merge_context["item_html_name"] = item_html_name
-    merge_context["maced_object_option_html_code"] = maced_object_option_html_code
+    merge_context["options_html_code"] = options_html_code
     html_code_dictionary[item_name][MERGE] = render(
         request=None, template_name="maced/merge_table_row_1.html", context=merge_context
     ).content
@@ -400,12 +399,12 @@ def build_url(item_name, name_of_app_with_url):
     return url
 
 
-def build_builder(item_name, item_html_name, item_model, field_to_order_by, url, item_options_list, field_list, allow_empty):
+def build_builder(item_name, item_html_name, item_model, field_to_order_by, url, options_html_code, field_list, allow_empty):
     builder = {}
     builder["item_name"] = item_name
     builder["item_html_name"] = item_html_name
     builder["items"] = get_items(item_model, field_to_order_by)
-    builder["item_options_list"] = item_options_list
+    builder["options_html_code"] = options_html_code
     builder["field_list"] = field_list
     builder["url"] = url
     builder["allow_empty"] = allow_empty
@@ -454,7 +453,7 @@ def build_templates(builder, html_code_dictionary, item_id):
 # MACED
 def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
     context = maced_info["context"]
-    item_options_list = context[maced_info["maced_name"] + "_item_options_list"]
+    options_html_code = context[maced_info["maced_name"] + "_options_html_code"]
 
     if action_type == ADD or action_type == EDIT:
         maced_name = maced_info["maced_name"]
@@ -468,13 +467,9 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
             context=context, maced_name=maced_name, action_type=action_type, item_path=item_path
         )
     elif action_type == MERGE:
-        options_html_code = get_html_code_for_options(option_tuple_list=item_options_list)
-
         html_code = get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code)
     else:
-        options_html_code = get_html_code_for_options(option_tuple_list=item_options_list)
-
-        html_code = get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, item_options_list)
+        html_code = get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, options_html_code)
 
     return html_code
 
@@ -489,8 +484,9 @@ def get_items_html_code_for_text(item_name, action_type, field_html_name, field_
     context["action_type"] = action_type
     context["field_html_name"] = field_html_name
     context["field_name"] = field_name
+    context["input_type"] = TEXT
 
-    return render(request=None, template_name="maced/inputs/text.html", context=context).content
+    return render(request=None, template_name="maced/inputs/regular_input.html", context=context).content
 
 
 def get_merge_html_code_for_text(item_name, field_html_name, field_name):
@@ -500,7 +496,7 @@ def get_merge_html_code_for_text(item_name, field_html_name, field_name):
     context["field_html_name"] = field_html_name
     context["field_name"] = field_name
 
-    return render(request=None, template_name="maced/inputs/merge_text.html", context=context).content
+    return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
 
 
 # COLOR
@@ -513,8 +509,9 @@ def get_items_html_code_for_color(item_name, action_type, field_html_name, field
     context["action_type"] = action_type
     context["field_html_name"] = field_html_name
     context["field_name"] = field_name
+    context["input_type"] = COLOR
 
-    return render(request=None, template_name="maced/inputs/color.html", context=context).content
+    return render(request=None, template_name="maced/inputs/regular_input.html", context=context).content
 
 
 def get_merge_html_code_for_color(item_name, field_html_name, field_name):
@@ -524,13 +521,11 @@ def get_merge_html_code_for_color(item_name, field_html_name, field_name):
     context["field_html_name"] = field_html_name
     context["field_name"] = field_name
 
-    return render(request=None, template_name="maced/inputs/merge_color.html", context=context).content
+    return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
 
 
 # SELECT
-def get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, options_info):
-    options_html_code = get_html_code_for_options(option_tuple_list=options_info)
-
+def get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, options_html_code):
     if action_type == MERGE:
         return get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code)
 
@@ -539,9 +534,10 @@ def get_items_html_code_for_select(item_name, action_type, field_html_name, fiel
     context["action_type"] = action_type
     context["field_html_name"] = field_html_name
     context["field_name"] = field_name
+    context["input_type"] = "select"
     context["options_html_code"] = options_html_code
 
-    return render(request=None, template_name="maced/inputs/select.html", context=context).content
+    return render(request=None, template_name="maced/inputs/regular_input.html", context=context).content
 
 
 def get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code):
@@ -552,7 +548,7 @@ def get_merge_html_code_for_select(item_name, field_html_name, field_name, optio
     context["field_name"] = field_name
     context["options_html_code"] = options_html_code
 
-    return render(request=None, template_name="maced/inputs/merge_select.html", context=context).content
+    return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
 
 
 # OPTIONS FOR SELECT
@@ -560,7 +556,7 @@ def get_html_code_for_options(option_tuple_list):
     context = {}
     context["option_tuple_list"] = option_tuple_list
 
-    return render(request=None, template_name="maced/inputs/merge_select.html", context=context).content
+    return render(request=None, template_name="maced/inputs/options.html", context=context).content
 
 
 # OTHER
@@ -583,7 +579,7 @@ def get_html_code_for_maced_fields(context, maced_name, action_type, item_path):
 
         # Build the special python-html
         html_code_dictionary = build_html_code(
-            context=context, item_options_list=child_builder["item_options_list"],
+            context=context, options_html_code=child_builder["options_html_code"],
             item_name=child_builder["item_name"], item_html_name=child_builder["item_html_name"],
             field_list=child_builder["field_list"]
         )
@@ -617,7 +613,7 @@ def get_html_code_for_maced_fields(context, maced_name, action_type, item_path):
 
     # Build the special python-html
     html_code_dictionary = build_html_code(
-        context=context, item_options_list=builder["item_options_list"], item_name=builder["item_name"],
+        context=context, options_html_code=builder["options_html_code"], item_name=builder["item_name"],
         item_html_name=builder["item_html_name"], field_list=builder["field_list"]
     )
 

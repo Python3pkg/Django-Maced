@@ -1,0 +1,13 @@
+<{% if input_type == "select" %}select{% else %}input{% endif %}
+    type="color" class="maced form-control" id="{{ action_type }}-{{ item_name }}{{ panel_number }}-{{ field_name }}-input"
+    {% if input_type == "color" %}
+        value="#00FF00"
+    {% endif %}
+    {% if can_disable %}
+        disabled
+    {% endif %}
+    {% if input_type == "select" %}>
+        {{ options_html_code|safe }}
+        </select
+    {% endif %}
+>
