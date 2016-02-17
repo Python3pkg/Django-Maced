@@ -386,9 +386,6 @@ def build_html_code(context, options_html_code, item_name, item_html_name, field
         maced_data["field_names"][item_name].append(field["name"])
         maced_data["field_identifiers"][item_name].append(field["name"])
 
-    # Merge has special html after the regular html
-    html_code_dictionary[item_name][MERGE] += "</table>"
-
     return html_code_dictionary
 
 
