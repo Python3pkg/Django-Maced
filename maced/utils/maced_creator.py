@@ -300,31 +300,13 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
     maced_object_option_html_code = get_html_code_for_options(item_options_list)
 
     # Merge has special html before the regular html
-    html_code_dictionary[item_name][MERGE] = '<table class="maced table">' + render(request=None, template_name="maced/merge_table_row_1.html", context={"item_name": item_name, "item_html_name": item_html_name, "maced_object_option_html_code": maced_object_option_html_code}).content
-    # html_code_dictionary[item_name][MERGE] = \
-    #     '<table class="maced table">' + \
-    #         '<tr class="maced">' + \
-    #             '<th class="maced" style="border: 0;"></th>' + \
-    #             '<th class="maced" style="text-align: center; vertical-align: middle; border: 0;"> ' + item_html_name + ' 1 </th>' + \
-    #             '<th class="maced" style="text-align: center; vertical-align: middle; border: 0;"> All </th>' + \
-    #             '<th class="maced" style="text-align: center; vertical-align: middle; border: 0; background-color: #F7D358;">' + \
-    #                 'Resulting ' + item_html_name + \
-    #             '</th>' + \
-    #             '<th class="maced" style="text-align: center; vertical-align: middle; border: 0;"> All </th>' + \
-    #             '<th class="maced" style="text-align: center; vertical-align: middle; border: 0;"> ' + item_html_name + ' 2 </th>' + \
-    #         '</tr>' + \
-    #         '<tr class="maced">' + \
-    #             '<th class="maced" style="border-bottom: 1px solid black; border-top: 0;"></th>' + \
-    #             '<th style="border-bottom: 1px solid black; border-top: 0;">' + \
-    #                 '<select class="maced form-control" id="merge-' + item_name + '1-input">' + maced_object_option_html_code + '</select>' + \
-    #             '</th>' + \
-    #             '<th class="maced" style="border-bottom: 1px solid black; border-top: 0; width: 0px;"> <button type="button" class="maced glyphicon glyphicon-arrow-right" style="color: Green; font-size: 20px"></button> </th>' + \
-    #             '<th class="maced" style="background-color: #F7D358; border-bottom: 1px solid black; border-top: 0;"></th>' + \
-    #             '<th class="maced" style="border-bottom: 1px solid black; border-top: 0; width: 0px;"> <button type="button" class="maced glyphicon glyphicon-arrow-left" style="color: Green; font-size: 20px"></button> </th>' + \
-    #             '<th style="border-bottom: 1px solid black; border-top: 0;">' + \
-    #                 '<select class="maced form-control" id="merge-' + item_name + '2-input">' + maced_object_option_html_code + '</select>' + \
-    #             '</th>' + \
-    #         '</tr>'
+    merge_context = {}
+    merge_context["item_name"] = item_name
+    merge_context["item_html_name"] = item_html_name
+    merge_context["maced_object_option_html_code"] = maced_object_option_html_code
+    html_code_dictionary[item_name][MERGE] = render(
+        request=None, template_name="maced/merge_table_row_1.html", context=merge_context
+    ).content
 
     # Create html input fields for each field on the model
     for field in field_list:
