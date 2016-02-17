@@ -904,9 +904,17 @@ function merge_into_middle(from_id, to_id)
 {
     var from_input = $("#" + from_id);
     var to_input = $("#" + to_id);
+
+    to_input.val(from_input.val());
 }
 
-function merge_all_into_middle(from_id, to_id)
+function merge_all_into_middle(modal_id, panel_number)
 {
+    var modal = $("#" + modal_id);
+    var merge_buttons = modal.find(".maced-merge-button-" + panel_number);
 
+    merge_buttons.each(function()
+    {
+        $(this).trigger("click");
+    });
 }

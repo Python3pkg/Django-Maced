@@ -303,6 +303,10 @@ def build_html_code(context, options_html_code, item_name, item_html_name, field
     merge_context["item_name"] = item_name
     merge_context["item_html_name"] = item_html_name
     merge_context["options_html_code"] = options_html_code
+    merge_context["input_id1"] = MERGE + "-" + item_name + "1-input"
+    merge_context["input_id2"] = MERGE + "-" + item_name + "2-input"
+    merge_context["modal_id"] = MERGE + "-" + item_name + "-modal"
+
     html_code_dictionary[item_name][MERGE] = render(
         request=None, template_name="maced/merge_table_row_1.html", context=merge_context
     ).content
