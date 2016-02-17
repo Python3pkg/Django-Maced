@@ -11,26 +11,26 @@
     <th class="maced" style="text-align: center; vertical-align: middle; border: 0;"> {{ item_html_name }} 2 </th>
 </tr>
 <tr class="maced">
-    <th class="maced" style="border-bottom: 1px solid black; border-top: 0;"></th>
-    <th style="border-bottom: 1px solid black; border-top: 0;">
+    <th class="maced" style="border-bottom: 1px; border-top: 0;"></th>
+    <th style="border-bottom: 1px; border-top: 0;">
         <select class="maced form-control" id="{{ input_id1 }}">
             {{ options_html_code|safe }}
         </select>
     </th>
-    <th class="maced" style="border-bottom: 1px solid black; border-top: 0; width: 0;">
+    <th class="maced" style="border-bottom: 1px; border-top: 0; width: 1px;">
         <button type="button" class="maced btn btn-info" id="{{ input_id1 }}-button"
             onclick="merge_all_into_middle('{{ modal_id }}', 1);" aria-hidden="true">
             {% bootstrap_icon "arrow-right" %}
         </button>
     </th>
-    <th class="maced" style="background-color: #F7D358; border-bottom: 1px solid black; border-top: 0;"></th>
-    <th class="maced" style="border-bottom: 1px solid black; border-top: 0; width: 0;">
+    <th class="maced" style="background-color: #F7D358; border-bottom: 1px; border-top: 0;"></th>
+    <th class="maced" style="border-bottom: 1px; border-top: 0; width: 1px;">
         <button type="button" class="maced btn btn-info" id="{{ input_id2 }}-button"
             onclick="merge_all_into_middle('{{ modal_id }}', 2);" aria-hidden="true">
             {% bootstrap_icon "arrow-left" %}
         </button>
     </th>
-    <th style="border-bottom: 1px solid black; border-top: 0;">
+    <th style="border-bottom: 1px; border-top: 0;">
         <select class="maced form-control" id="merge-{{ item_name }}2-input">
             {{ options_html_code|safe }}
         </select>
