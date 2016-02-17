@@ -1,6 +1,6 @@
 <tr>
-    <th class="maced"> {{ field_html_name }}: </th>
-    <td>
+    <th class="maced" style="border: 0;"> {{ field_html_name }}: </th>
+    <td style="border: 0;">
         <{% if input_type == "select" %}select{% else %}input type="{{ input_type }}"{% endif %}
             class="maced form-control" id="{{ action_type }}-{{ item_name }}-{{ field_name }}-input"
             {% if input_type == "color" %}
