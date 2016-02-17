@@ -297,7 +297,7 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
     for action_type in PRIMARY_ACTION_TYPES:
         html_code_dictionary[item_name][action_type] = ""
 
-    maced_object_option_html_code = get_html_code_for_options(item_options_list)
+    maced_object_option_html_code = get_html_code_for_options(option_tuple_list=item_options_list)
 
     # Merge has special html before the regular html
     merge_context = {}
@@ -468,19 +468,13 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
             context=context, maced_name=maced_name, action_type=action_type, item_path=item_path
         )
     elif action_type == MERGE:
-        options_html_code = get_html_code_for_options(item_options_list)
+        options_html_code = get_html_code_for_options(option_tuple_list=item_options_list)
 
         html_code = get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code)
     else:
-        options_html_code = get_html_code_for_options(item_options_list)
+        options_html_code = get_html_code_for_options(option_tuple_list=item_options_list)
 
-        html_code = '<b class="maced">' + field_html_name + ': </b>'
-        html_code += '<select class="maced form-control" id="' + action_type + '-' + item_name + '-' + field_name + '-input" '
-
-        if action_type == DELETE or action_type == CLONE or action_type == INFO:
-            html_code += 'disabled '
-
-        html_code += '>' + options_html_code + '</select>'
+        html_code = get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, item_options_list)
 
     return html_code
 
@@ -535,7 +529,7 @@ def get_merge_html_code_for_color(item_name, field_html_name, field_name):
 
 # SELECT
 def get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, options_info):
-    options_html_code = get_html_code_for_options(options_info)
+    options_html_code = get_html_code_for_options(option_tuple_list=options_info)
 
     if action_type == MERGE:
         return get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code)
@@ -562,18 +556,11 @@ def get_merge_html_code_for_select(item_name, field_html_name, field_name, optio
 
 
 # OPTIONS FOR SELECT
-def get_html_code_for_options(options_list, selected_index=None):
-    html_code = ''
+def get_html_code_for_options(option_tuple_list):
+    context = {}
+    context["option_tuple_list"] = option_tuple_list
 
-    for i in range(len(options_list)):
-        html_code += '<option class="maced" value="' + str(options_list[i][0]) + '" '
-
-        if i == selected_index:
-            html_code += 'selected'
-
-        html_code += '> ' + str(options_list[i][1]) + ' </option>'
-
-    return html_code
+    return render(request=None, template_name="maced/inputs/merge_select.html", context=context).content
 
 
 # OTHER
