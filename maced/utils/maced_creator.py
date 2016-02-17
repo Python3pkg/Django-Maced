@@ -466,8 +466,6 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
         html_code = get_html_code_for_maced_fields(
             context=context, maced_name=maced_name, action_type=action_type, item_path=item_path
         )
-    elif action_type == MERGE:
-        html_code = get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code)
     else:
         html_code = get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, options_html_code)
 
@@ -476,9 +474,6 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
 
 # TEXT
 def get_items_html_code_for_text(item_name, action_type, field_html_name, field_name):
-    if action_type == MERGE:
-        return get_merge_html_code_for_text(item_name, field_html_name, field_name)
-
     context = {}
     context["item_name"] = item_name
     context["action_type"] = action_type
@@ -486,25 +481,14 @@ def get_items_html_code_for_text(item_name, action_type, field_html_name, field_
     context["field_name"] = field_name
     context["input_type"] = TEXT
 
+    if action_type == MERGE:
+        return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
+
     return render(request=None, template_name="maced/inputs/regular_input.html", context=context).content
-
-
-def get_merge_html_code_for_text(item_name, field_html_name, field_name):
-    context = {}
-    context["item_name"] = item_name
-    context["action_type"] = MERGE
-    context["field_html_name"] = field_html_name
-    context["field_name"] = field_name
-    context["input_type"] = TEXT
-
-    return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
 
 
 # COLOR
 def get_items_html_code_for_color(item_name, action_type, field_html_name, field_name):
-    if action_type == MERGE:
-        return get_merge_html_code_for_color(item_name, field_html_name, field_name)
-
     context = {}
     context["item_name"] = item_name
     context["action_type"] = action_type
@@ -512,25 +496,14 @@ def get_items_html_code_for_color(item_name, action_type, field_html_name, field
     context["field_name"] = field_name
     context["input_type"] = COLOR
 
+    if action_type == MERGE:
+        return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
+
     return render(request=None, template_name="maced/inputs/regular_input.html", context=context).content
-
-
-def get_merge_html_code_for_color(item_name, field_html_name, field_name):
-    context = {}
-    context["item_name"] = item_name
-    context["action_type"] = MERGE
-    context["field_html_name"] = field_html_name
-    context["field_name"] = field_name
-    context["input_type"] = COLOR
-
-    return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
 
 
 # SELECT
 def get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, options_html_code):
-    if action_type == MERGE:
-        return get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code)
-
     context = {}
     context["item_name"] = item_name
     context["action_type"] = action_type
@@ -539,19 +512,10 @@ def get_items_html_code_for_select(item_name, action_type, field_html_name, fiel
     context["input_type"] = SELECT
     context["options_html_code"] = options_html_code
 
+    if action_type == MERGE:
+        return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
+
     return render(request=None, template_name="maced/inputs/regular_input.html", context=context).content
-
-
-def get_merge_html_code_for_select(item_name, field_html_name, field_name, options_html_code):
-    context = {}
-    context["item_name"] = item_name
-    context["action_type"] = MERGE
-    context["field_html_name"] = field_html_name
-    context["field_name"] = field_name
-    context["input_type"] = SELECT
-    context["options_html_code"] = options_html_code
-
-    return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
 
 
 # OPTIONS FOR SELECT
