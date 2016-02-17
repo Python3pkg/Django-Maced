@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
 from maced.utils.constants import PRIMARY_ACTION_TYPES, VALID_INPUT_TYPES, VALID_SELECT_TYPES, ADD, EDIT, MERGE, DELETE, \
-    CLONE, INFO, COLOR, TEXT
+    CLONE, INFO, COLOR, TEXT, SELECT
 from maced.utils.misc import validate_select_options, prettify_string
 
 
@@ -495,6 +495,7 @@ def get_merge_html_code_for_text(item_name, field_html_name, field_name):
     context["action_type"] = MERGE
     context["field_html_name"] = field_html_name
     context["field_name"] = field_name
+    context["input_type"] = TEXT
 
     return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
 
@@ -520,6 +521,7 @@ def get_merge_html_code_for_color(item_name, field_html_name, field_name):
     context["action_type"] = MERGE
     context["field_html_name"] = field_html_name
     context["field_name"] = field_name
+    context["input_type"] = COLOR
 
     return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
 
@@ -534,7 +536,7 @@ def get_items_html_code_for_select(item_name, action_type, field_html_name, fiel
     context["action_type"] = action_type
     context["field_html_name"] = field_html_name
     context["field_name"] = field_name
-    context["input_type"] = "select"
+    context["input_type"] = SELECT
     context["options_html_code"] = options_html_code
 
     return render(request=None, template_name="maced/inputs/regular_input.html", context=context).content
@@ -546,6 +548,7 @@ def get_merge_html_code_for_select(item_name, field_html_name, field_name, optio
     context["action_type"] = MERGE
     context["field_html_name"] = field_html_name
     context["field_name"] = field_name
+    context["input_type"] = SELECT
     context["options_html_code"] = options_html_code
 
     return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
