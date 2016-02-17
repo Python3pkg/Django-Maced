@@ -300,6 +300,7 @@ def build_html_code(context, item_options_list, item_name, item_html_name, field
     maced_object_option_html_code = get_html_code_for_options(item_options_list)
 
     # Merge has special html before the regular html
+    # '<table class="maced table">' + render(request=None, template_name="maced/merge_table_row_1.html", context={"item_name": item_name, "item_html_name": item_html_name, "maced_object_option_html_code": maced_object_option_html_code}).content
     html_code_dictionary[item_name][MERGE] = \
         '<table class="maced table">' + \
             '<tr class="maced">' + \
