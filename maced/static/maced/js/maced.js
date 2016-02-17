@@ -899,3 +899,14 @@ function change_item_visibility(item_name, should_turn_on)
         item_tr.css("display", "none");
     }
 }
+
+function merge_into_middle(from_id, to_id)
+{
+    var from_input = $("#" + from_id);
+    var to_input = $("#" + to_id);
+}
+
+function merge_all_into_middle(from_id, to_id)
+{
+
+}

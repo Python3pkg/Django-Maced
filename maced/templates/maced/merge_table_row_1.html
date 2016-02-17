@@ -1,3 +1,5 @@
+{% load bootstrap3 %}
+
 <tr class="maced">
     <th class="maced" style="border: 0;"></th>
     <th class="maced" style="text-align: center; vertical-align: middle; border: 0;"> {{ item_html_name }} 1 </th>
@@ -16,11 +18,17 @@
         </select>
     </th>
     <th class="maced" style="border-bottom: 1px solid black; border-top: 0; width: 0;">
-        <button type="button" class="maced glyphicon glyphicon-arrow-right" style="color: Green; font-size: 20px"></button>
+        <button type="button" class="maced btn btn-info" id="{{ action_type }}-{{ item_name }}1-{{ field_name }}-input-button"
+            onclick="merge_all_into_middle('{{ action_type }}-{{ item_name }}1-{{ field_name }}-input', '{{ action_type }}-{{ item_name }}-{{ field_name }}-input');"
+            aria-hidden="true">
+            {% bootstrap_icon "arrow-right" %}
+        </button>
     </th>
     <th class="maced" style="background-color: #F7D358; border-bottom: 1px solid black; border-top: 0;"></th>
     <th class="maced" style="border-bottom: 1px solid black; border-top: 0; width: 0;">
-        <button type="button" class="maced glyphicon glyphicon-arrow-left" style="color: Green; font-size: 20px"></button>
+        <button type="button" class="maced btn btn-info" aria-hidden="true">
+            {% bootstrap_icon "arrow-left" %}
+        </button>
     </th>
     <th style="border-bottom: 1px solid black; border-top: 0;">
         <select class="maced form-control" id="merge-{{ item_name }}2-input">

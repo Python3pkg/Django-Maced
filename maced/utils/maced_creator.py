@@ -477,6 +477,9 @@ def get_items_html_code_for_text(item_name, action_type, field_html_name, field_
     context["field_html_name"] = field_html_name
     context["field_name"] = field_name
     context["input_type"] = TEXT
+    context["input_id"] = action_type + "-" + item_name + "-" + field_name + "-input"
+    context["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
+    context["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
 
     if action_type == MERGE:
         return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
@@ -492,6 +495,9 @@ def get_items_html_code_for_color(item_name, action_type, field_html_name, field
     context["field_html_name"] = field_html_name
     context["field_name"] = field_name
     context["input_type"] = COLOR
+    context["input_id"] = action_type + "-" + item_name + "-" + field_name + "-input"
+    context["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
+    context["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
 
     if action_type == MERGE:
         return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
@@ -507,6 +513,9 @@ def get_items_html_code_for_select(item_name, action_type, field_html_name, fiel
     context["field_html_name"] = field_html_name
     context["field_name"] = field_name
     context["input_type"] = SELECT
+    context["input_id"] = action_type + "-" + item_name + "-" + field_name + "-input"
+    context["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
+    context["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
     context["options_html_code"] = options_html_code
 
     if action_type == MERGE:

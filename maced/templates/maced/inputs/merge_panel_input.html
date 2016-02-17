@@ -1,5 +1,5 @@
 <{% if input_type == "select" %}select{% else %}input type="{{ input_type }}"{% endif %}
-    class="maced form-control" id="{{ action_type }}-{{ item_name }}{{ panel_number }}-{{ field_name }}-input"
+    class="maced form-control" id="{{ input_id }}"
     {% if input_type == "color" %}
         value="#00FF00"
     {% endif %}

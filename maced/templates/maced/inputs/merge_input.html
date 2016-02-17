@@ -1,25 +1,35 @@
+{% load bootstrap3 %}
+
 <tr class="maced">
     <th class="maced" style="border: 0;">
         {{ field_html_name }}:
     </th>
 
     <td class="maced" style="border: 0;">
-        {% include "maced/inputs/merge_panel_input.html" with panel_number="1" can_disable=True %}
+        {% include "maced/inputs/merge_panel_input.html" with input_id=input_id1 can_disable=True %}
     </td>
 
     <th class="maced" style="border: 0;">
-        <button type="button" class="maced glyphicon glyphicon-arrow-right" style="color: Green; font-size: 20px;"></button>
+        <button type="button" class="maced maced-merge-button-1 btn btn-info" id="{{ input_id1 }}-button"
+            onclick="merge_into_middle('{{ input_id1 }}', '{{ input_id }}');"
+            aria-hidden="true">
+            {% bootstrap_icon "arrow-right" %}
+        </button>
     </th>
 
     <td class="maced" style="border: 0; background-color: #F7D358;">
-        {% include "maced/inputs/merge_panel_input.html" with panel_number="" can_disable=False %}
+        {% include "maced/inputs/merge_panel_input.html" with input_id=input_id can_disable=False %}
     </td>
 
     <th class="maced" style="border: 0;">
-        <button type="button" class="maced glyphicon glyphicon-arrow-left" style="color: Green; font-size: 20px;"></button>
+        <button type="button" class="maced maced-merge-button-2 btn btn-info" id="{{ input_id2 }}-button"
+            onclick="merge_into_middle('{{ input_id2 }}', '{{ input_id }}');"
+            aria-hidden="true">
+            {% bootstrap_icon "arrow-left" %}
+        </button>
     </th>
 
     <td class="maced" style="border: 0;">
-        {% include "maced/inputs/merge_panel_input.html" with panel_number="2" can_disable=True %}
+        {% include "maced/inputs/merge_panel_input.html" with input_id=input_id2 can_disable=True %}
     </td>
 </tr>
