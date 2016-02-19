@@ -914,7 +914,7 @@ function merge_all_into_middle(modal_id, panel_number)
 
 function merge_items_in_select(item_select, item1_id, item2_id, new_name)
 {
-    remove_item_from_select(item_select, item2_id);
+    delete_item_from_select(item_select, item2_id);
     item_select.find("option[value=" + item1_id + "]").prop("selected", true).text(new_name);
 }
 
