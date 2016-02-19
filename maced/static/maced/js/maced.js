@@ -174,24 +174,17 @@ function merge_item(item_name)
         {
             var out_data_json = JSON.parse(out_data);
             var name = out_data_json["name"];
-            var id = out_data_json["id"];
             var field_identifier;
 
             spinner.css("display", "none");
             modal.modal("hide");
             $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
 
-            // For the following "finds", which option is used to remove and which is used to set to doesn't matter
-
-            // Remove the old option
-            item_select.find("option[value=" + item2_id + "]").remove();
-            merge_item1_select.find("option[value=" + item2_id + "]").remove();
-            merge_item2_select.find("option[value=" + item2_id + "]").remove();
-
-            // Turn the other option into the new merged option and select it
-            item_select.find("option[value=" + item1_id + "]").attr("value", id).prop("selected", true).text(name);
-            merge_item1_select.find("option[value=" + item1_id + "]").attr("value", id).prop("selected", true).text(name);
-            merge_item2_select.find("option[value=" + item1_id + "]").attr("value", id).prop("selected", true).text(name);
+            // Remove the old options and select the new one. Technically this is just deleting the second one and
+            // selecting the first one and giving it the new name.
+            merge_items_in_select(item_select, item1_id, item2_id, name);
+            merge_items_in_select(merge_item1_select, item1_id, item2_id, name);
+            merge_items_in_select(merge_item2_select, item1_id, item2_id, name);
 
             // Reset the modal for the next item merge
             for (i = 0; i < maced_field_names[item_name].length; i++)
@@ -263,9 +256,9 @@ function add_item(item_name)
             $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
 
             // Add the new option to the select and select it
-            item_select.append($("<option selected></option>").attr("value", id).text(name));
-            merge_item1_select.append($("<option selected></option>").attr("value", id).text(name));
-            merge_item2_select.append($("<option></option>").attr("value", id).text(name));  // Select 2 doesn't need to have its selection overridden
+            add_item_to_select(item_select, id, name, true);
+            add_item_to_select(merge_item1_select, id, name, true);
+            add_item_to_select(merge_item2_select, id, name, false);  // Select 2 doesn't need to have its selection overridden
 
             // Reset the modal for the next item addition
             for (i = 0; i < maced_field_names[item_name].length; i++)
@@ -339,9 +332,9 @@ function clone_item(item_name)
     //        $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
     //
     //        // Add the new option to the select and select it
-    //        item_select.append($("<option selected></option>").attr("value", id).text(name));
-    //        merge_item1_select.append($("<option selected></option>").attr("value", id).text(name));
-    //        merge_item2_select.append($("<option></option>").attr("value", id).text(name));  // Select 2 doesn't need to have its selection overridden
+    //        add_item_to_select(item_select, id, name, true);
+    //        add_item_to_select(merge_item1_select, id, name, true);
+    //        add_item_to_select(merge_item2_select, id, name, false);  // Select 2 doesn't need to have its selection overridden
     //
     //        // Fill modals with this new data
     //        get_item(item_name, 0);
@@ -409,9 +402,9 @@ function edit_item(item_name)
             $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
 
             // Update the option with the new name (could be the same name though)
-            item_select.find(":selected").text(name);  // Using selected because it is probably faster
-            merge_item1_select.find("option[value=" + item_id + "]").text(name);  // Not using selected for these since it can't be guaranteed that is the selected one
-            merge_item2_select.find("option[value=" + item_id + "]").text(name);  // Not using selected for these since it can't be guaranteed that is the selected one
+            edit_item_name_in_select(item_select, item_id, name);
+            edit_item_name_in_select(merge_item1_select, item_id, name);
+            edit_item_name_in_select(merge_item2_select, item_id, name);
 
             // Fill modals with this new data
             get_item(item_name, 0);
@@ -465,9 +458,9 @@ function delete_item(item_name)
             $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
 
             // Remove the option from the select
-            item_select.find(":selected").remove();  // Using selected because it is probably faster
-            merge_item1_select.find("option[value=" + item_id + "]").remove();  // Not using selected for these since it can't be guaranteed that is the selected one
-            merge_item2_select.find("option[value=" + item_id + "]").remove();  // Not using selected for these since it can't be guaranteed that is the selected one
+            delete_item_from_select(item_select, item_id);
+            delete_item_from_select(merge_item1_select, item_id);
+            delete_item_from_select(merge_item2_select, item_id);
 
             // Fill modals with this with data from whatever is the new selection
             get_item(item_name, 0);
@@ -918,3 +911,38 @@ function merge_all_into_middle(modal_id, panel_number)
         $(this).trigger("click");
     });
 }
+
+function merge_items_in_select(item_select, item1_id, item2_id, new_name)
+{
+    remove_item_from_select(item_select, item2_id);
+    item_select.find("option[value=" + item1_id + "]").prop("selected", true).text(new_name);
+}
+
+function add_item_to_select(item_select, item_id, name, should_be_selected)
+{
+    var option = $("<option></option>").prop("value", item_id).text(name);
+
+    if (should_be_selected)
+    {
+        option.prop("selected", true);
+    }
+
+    item_select.append(option);
+}
+
+// Originally was going to call this update instead of edit, but I thought it fits better with macEd
+function edit_item_name_in_select(item_select, item_id, new_name)
+{
+    item_select.find("option[value=" + item_id + "]").text(new_name);
+}
+
+// Originally was going to call this remove instead of delete, but I thought it fits better with maceD
+function delete_item_from_select(item_select, item_id)
+{
+    item_select.find("option[value=" + item_id + "]").remove();
+}
+
+
+
+
+

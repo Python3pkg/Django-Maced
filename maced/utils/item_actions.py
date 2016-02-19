@@ -63,7 +63,6 @@ def merge_item(item_model, fields_to_save, item_name, item1_id, item2_id, item_n
     merge_model_objects(item1, item2)
 
     data["name"] = item_name
-    data["id"] = item1_id
 
     return data
 
