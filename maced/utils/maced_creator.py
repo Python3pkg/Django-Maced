@@ -494,67 +494,67 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
 
 # TEXT
 def get_items_html_code_for_text(item_name, action_type, field_html_name, field_name):
-    context = {}
-    context["item_name"] = item_name
-    context["action_type"] = action_type
-    context["field_html_name"] = field_html_name
-    context["field_name"] = field_name
-    context["input_type"] = TEXT
-    context["input_id"] = action_type + "-" + item_name + "-" + field_name + "-input"
-    context["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
-    context["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
+    subcontext = {}
+    subcontext["item_name"] = item_name
+    subcontext["action_type"] = action_type
+    subcontext["field_html_name"] = field_html_name
+    subcontext["field_name"] = field_name
+    subcontext["input_type"] = TEXT
+    subcontext["input_id"] = action_type + "-" + item_name + "-" + field_name + "-input"
+    subcontext["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
+    subcontext["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
 
     if action_type == MERGE:
-        return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
+        return render(request=None, template_name="maced/inputs/merge_input.html", context=subcontext).content
 
-    return render(request=None, template_name="maced/inputs/regular_input.html", context=context).content
+    return render(request=None, template_name="maced/inputs/regular_input.html", context=subcontext).content
 
 
 # COLOR
 def get_items_html_code_for_color(item_name, action_type, field_html_name, field_name):
-    context = {}
-    context["item_name"] = item_name
-    context["action_type"] = action_type
-    context["field_html_name"] = field_html_name
-    context["field_name"] = field_name
-    context["input_type"] = COLOR
-    context["input_id"] = action_type + "-" + item_name + "-" + field_name + "-input"
-    context["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
-    context["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
+    subcontext = {}
+    subcontext["item_name"] = item_name
+    subcontext["action_type"] = action_type
+    subcontext["field_html_name"] = field_html_name
+    subcontext["field_name"] = field_name
+    subcontext["input_type"] = COLOR
+    subcontext["input_id"] = action_type + "-" + item_name + "-" + field_name + "-input"
+    subcontext["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
+    subcontext["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
 
     if action_type == MERGE:
-        return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
+        return render(request=None, template_name="maced/inputs/merge_input.html", context=subcontext).content
 
-    return render(request=None, template_name="maced/inputs/regular_input.html", context=context).content
+    return render(request=None, template_name="maced/inputs/regular_input.html", context=subcontext).content
 
 
 # SELECT
 def get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, options_html_code, is_maced_item):
-    context = {}
-    context["item_name"] = item_name
-    context["action_type"] = action_type
-    context["field_html_name"] = field_html_name
-    context["field_name"] = field_name
-    context["input_type"] = SELECT
-    context["input_id"] = action_type + "-" + item_name + "-" + field_name + "-input"
-    context["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
-    context["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
-    context["options_html_code"] = options_html_code
+    subcontext = {}
+    subcontext["item_name"] = item_name
+    subcontext["action_type"] = action_type
+    subcontext["field_html_name"] = field_html_name
+    subcontext["field_name"] = field_name
+    subcontext["input_type"] = SELECT
+    subcontext["input_id"] = action_type + "-" + item_name + "-" + field_name + "-input"
+    subcontext["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
+    subcontext["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
+    subcontext["options_html_code"] = options_html_code
 
-    # context[item_name + "_dependees"]
+    subcontext[item_name + "_dependees"]
 
     if action_type == MERGE:
-        return render(request=None, template_name="maced/inputs/merge_input.html", context=context).content
+        return render(request=None, template_name="maced/inputs/merge_input.html", context=subcontext).content
 
-    return render(request=None, template_name="maced/inputs/regular_input.html", context=context).content
+    return render(request=None, template_name="maced/inputs/regular_input.html", context=subcontext).content
 
 
 # OPTIONS FOR SELECT
 def get_html_code_for_options(option_tuple_list):
-    context = {}
-    context["option_tuple_list"] = option_tuple_list
+    subcontext = {}
+    subcontext["option_tuple_list"] = option_tuple_list
 
-    return render(request=None, template_name="maced/inputs/options.html", context=context).content
+    return render(request=None, template_name="maced/inputs/options.html", context=subcontext).content
 
 
 # OTHER
