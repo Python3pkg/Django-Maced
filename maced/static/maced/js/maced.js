@@ -941,8 +941,3 @@ function delete_item_from_select(item_select, item_id)
 {
     item_select.find("option[value=" + item_id + "]").remove();
 }
-
-
-
-
-
