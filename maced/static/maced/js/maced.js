@@ -144,9 +144,9 @@ function merge_item(item_name)
     {
         reenable_buttons(item_name);
 
-        spinner.css("display", "none");
+        spinner.hide();
         error_div.text("You cannot merge an item with itself");
-        error_div.css("display", "");
+        error_div.show();
 
         return;
     }
@@ -176,9 +176,9 @@ function merge_item(item_name)
             var name = out_data_json["name"];
             var field_identifier;
 
-            spinner.css("display", "none");
+            spinner.hide();
             modal.modal("hide");
-            $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
+            $("#" + action_type + "-" + item_name + "-success-div").show();
 
             // Remove the old options and select the new one. Technically this is just deleting the second one and
             // selecting the first one and giving it the new name.
@@ -205,9 +205,9 @@ function merge_item(item_name)
         {
             reenable_buttons(item_name);
 
-            spinner.css("display", "none");
+            spinner.hide();
             error_div.text(XMLHttpRequest.responseText);
-            error_div.css("display", "");
+            error_div.show();
         }
     });
 }
@@ -251,9 +251,9 @@ function add_item(item_name)
             var name = out_data_json["name"];
             var field_identifier;
 
-            spinner.css("display", "none");
+            spinner.hide();
             modal.modal("hide");
-            $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
+            $("#" + action_type + "-" + item_name + "-success-div").show();
 
             // Add the new option to the select and select it
             add_item_to_select(item_select, id, name, true);
@@ -275,9 +275,9 @@ function add_item(item_name)
         {
             reenable_buttons(item_name);
 
-            spinner.css("display", "none");
+            spinner.hide();
             error_div.text(XMLHttpRequest.responseText);
-            error_div.css("display", "");
+            error_div.show();
         }
     });
 }
@@ -327,9 +327,9 @@ function clone_item(item_name)
     //        var id = out_data_json["id"];
     //        var name = out_data_json["name"];
     //
-    //        spinner.css("display", "none");
+    //        spinner.hide();
     //        modal.modal("hide");
-    //        $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
+    //        $("#" + action_type + "-" + item_name + "-success-div").show();
     //
     //        // Add the new option to the select and select it
     //        add_item_to_select(item_select, id, name, true);
@@ -344,9 +344,9 @@ function clone_item(item_name)
     //    {
     //        reenable_buttons(item_name);
     //
-    //        spinner.css("display", "none");
+    //        spinner.hide();
     //        error_div.text(XMLHttpRequest.responseText);
-    //        error_div.css("display", "");
+    //        error_div.show();
     //    }
     //});
 
@@ -397,9 +397,9 @@ function edit_item(item_name)
             var out_data_json = JSON.parse(out_data);
             var name = out_data_json["name"];
 
-            spinner.css("display", "none");
+            spinner.hide();
             modal.modal("hide");
-            $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
+            $("#" + action_type + "-" + item_name + "-success-div").show();
 
             // Update the option with the new name (could be the same name though)
             edit_item_name_in_select(item_select, item_id, name);
@@ -413,9 +413,9 @@ function edit_item(item_name)
         {
             reenable_buttons(item_name);
 
-            spinner.css("display", "none");
+            spinner.hide();
             error_div.text(XMLHttpRequest.responseText);
-            error_div.css("display", "");
+            error_div.show();
         }
     });
 }
@@ -453,9 +453,9 @@ function delete_item(item_name)
         {
             var out_data_json = JSON.parse(out_data);
 
-            spinner.css("display", "none");
+            spinner.hide();
             modal.modal("hide");
-            $("#" + action_type + "-" + item_name + "-success-div").css("display", "");
+            $("#" + action_type + "-" + item_name + "-success-div").show();
 
             // Remove the option from the select
             delete_item_from_select(item_select, item_id);
@@ -470,9 +470,9 @@ function delete_item(item_name)
         {
             reenable_buttons(item_name);
 
-            spinner.css("display", "none");
+            spinner.hide();
             error_div.text(XMLHttpRequest.responseText);
-            error_div.css("display", "");
+            error_div.show();
         }
     });
 }
@@ -641,9 +641,9 @@ function get_item(item_name, merge_select_number)
 
             if (merge_select_number == 1 || merge_select_number == 2)
             {
-                merge_spinner.css("display", "none");
+                merge_spinner.hide();
                 merge_error_div.text(XMLHttpRequest.responseText);
-                merge_error_div.css("display", "");
+                merge_error_div.show();
             }
             else
             {
@@ -716,10 +716,10 @@ function get_authentication(item_name)
 
 function remove_success_divs(item_name)
 {
-    $("#" + maced_ADD + "-" + item_name + "-success-div").css("display", "none");
-    $("#" + maced_EDIT + "-" + item_name + "-success-div").css("display", "none");
-    $("#" + maced_MERGE + "-" + item_name + "-success-div").css("display", "none");
-    $("#" + maced_DELETE + "-" + item_name + "-success-div").css("display", "none");
+    $("#" + maced_ADD + "-" + item_name + "-success-div").hide();
+    $("#" + maced_EDIT + "-" + item_name + "-success-div").hide();
+    $("#" + maced_MERGE + "-" + item_name + "-success-div").hide();
+    $("#" + maced_DELETE + "-" + item_name + "-success-div").hide();
 }
 
 // Get value from an input for the related item
@@ -885,11 +885,11 @@ function change_item_visibility(item_name, should_turn_on)
 
     if (should_turn_on)
     {
-        item_tr.css("display", "");
+        item_tr.show();
     }
     else
     {
-        item_tr.css("display", "none");
+        item_tr.hide();
     }
 }
 
