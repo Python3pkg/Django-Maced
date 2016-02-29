@@ -161,7 +161,8 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
 
     # The final step of putting it all together to make 2 sets of html; one for the item on the page and one for the modal that pops up.
     maced_html_code, maced_modal_html_code = build_templates(
-        builder=context[item_name + "_builder"], html_code_dictionary=html_code_dictionary, item_id=current_item_id
+        builder=context[item_name + "_builder"], html_code_dictionary=html_code_dictionary, item_id=current_item_id,
+        maced_name=item_name
     )
 
     context[item_name + "_item"] = maced_html_code
@@ -429,7 +430,7 @@ def build_builder(item_name, item_html_name, item_model, field_to_order_by, url,
     return builder
 
 
-def build_templates(builder, html_code_dictionary, item_id):
+def build_templates(builder, html_code_dictionary, item_id, maced_name):
     subcontext = deepcopy(builder)
     item_name = subcontext["item_name"]
 
@@ -438,6 +439,7 @@ def build_templates(builder, html_code_dictionary, item_id):
     subcontext["edit_html_code"] = html_code_dictionary[item_name][EDIT]
     subcontext["merge_html_code"] = html_code_dictionary[item_name][MERGE]
     subcontext["delete_html_code"] = html_code_dictionary[item_name][DELETE]
+    subcontext["maced_class_name"] = "maced-" + str(maced_name)
 
     maced_html_code = render(request=None, template_name="maced/container.html", context=subcontext).content
     maced_modal_html_code = render(request=None, template_name="maced/modal_list.html", context=subcontext).content
@@ -590,7 +592,7 @@ def get_html_code_for_maced_fields(context, maced_name, action_type, item_path):
 
         # Build the templates
         maced_html_code, maced_modal_html_code = build_templates(
-            builder=child_builder, html_code_dictionary=html_code_dictionary, item_id=0
+            builder=child_builder, html_code_dictionary=html_code_dictionary, item_id=0, maced_name=childs_maced_name
         )
 
         # Add the template to the blob
@@ -623,7 +625,7 @@ def get_html_code_for_maced_fields(context, maced_name, action_type, item_path):
 
     # Build the templates
     maced_html_code, maced_modal_html_code = build_templates(
-        builder=builder, html_code_dictionary=html_code_dictionary, item_id=0
+        builder=builder, html_code_dictionary=html_code_dictionary, item_id=0, maced_name=maced_name
     )
 
     # Add the template to the blob
