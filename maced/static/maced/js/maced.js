@@ -932,10 +932,14 @@ function merge_items_in_select(item_select, item1_id, item2_id, new_name, should
 {
     delete_item_from_select(item_select, item2_id);
 
+    var option = item_select.find("option[value=" + item1_id + "]");
+
     if (should_be_selected)
     {
-        item_select.find("option[value=" + item1_id + "]").prop("selected", true).text(new_name);
+        option.prop("selected", true);
     }
+
+    option.text(new_name);
 }
 
 function add_item_to_select(item_select, item_id, name, should_be_selected)
