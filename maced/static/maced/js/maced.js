@@ -266,6 +266,7 @@ function add_item(item_name)
             var id = out_data_json["id"];
             var name = out_data_json["name"];
             var field_identifier;
+            var maced_name = maced_names[item_name];
 
             spinner.hide();
             modal.modal("hide");
