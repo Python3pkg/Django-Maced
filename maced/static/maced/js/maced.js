@@ -278,7 +278,10 @@ function add_item(item_name)
                 var should_be_selected = false;
 
                 // Merge select 2 doesn't need to have its selection overridden
-                if ($(this) == item_select || $(this) == merge_item1_select)
+                // Had to use .is() because == doesn't work:
+                // http://stackoverflow.com/questions/16358752/jquery-objects-of-the-same-element-are-not-equal
+                // Moreover, it works with multiple items. Good to know.
+                if ($(this).is(item_select, merge_item1_select))
                 {
                     should_be_selected = true;
                 }
