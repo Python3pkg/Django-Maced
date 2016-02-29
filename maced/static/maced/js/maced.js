@@ -124,6 +124,7 @@ function merge_item(item_name)
     var merge_item1_select = $("#" + maced_MERGE + "-" + item_name + "1-input");
     var merge_item2_select = $("#" + maced_MERGE + "-" + item_name + "2-input");
     var data = {};
+    var previously_selected_item_id = item_select.val();
     var item1_id = merge_item1_select.val();
     var item2_id = merge_item2_select.val();
     var url = maced_urls[item_name];
@@ -186,7 +187,15 @@ function merge_item(item_name)
             // Technically this is just deleting the second one and selecting the first one and giving it the new name.
             $(".maced-" + maced_name).each(function()
             {
-                merge_items_in_select($(this), item1_id, item2_id, name);
+                var should_be_selected = false;
+
+                // If the select was using one of the merged items, then set this select to the new item
+                if (previously_selected_item_id == item1_id || previously_selected_item_id == item2_id)
+                {
+                    should_be_selected = true;
+                }
+
+                merge_items_in_select($(this), item1_id, item2_id, name, should_be_selected);
             });
 
             //merge_items_in_select(item_select, item1_id, item2_id, name);
@@ -919,10 +928,14 @@ function merge_all_into_middle(modal_id, panel_number)
     });
 }
 
-function merge_items_in_select(item_select, item1_id, item2_id, new_name)
+function merge_items_in_select(item_select, item1_id, item2_id, new_name, should_be_selected)
 {
     delete_item_from_select(item_select, item2_id);
-    item_select.find("option[value=" + item1_id + "]").prop("selected", true).text(new_name);
+
+    if (should_be_selected)
+    {
+        item_select.find("option[value=" + item1_id + "]").prop("selected", true).text(new_name);
+    }
 }
 
 function add_item_to_select(item_select, item_id, name, should_be_selected)
