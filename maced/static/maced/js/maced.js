@@ -12,6 +12,7 @@ var maced_AUTHENTICATE = "authenticate";
 var maced_ACTION_TYPES = [maced_ADD, maced_EDIT, maced_MERGE, maced_DELETE, maced_GET];
 
 var maced_item_names = maced_data["item_names"];
+var maced_names = maced_data["maced_names"];
 var maced_field_names = JSON.parse(maced_data["field_names"]);
 var maced_field_identifiers = JSON.parse(maced_data["field_identifiers"]);
 var maced_urls = JSON.parse(maced_data["urls"]);
@@ -175,16 +176,22 @@ function merge_item(item_name)
             var out_data_json = JSON.parse(out_data);
             var name = out_data_json["name"];
             var field_identifier;
+            var maced_name = maced_names[item_name];
 
             spinner.hide();
             modal.modal("hide");
             $("#" + action_type + "-" + item_name + "-success-div").show();
 
-            // Remove the old options and select the new one. Technically this is just deleting the second one and
-            // selecting the first one and giving it the new name.
-            merge_items_in_select(item_select, item1_id, item2_id, name);
-            merge_items_in_select(merge_item1_select, item1_id, item2_id, name);
-            merge_items_in_select(merge_item2_select, item1_id, item2_id, name);
+            // Remove the old options and select the new one on every select that is connected to this base maced_item.
+            // Technically this is just deleting the second one and selecting the first one and giving it the new name.
+            $(".maced-" + maced_name).each(function()
+            {
+                merge_items_in_select($(this), item1_id, item2_id, name);
+            });
+
+            //merge_items_in_select(item_select, item1_id, item2_id, name);
+            //merge_items_in_select(merge_item1_select, item1_id, item2_id, name);
+            //merge_items_in_select(merge_item2_select, item1_id, item2_id, name);
 
             // Reset the modal for the next item merge
             for (i = 0; i < maced_field_names[item_name].length; i++)

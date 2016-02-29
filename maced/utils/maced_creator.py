@@ -8,8 +8,8 @@ from copy import deepcopy
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
-from maced.utils.constants import PRIMARY_ACTION_TYPES, VALID_INPUT_TYPES, VALID_SELECT_TYPES, ADD, EDIT, MERGE, DELETE, \
-    CLONE, INFO, COLOR, TEXT, SELECT
+from maced.utils.constants import PRIMARY_ACTION_TYPES, VALID_INPUT_TYPES, VALID_SELECT_TYPES, ADD, EDIT, MERGE, \
+    DELETE, CLONE, INFO, COLOR, TEXT, SELECT
 from maced.utils.errors import MacedProgrammingError
 from maced.utils.misc import validate_select_options, prettify_string
 
@@ -101,6 +101,12 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     if "item_names" not in maced_data:
         maced_data["item_names"] = []
 
+    if item_name in maced_data["item_names"]:
+        raise ValueError("Duplicate item var name of " + str(item_name))
+
+    if "maced_names" not in maced_data:
+        maced_data["maced_names"] = {}
+
     if "items_to_remove" not in maced_data:
         maced_data["items_to_remove"] = []
 
@@ -116,9 +122,6 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     if "item_names_with_ignored_alerts" not in maced_data:
         maced_data["item_names_with_ignored_alerts"] = []
 
-    if item_name in maced_data["item_names"]:
-        raise ValueError("Duplicate item var name of " + str(item_name))
-
     if is_used_only_for_maced_fields:
         maced_data["items_to_remove"].append(item_name)
     else:
@@ -129,6 +132,8 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
 
     if field_to_order_by is None:
         field_to_order_by = item_name_field_name
+
+    maced_data["maced_names"][item_name] = item_name
 
     initialize_fields_for_item_in_maced_data(maced_data=maced_data, item_name=item_name)
     context[item_name + "_dependencies"] = []
@@ -583,6 +588,9 @@ def get_html_code_for_maced_fields(context, maced_name, action_type, item_path):
         initialize_fields_for_item_in_maced_data(maced_data=maced_data, item_name=full_child_name)
         child_builder["item_name"] = full_child_name
 
+        # Set the maced_name for this full_child_name
+        maced_data["maced_names"][full_child_name] = childs_maced_name
+
         # Build the special python-html
         html_code_dictionary = build_html_code(
             context=context, options_html_code=child_builder["options_html_code"],
@@ -616,6 +624,9 @@ def get_html_code_for_maced_fields(context, maced_name, action_type, item_path):
     # Modify the item_name to the complex path
     full_name = get_prefixed_item_path(action_type=action_type, path=item_path)
     builder["item_name"] = full_name
+
+    # Set the maced_name for this full_name
+    maced_data["maced_names"][full_name] = maced_name
 
     # Build the special python-html
     html_code_dictionary = build_html_code(

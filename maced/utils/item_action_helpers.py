@@ -4,7 +4,7 @@ import logging
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
-from maced.utils.constants import GET, MERGE, ADD, EDIT
+from maced.utils.constants import GET, MERGE, ADD, EDIT, CLONE
 from maced.utils.misc import MissingFromPost, is_item_name_valid, get_bad_item_name_characters_in_string
 
 
@@ -124,7 +124,7 @@ def get_post_data(request, item_model, item_name_field_name, action_type):
             missing_field_names.append(field.name)
             fields_to_save.pop(field.name, None)
 
-    if action_type == MERGE or action_type == ADD or action_type == EDIT:
+    if action_type == MERGE or action_type == ADD or action_type == CLONE or action_type == EDIT:
         item_name = fields_to_save[item_name_field_name]
 
         if item_name.__class__ is MissingFromPost:
