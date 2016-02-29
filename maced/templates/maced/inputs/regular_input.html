@@ -2,7 +2,7 @@
     <th class="maced" style="border: 0;"> {{ field_html_name }}: </th>
     <td style="border: 0;">
         <{% if input_type == "select" %}select{% else %}input type="{{ input_type }}"{% endif %}
-            class="maced{% if input_type == "select" %} {{ maced_class_name }} {% endif %}form-control" id="{{ input_id }}"
+            class="maced {% if input_type == "select" %}{{ maced_class_name }} {% endif %}form-control" id="{{ input_id }}"
             {% if input_type == "color" %}
                 value="#00FF00"
             {% endif %}
