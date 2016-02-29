@@ -10,6 +10,7 @@ from django.shortcuts import render
 
 from maced.utils.constants import PRIMARY_ACTION_TYPES, VALID_INPUT_TYPES, VALID_SELECT_TYPES, ADD, EDIT, MERGE, DELETE, \
     CLONE, INFO, COLOR, TEXT, SELECT
+from maced.utils.errors import MacedProgrammingError
 from maced.utils.misc import validate_select_options, prettify_string
 
 
@@ -152,10 +153,10 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
         url=url, options_html_code=options_html_code, field_list=field_list, allow_empty=allow_empty
     )
 
-    # All the special html that is built in python
+    # All the special html that is dynamically generated
     html_code_dictionary = build_html_code(
         context=context, options_html_code=options_html_code, item_name=item_name, item_html_name=item_html_name,
-        field_list=field_list
+        field_list=field_list, maced_name=item_name
     )
 
     # The final step of putting it all together to make 2 sets of html; one for the item on the page and one for the modal that pops up.
@@ -167,9 +168,6 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     context["individual_maced_modals"][item_name] = maced_modal_html_code  # This will be added to "maced_modals" later
     context[item_name + "_options_html_code"] = options_html_code
 
-    # Lastly create an empty dependee list to know what selects depend on this item. It will be filled in as things
-    # that depend on it are created.
-    context[item_name + "_dependees"] = []
 
 # A nice helper function to simplify code for whoever is using this app. Since current_item_id is required, this makes
 # getting it much easier. In many cases you don't need a current_item_id and should use 0 instead.
@@ -246,7 +244,8 @@ def finalize_context_for_items(context, login_url=None):
 # field_name is the name of the field on the model
 # extra_info is an optional parameter that is used for special purposes depending on the item_type if the type uses it.
 #   Example: Select uses extra_info for options information
-def insert_items_html_code(original_dictionary, item_name, field_type, field_html_name, field_name, extra_info=None):
+def insert_items_html_code(
+        original_dictionary, item_name, field_type, field_html_name, field_name, maced_name, extra_info=None):
     if field_type == "maced":
         for action_type in PRIMARY_ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_maced(
@@ -267,7 +266,7 @@ def insert_items_html_code(original_dictionary, item_name, field_type, field_htm
         for action_type in PRIMARY_ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_select(
                 item_name=item_name, action_type=action_type, field_html_name=field_html_name, field_name=field_name,
-                options_html_code=extra_info, is_maced_item=False
+                options_html_code=extra_info, maced_name=maced_name
             )
     else:
         raise TypeError("field_type of " + str(field_type) + " is not supported yet. (maced_items.py:insert_items_html_code())")
@@ -303,7 +302,7 @@ def get_items(item_model, field_to_order_by=None):
 
 
 
-def build_html_code(context, options_html_code, item_name, item_html_name, field_list):
+def build_html_code(context, options_html_code, item_name, item_html_name, field_list, maced_name):
     maced_data = context["maced_data"]
     html_code_dictionary = {}
     html_code_dictionary[item_name] = {}
@@ -319,6 +318,7 @@ def build_html_code(context, options_html_code, item_name, item_html_name, field
     merge_context["input_id1"] = MERGE + "-" + item_name + "1-input"
     merge_context["input_id2"] = MERGE + "-" + item_name + "2-input"
     merge_context["modal_id"] = MERGE + "-" + item_name + "-modal"
+    merge_context["maced_class_name"] = "maced-" + str(maced_name)
 
     html_code_dictionary[item_name][MERGE] = render(
         request=None, template_name="maced/merge_table_row_1.html", context=merge_context
@@ -399,7 +399,7 @@ def build_html_code(context, options_html_code, item_name, item_html_name, field
         # Form the html based on the info from field
         insert_items_html_code(
             original_dictionary=html_code_dictionary, item_name=item_name, field_type=field["type"],
-            field_html_name=field["html_name"], field_name=field["name"], extra_info=extra_info
+            field_html_name=field["html_name"], field_name=field["name"], maced_name=maced_name, extra_info=extra_info
         )
 
         # Lastly add the field info to the context
@@ -471,9 +471,9 @@ def build_templates(builder, html_code_dictionary, item_id):
 def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
     context = maced_info["context"]
     options_html_code = context[maced_info["maced_name"] + "_options_html_code"]
+    maced_name = maced_info["maced_name"]
 
     if action_type == ADD or action_type == EDIT:
-        maced_name = maced_info["maced_name"]
         maced_data = context["maced_data"]
         item_path = item_name + "-" + field_name
         full_item_name = get_prefixed_item_path(action_type=action_type, path=item_path)
@@ -486,7 +486,7 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
     else:
         html_code = get_items_html_code_for_select(
             item_name=item_name, action_type=action_type, field_html_name=field_html_name, field_name=field_name,
-            options_html_code=options_html_code, is_maced_item=True
+            options_html_code=options_html_code, maced_name=maced_name
         )
 
     return html_code
@@ -529,7 +529,8 @@ def get_items_html_code_for_color(item_name, action_type, field_html_name, field
 
 
 # SELECT
-def get_items_html_code_for_select(item_name, action_type, field_html_name, field_name, options_html_code, is_maced_item):
+def get_items_html_code_for_select(
+        item_name, action_type, field_html_name, field_name, options_html_code, maced_name):
     subcontext = {}
     subcontext["item_name"] = item_name
     subcontext["action_type"] = action_type
@@ -540,8 +541,7 @@ def get_items_html_code_for_select(item_name, action_type, field_html_name, fiel
     subcontext["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
     subcontext["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
     subcontext["options_html_code"] = options_html_code
-
-    subcontext[item_name + "_dependees"]
+    subcontext["maced_class_name"] = "maced-" + str(maced_name)
 
     if action_type == MERGE:
         return render(request=None, template_name="maced/inputs/merge_input.html", context=subcontext).content
@@ -561,9 +561,10 @@ def get_html_code_for_options(option_tuple_list):
 # Search dependencies and change their ids to the full path.
 # Note: I realized well after making this function that I am using conflicting definitions for child/dependency and
 #       after much thought I understand why. If a maced item pops up with a modal and it has another maced item, you
-#       would probably think of the inner maced item as the child. However, the outer maced item is depending on the
-#       inner maced item in order to construct it, so you would probably think of the inner maced item as the
-#       dependency. However, a child is a dependent in most concepts, but a dependent is not a dependency. MIND BLOWN!
+#       would probably think of the inner maced item as the child seeing as the parent contains the child. However, the
+#       outer maced item is depending on the inner maced item in order for it to be constructed, so you would probably
+#       think of the inner maced item as the dependency. However, a child is a dependent in most concepts, but a
+#       dependent is not a dependency. MIND BLOWN!
 def get_html_code_for_maced_fields(context, maced_name, action_type, item_path):
     dependencies = context[maced_name + "_dependencies"]
     maced_data = context["maced_data"]
@@ -584,7 +585,7 @@ def get_html_code_for_maced_fields(context, maced_name, action_type, item_path):
         html_code_dictionary = build_html_code(
             context=context, options_html_code=child_builder["options_html_code"],
             item_name=child_builder["item_name"], item_html_name=child_builder["item_html_name"],
-            field_list=child_builder["field_list"]
+            field_list=child_builder["field_list"], maced_name=childs_maced_name
         )
 
         # Build the templates
@@ -617,7 +618,7 @@ def get_html_code_for_maced_fields(context, maced_name, action_type, item_path):
     # Build the special python-html
     html_code_dictionary = build_html_code(
         context=context, options_html_code=builder["options_html_code"], item_name=builder["item_name"],
-        item_html_name=builder["item_html_name"], field_list=builder["field_list"]
+        item_html_name=builder["item_html_name"], field_list=builder["field_list"], maced_name=maced_name
     )
 
     # Build the templates
