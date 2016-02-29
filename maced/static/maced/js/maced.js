@@ -355,15 +355,29 @@ function clone_item(item_name)
     //        var out_data_json = JSON.parse(out_data);
     //        var id = out_data_json["id"];
     //        var name = out_data_json["name"];
+    //        var maced_name = maced_names[item_name];
     //
     //        spinner.hide();
     //        modal.modal("hide");
     //        $("#" + action_type + "-" + item_name + "-success-div").show();
     //
-    //        // Add the new option to the select and select it
-    //        add_item_to_select(item_select, id, name, true);
-    //        add_item_to_select(merge_item1_select, id, name, true);
-    //        add_item_to_select(merge_item2_select, id, name, false);  // Select 2 doesn't need to have its selection overridden
+    //
+    //        // Add the new option to every select that is connected to this base maced_item and select it if necessary
+    //        $(".maced-" + maced_name).each(function()
+    //        {
+    //            var should_be_selected = false;
+    //
+    //            // Merge select 2 doesn't need to have its selection overridden
+    //            // Had to use .is() because == doesn't work:
+    //            // http://stackoverflow.com/questions/16358752/jquery-objects-of-the-same-element-are-not-equal
+    //            // Moreover, it works with multiple items. Good to know.
+    //            if ($(this).is(item_select, merge_item1_select))
+    //            {
+    //                should_be_selected = true;
+    //            }
+    //
+    //            add_item_to_select($(this), id, name, should_be_selected);
+    //        });
     //
     //        // Fill modals with this new data
     //        get_item(item_name, 0);
