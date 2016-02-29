@@ -271,10 +271,19 @@ function add_item(item_name)
             modal.modal("hide");
             $("#" + action_type + "-" + item_name + "-success-div").show();
 
-            // Add the new option to the select and select it
-            add_item_to_select(item_select, id, name, true);
-            add_item_to_select(merge_item1_select, id, name, true);
-            add_item_to_select(merge_item2_select, id, name, false);  // Select 2 doesn't need to have its selection overridden
+            // Add the new option to every select that is connected to this base maced_item and select it if necessary
+            $(".maced-" + maced_name).each(function()
+            {
+                var should_be_selected = false;
+
+                // Merge select 2 doesn't need to have its selection overridden
+                if ($(this) == item_select || $(this) == merge_item1_select)
+                {
+                    should_be_selected = true;
+                }
+
+                add_item_to_select($(this), id, name, should_be_selected);
+            });
 
             // Reset the modal for the next item addition
             for (i = 0; i < maced_field_names[item_name].length; i++)
