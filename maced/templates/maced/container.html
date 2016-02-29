@@ -9,7 +9,7 @@
     <th class="maced" id="{{ item_name }}-row-name-th"> {{ item_html_name }}: </th>
 
     <td class="maced">
-        <select class="maced form-control disableable" id="{{ item_name }}-select" {% if should_disable %} disabled {% endif %}>
+        <select class="maced {{ maced_class_name }} form-control disableable" id="{{ item_name }}-select" {% if should_disable %} disabled {% endif %}>
             {% if allow_empty %} <option class="maced" value=""></option> {% endif %}
             {% for item in items %}
                 <option class="maced" value="{{ item.id }}" {% if item.id == item_id %} selected {% endif %}> {{ item }} </option>
