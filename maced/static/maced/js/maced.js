@@ -498,15 +498,17 @@ function delete_item(item_name)
         success: function(out_data)
         {
             var out_data_json = JSON.parse(out_data);
+            var maced_name = maced_names[item_name];
 
             spinner.hide();
             modal.modal("hide");
             $("#" + action_type + "-" + item_name + "-success-div").show();
 
-            // Remove the option from the select
-            delete_item_from_select(item_select, item_id);
-            delete_item_from_select(merge_item1_select, item_id);
-            delete_item_from_select(merge_item2_select, item_id);
+            // Remove the option from every select that is connected to this base maced_item
+            $(".maced-" + maced_name).each(function()
+            {
+                delete_item_from_select($(this), item_id);
+            });
 
             // Fill modals with this with data from whatever is the new selection
             get_item(item_name, 0);
