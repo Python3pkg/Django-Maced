@@ -259,8 +259,8 @@ def insert_items_html_code(
     if field_type == "maced":
         for action_type in PRIMARY_ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_maced(
-                maced_name=maced_name, item_name=item_name, action_type=action_type, field_html_name=field_html_name,
-                field_name=field_name, context=extra_info
+                item_name=item_name, action_type=action_type, field_html_name=field_html_name, field_name=field_name,
+                maced_info=extra_info
             )
     elif field_type == "text":
         for action_type in PRIMARY_ACTION_TYPES:
@@ -404,7 +404,9 @@ def build_html_code(context, options_html_code, item_name, item_html_name, field
 
             context[item_name + "_dependencies"].append(dependency)
 
-            extra_info = context
+            extra_info = {}
+            extra_info["context"] = context
+            extra_info["field_maced_name"] = field["maced_name"]
 
         if "html_name" not in field:
             field["html_name"] = prettify_string(ugly_string=field["name"])
@@ -484,8 +486,10 @@ def build_templates(builder, html_code_dictionary, item_id, maced_name):
 
 
 # MACED
-def get_items_html_code_for_maced(maced_name, item_name, action_type, field_html_name, field_name, context):
-    options_html_code = context[maced_name + "_options_html_code"]
+def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
+    field_maced_name = maced_info["field_maced_name"]
+    context = maced_info["context"]
+    options_html_code = context[field_maced_name + "_options_html_code"]
 
     if action_type == ADD or action_type == EDIT:
         maced_data = context["maced_data"]
@@ -495,11 +499,11 @@ def get_items_html_code_for_maced(maced_name, item_name, action_type, field_html
 
         # This function will handle the field_name, field_identifier, item_name, and url additions to the context
         html_code = get_html_code_for_maced_fields(
-            context=context, maced_name=maced_name, action_type=action_type, item_path=item_path
+            context=context, maced_name=field_maced_name, action_type=action_type, item_path=item_path
         )
     else:
         html_code = get_items_html_code_for_select(
-            maced_name=maced_name, item_name=item_name, action_type=action_type, field_html_name=field_html_name,
+            maced_name=field_maced_name, item_name=item_name, action_type=action_type, field_html_name=field_html_name,
             field_name=field_name, options_html_code=options_html_code
         )
 
