@@ -185,7 +185,7 @@ function merge_item(item_name)
 
             // Remove the old options and select the new one on every select that is connected to this base maced_item.
             // Technically this is just deleting the second one and selecting the first one and giving it the new name.
-            $(".maced-" + maced_name).each(function()
+            $(get_item_html_class_selector(maced_name)).each(function()
             {
                 var should_be_selected = false;
 
@@ -198,14 +198,18 @@ function merge_item(item_name)
                 merge_items_in_select($(this), item1_id, item2_id, name, should_be_selected);
             });
 
-            //merge_items_in_select(item_select, item1_id, item2_id, name);
-            //merge_items_in_select(merge_item1_select, item1_id, item2_id, name);
-            //merge_items_in_select(merge_item2_select, item1_id, item2_id, name);
-
             // Reset the modal for the next item merge
             for (i = 0; i < maced_field_names[item_name].length; i++)
             {
+                field_name = maced_field_names[item_name][i];
                 field_identifier = maced_field_identifiers[item_name][i];
+
+                // This may in fact replace the statement below get_item(item_name, 0);
+                // Fills all fields that are this field for this type of item.
+                $(get_field_html_class_selector(maced_name, field_name)).each(function()
+                {
+                    $(this).val(data[field_name]);
+                });
 
                 // Sending in "" for merge_panel_number so that it finds the middle panel, which doesn't have a number.
                 // This should probably be changed to 0 or something, but it would cause other issues. This is the
@@ -272,7 +276,7 @@ function add_item(item_name)
             $("#" + action_type + "-" + item_name + "-success-div").show();
 
             // Add the new option to every select that is connected to this base maced_item and select it if necessary
-            $(".maced-" + maced_name).each(function()
+            $(get_item_html_class_selector(maced_name)).each(function()
             {
                 var should_be_selected = false;
 
@@ -362,7 +366,7 @@ function clone_item(item_name)
     //
     //
     //        // Add the new option to every select that is connected to this base maced_item and select it if necessary
-    //        $(".maced-" + maced_name).each(function()
+    //        $(get_item_html_class_selector(maced_name)).each(function()
     //        {
     //            var should_be_selected = false;
     //
@@ -444,7 +448,7 @@ function edit_item(item_name)
 
             // Update the option with the new name (could be the same name though) to every select that is connected
             // to this base maced_item
-            $(".maced-" + maced_name).each(function()
+            $(get_item_html_class_selector(maced_name)).each(function()
             {
                 edit_item_name_in_select($(this), item_id, name);
             });
@@ -502,7 +506,7 @@ function delete_item(item_name)
             $("#" + action_type + "-" + item_name + "-success-div").show();
 
             // Remove the option from every select that is connected to this base maced_item
-            $(".maced-" + maced_name).each(function()
+            $(get_item_html_class_selector(maced_name)).each(function()
             {
                 delete_item_from_select($(this), item_id);
             });
@@ -994,4 +998,14 @@ function edit_item_name_in_select(item_select, item_id, new_name)
 function delete_item_from_select(item_select, item_id)
 {
     item_select.find("option[value=" + item_id + "]").remove();
+}
+
+function get_item_html_class_selector(maced_name)
+{
+    return ".maced-" + maced_name;
+}
+
+function get_field_html_class_selector(maced_name, field_name)
+{
+    return get_item_html_class_selector(maced_name) + "-" + field_name;
 }
