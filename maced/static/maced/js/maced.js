@@ -764,9 +764,10 @@ function get_authentication(item_name)
 
 function remove_success_divs(item_name)
 {
-    $("#" + maced_ADD + "-" + item_name + "-success-div").hide();
-    $("#" + maced_EDIT + "-" + item_name + "-success-div").hide();
     $("#" + maced_MERGE + "-" + item_name + "-success-div").hide();
+    $("#" + maced_ADD + "-" + item_name + "-success-div").hide();
+    $("#" + maced_CLONE + "-" + item_name + "-success-div").hide();
+    $("#" + maced_EDIT + "-" + item_name + "-success-div").hide();
     $("#" + maced_DELETE + "-" + item_name + "-success-div").hide();
 }
 
