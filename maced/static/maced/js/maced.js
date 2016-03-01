@@ -439,15 +439,18 @@ function edit_item(item_name)
         {
             var out_data_json = JSON.parse(out_data);
             var name = out_data_json["name"];
+            var maced_name = maced_names[item_name];
 
             spinner.hide();
             modal.modal("hide");
             $("#" + action_type + "-" + item_name + "-success-div").show();
 
-            // Update the option with the new name (could be the same name though)
-            edit_item_name_in_select(item_select, item_id, name);
-            edit_item_name_in_select(merge_item1_select, item_id, name);
-            edit_item_name_in_select(merge_item2_select, item_id, name);
+            // Update the option with the new name (could be the same name though) to every select that is connected
+            // to this base maced_item
+            $(".maced-" + maced_name).each(function()
+            {
+                edit_item_name_in_select($(this), item_id, name);
+            });
 
             // Fill modals with this new data
             get_item(item_name, 0);
