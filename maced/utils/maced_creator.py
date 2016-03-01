@@ -164,7 +164,8 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
         field_list=field_list, maced_name=item_name
     )
 
-    # The final step of putting it all together to make 2 sets of html; one for the item on the page and one for the modal that pops up.
+    # The final step of putting it all together to make 2 sets of html;
+    # one for the item on the page and one for the modal that pops up.
     maced_html_code, maced_modal_html_code = build_templates(
         builder=context[item_name + "_builder"], html_code_dictionary=html_code_dictionary, item_id=current_item_id,
         maced_name=item_name
@@ -212,7 +213,9 @@ def get_current_item_id(model_instance, field_name):
 # generated and should only be called once
 def finalize_context_for_items(context, login_url=None):
     if "maced_data" not in context:
-        raise RuntimeError("maced_items is not configured correctly. Please check why maced_data is missing from the context.")
+        raise RuntimeError(
+            "maced_items is not configured correctly. Please check why maced_data is missing from the context."
+        )
 
     maced_data = context["maced_data"]
 
@@ -243,7 +246,8 @@ def finalize_context_for_items(context, login_url=None):
 
 # original_dictionary is the dictionary that is being built up for a particular maced_item object.
 #   When it is complete, it should be sent to get_context_data_for_maced_items to be added to the context.
-# item_name is the name of the model.
+# maced_name is the name of the model.
+# item_name is the name of this instance of this item.
 # field_type is small set of predefined constants to support various html input types.
 # field_html_name is the name that will be shown to the user for the modal that pops up after clicking add, edit, merge
 #   or delete
@@ -251,31 +255,35 @@ def finalize_context_for_items(context, login_url=None):
 # extra_info is an optional parameter that is used for special purposes depending on the item_type if the type uses it.
 #   Example: Select uses extra_info for options information
 def insert_items_html_code(
-        original_dictionary, item_name, field_type, field_html_name, field_name, maced_name, extra_info=None):
+        original_dictionary, maced_name, item_name, field_type, field_html_name, field_name, extra_info=None):
     if field_type == "maced":
         for action_type in PRIMARY_ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_maced(
-                item_name=item_name, action_type=action_type, field_html_name=field_html_name, field_name=field_name,
-                maced_info=extra_info
+                maced_name=maced_name, item_name=item_name, action_type=action_type, field_html_name=field_html_name,
+                field_name=field_name, context=extra_info
             )
     elif field_type == "text":
         for action_type in PRIMARY_ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_text(
-                item_name=item_name, action_type=action_type, field_html_name=field_html_name, field_name=field_name
+                maced_name=maced_name, item_name=item_name, action_type=action_type, field_html_name=field_html_name,
+                field_name=field_name
             )
     elif field_type == "color":
         for action_type in PRIMARY_ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_color(
-                item_name=item_name, action_type=action_type, field_html_name=field_html_name, field_name=field_name
+                maced_name=maced_name, item_name=item_name, action_type=action_type, field_html_name=field_html_name,
+                field_name=field_name
             )
     elif field_type == "select":
         for action_type in PRIMARY_ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_select(
-                item_name=item_name, action_type=action_type, field_html_name=field_html_name, field_name=field_name,
-                options_html_code=extra_info, maced_name=maced_name
+                maced_name=maced_name, item_name=item_name, action_type=action_type, field_html_name=field_html_name,
+                field_name=field_name, options_html_code=extra_info
             )
     else:
-        raise TypeError("field_type of " + str(field_type) + " is not supported yet. (maced_items.py:insert_items_html_code())")
+        raise TypeError(
+            "field_type of " + str(field_type) + " is not supported yet. (maced_items.py:insert_items_html_code)"
+        )
 
 
 # Later, restrictions will be applied to incorporate permissions/public/private/etc.
@@ -324,7 +332,7 @@ def build_html_code(context, options_html_code, item_name, item_html_name, field
     merge_context["input_id1"] = MERGE + "-" + item_name + "1-input"
     merge_context["input_id2"] = MERGE + "-" + item_name + "2-input"
     merge_context["modal_id"] = MERGE + "-" + item_name + "-modal"
-    merge_context["maced_class_name"] = "maced-" + str(maced_name)
+    merge_context["item_html_class_name"] = get_item_html_class_name(maced_name)
 
     html_code_dictionary[item_name][MERGE] = render(
         request=None, template_name="maced/merge_table_row_1.html", context=merge_context
@@ -360,7 +368,9 @@ def build_html_code(context, options_html_code, item_name, item_html_name, field
                 extra_info = field["options"]
 
                 # Will raise errors if invalid, else it move on
-                validate_select_options(extra_info=extra_info, field=field, item_name=item_name, select_type=field["select_type"])
+                validate_select_options(
+                    extra_info=extra_info, field=field, item_name=item_name, select_type=field["select_type"]
+                )
             else:
                 raise ValueError(
                     "Field \"" + str(field["name"]) + "\" in field_list for \"" + str(item_name) + "\" " +
@@ -394,18 +404,16 @@ def build_html_code(context, options_html_code, item_name, item_html_name, field
 
             context[item_name + "_dependencies"].append(dependency)
 
-            extra_info = {}
-            extra_info["maced_item_html_code"] = context[field["maced_name"] + "_item"]
-            extra_info["maced_name"] = field["maced_name"]
-            extra_info["context"] = context
+            extra_info = context
 
         if "html_name" not in field:
             field["html_name"] = prettify_string(ugly_string=field["name"])
 
         # Form the html based on the info from field
         insert_items_html_code(
-            original_dictionary=html_code_dictionary, item_name=item_name, field_type=field["type"],
-            field_html_name=field["html_name"], field_name=field["name"], maced_name=maced_name, extra_info=extra_info
+            original_dictionary=html_code_dictionary, maced_name=maced_name, item_name=item_name,
+            field_type=field["type"], field_html_name=field["html_name"], field_name=field["name"],
+            extra_info=extra_info
         )
 
         # Lastly add the field info to the context
@@ -422,7 +430,8 @@ def build_url(item_name, name_of_app_with_url):
     return url
 
 
-def build_builder(item_name, item_html_name, item_model, field_to_order_by, url, options_html_code, field_list, allow_empty):
+def build_builder(item_name, item_html_name, item_model, field_to_order_by, url, options_html_code, field_list,
+                  allow_empty):
     builder = {}
     builder["item_name"] = item_name
     builder["item_html_name"] = item_html_name
@@ -444,7 +453,7 @@ def build_templates(builder, html_code_dictionary, item_id, maced_name):
     subcontext["edit_html_code"] = html_code_dictionary[item_name][EDIT]
     subcontext["merge_html_code"] = html_code_dictionary[item_name][MERGE]
     subcontext["delete_html_code"] = html_code_dictionary[item_name][DELETE]
-    subcontext["maced_class_name"] = "maced-" + str(maced_name)
+    subcontext["item_html_class_name"] = get_item_html_class_name(maced_name)
 
     maced_html_code = render(request=None, template_name="maced/container.html", context=subcontext).content
     maced_modal_html_code = render(request=None, template_name="maced/modal_list.html", context=subcontext).content
@@ -475,10 +484,8 @@ def build_templates(builder, html_code_dictionary, item_id, maced_name):
 
 
 # MACED
-def get_items_html_code_for_maced(item_name, action_type, field_html_name, field_name, maced_info):
-    context = maced_info["context"]
-    options_html_code = context[maced_info["maced_name"] + "_options_html_code"]
-    maced_name = maced_info["maced_name"]
+def get_items_html_code_for_maced(maced_name, item_name, action_type, field_html_name, field_name, context):
+    options_html_code = context[maced_name + "_options_html_code"]
 
     if action_type == ADD or action_type == EDIT:
         maced_data = context["maced_data"]
@@ -492,15 +499,15 @@ def get_items_html_code_for_maced(item_name, action_type, field_html_name, field
         )
     else:
         html_code = get_items_html_code_for_select(
-            item_name=item_name, action_type=action_type, field_html_name=field_html_name, field_name=field_name,
-            options_html_code=options_html_code, maced_name=maced_name
+            maced_name=maced_name, item_name=item_name, action_type=action_type, field_html_name=field_html_name,
+            field_name=field_name, options_html_code=options_html_code
         )
 
     return html_code
 
 
 # TEXT
-def get_items_html_code_for_text(item_name, action_type, field_html_name, field_name):
+def get_items_html_code_for_text(maced_name, item_name, action_type, field_html_name, field_name):
     subcontext = {}
     subcontext["item_name"] = item_name
     subcontext["action_type"] = action_type
@@ -510,6 +517,7 @@ def get_items_html_code_for_text(item_name, action_type, field_html_name, field_
     subcontext["input_id"] = action_type + "-" + item_name + "-" + field_name + "-input"
     subcontext["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
     subcontext["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
+    subcontext["field_html_class_name"] = get_field_html_class_name(maced_name, field_name)
 
     if action_type == MERGE:
         return render(request=None, template_name="maced/inputs/merge_input.html", context=subcontext).content
@@ -518,7 +526,7 @@ def get_items_html_code_for_text(item_name, action_type, field_html_name, field_
 
 
 # COLOR
-def get_items_html_code_for_color(item_name, action_type, field_html_name, field_name):
+def get_items_html_code_for_color(maced_name, item_name, action_type, field_html_name, field_name):
     subcontext = {}
     subcontext["item_name"] = item_name
     subcontext["action_type"] = action_type
@@ -528,6 +536,7 @@ def get_items_html_code_for_color(item_name, action_type, field_html_name, field
     subcontext["input_id"] = action_type + "-" + item_name + "-" + field_name + "-input"
     subcontext["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
     subcontext["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
+    subcontext["field_html_class_name"] = get_field_html_class_name(maced_name, field_name)
 
     if action_type == MERGE:
         return render(request=None, template_name="maced/inputs/merge_input.html", context=subcontext).content
@@ -536,8 +545,7 @@ def get_items_html_code_for_color(item_name, action_type, field_html_name, field
 
 
 # SELECT
-def get_items_html_code_for_select(
-        item_name, action_type, field_html_name, field_name, options_html_code, maced_name):
+def get_items_html_code_for_select(maced_name, item_name, action_type, field_html_name, field_name, options_html_code):
     subcontext = {}
     subcontext["item_name"] = item_name
     subcontext["action_type"] = action_type
@@ -548,7 +556,8 @@ def get_items_html_code_for_select(
     subcontext["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
     subcontext["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
     subcontext["options_html_code"] = options_html_code
-    subcontext["maced_class_name"] = "maced-" + str(maced_name)
+    subcontext["item_html_class_name"] = get_item_html_class_name(maced_name)
+    subcontext["field_html_class_name"] = get_field_html_class_name(maced_name, field_name)
 
     if action_type == MERGE:
         return render(request=None, template_name="maced/inputs/merge_input.html", context=subcontext).content
@@ -661,3 +670,11 @@ def get_prefixed_item_path(action_type, path):
 def initialize_fields_for_item_in_maced_data(maced_data, item_name):
     maced_data["field_names"][item_name] = []
     maced_data["field_identifiers"][item_name] = []
+
+
+def get_item_html_class_name(maced_name):
+    return "maced-" + str(maced_name)
+
+
+def get_field_html_class_name(maced_name, field_name):
+    return get_item_html_class_name(maced_name) + "-" + str(field_name)

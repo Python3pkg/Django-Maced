@@ -236,7 +236,6 @@ function add_item(item_name)
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
     var item_select = $("#" + item_name + "-select");
     var merge_item1_select = $("#" + maced_MERGE + "-" + item_name + "1-input");
-    var merge_item2_select = $("#" + maced_MERGE + "-" + item_name + "2-input");
     var data = {};
     var url = maced_urls[item_name];
     var field_name;
@@ -403,8 +402,6 @@ function edit_item(item_name)
     var spinner = $("#" + action_type + "-" + item_name + "-spinner");
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
     var item_select = $("#" + item_name + "-select");
-    var merge_item1_select = $("#" + maced_MERGE + "-" + item_name + "1-input");
-    var merge_item2_select = $("#" + maced_MERGE + "-" + item_name + "2-input");
     var data = {};
     var item_id = item_select.val();
     var url = maced_urls[item_name];
