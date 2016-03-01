@@ -265,7 +265,7 @@ def insert_items_html_code(
             )
     elif field_type == "color":
         for action_type in PRIMARY_ACTION_TYPES:
-            original_dictionary[item_name][action_type] += get_items_html_code_for_text(
+            original_dictionary[item_name][action_type] += get_items_html_code_for_color(
                 item_name=item_name, action_type=action_type, field_html_name=field_html_name, field_name=field_name
             )
     elif field_type == "select":
