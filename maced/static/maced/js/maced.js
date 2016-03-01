@@ -176,7 +176,6 @@ function merge_item(item_name)
         {
             var out_data_json = JSON.parse(out_data);
             var name = out_data_json["name"];
-            var field_identifier;
             var maced_name = maced_names[item_name];
 
             spinner.hide();
@@ -198,17 +197,22 @@ function merge_item(item_name)
                 merge_items_in_select($(this), item1_id, item2_id, name, should_be_selected);
             });
 
-            // Reset the modal for the next item merge
+            // Reset the modal for the next item merge and fill all relative inputs.
             for (i = 0; i < maced_field_names[item_name].length; i++)
             {
                 field_name = maced_field_names[item_name][i];
                 field_identifier = maced_field_identifiers[item_name][i];
 
-                // This may in fact replace the statement below get_item(item_name, 0);
-                // Fills all fields that are this field for this type of item.
+                // Fills all fields that are this field for this type of item. Any that need to be empty will be
+                // emptied in set_input_item().
                 $(get_field_html_class_selector(maced_name, field_name)).each(function()
                 {
-                    $(this).val(data[field_name]);
+                    var select_value = get_select_value_by_field($(this));
+
+                    if (select_value == item1_id || select_value == item2_id)
+                    {
+                        $(this).val(data[field_name]);
+                    }
                 });
 
                 // Sending in "" for merge_panel_number so that it finds the middle panel, which doesn't have a number.
@@ -268,7 +272,6 @@ function add_item(item_name)
             var out_data_json = JSON.parse(out_data);
             var id = out_data_json["id"];
             var name = out_data_json["name"];
-            var field_identifier;
             var maced_name = maced_names[item_name];
 
             spinner.hide();
@@ -292,10 +295,19 @@ function add_item(item_name)
                 add_item_to_select($(this), id, name, should_be_selected);
             });
 
-            // Reset the modal for the next item addition
+            // Reset the modal for the next item addition and fill all relative inputs.
             for (i = 0; i < maced_field_names[item_name].length; i++)
             {
+                field_name = maced_field_names[item_name][i];
                 field_identifier = maced_field_identifiers[item_name][i];
+
+                //// Fills all fields that are this field for this type of item. Any that need to be empty will be
+                //// emptied in set_input_item().
+                //$(get_field_html_class_selector(maced_name, field_name)).each(function()
+                //{
+                //    $(this).val(data[field_name]);
+                //});
+
                 set_input_item(action_type, item_name, field_identifier, "", null);
             }
 
@@ -1008,4 +1020,25 @@ function get_item_html_class_selector(maced_name)
 function get_field_html_class_selector(maced_name, field_name)
 {
     return get_item_html_class_selector(maced_name) + "-" + field_name;
+}
+
+// Black magic
+function get_select_value_by_field(field)
+{
+    var field_id = field.prop("id");
+    var field_id_split = field_id.split("-");
+    var select_id_split =  field_id_split.slice(1, field_id_split.length - 2);
+    select_id_split.push("select");
+    var select_id = select_id_split.join("-");
+    var the_select = $("#" + select_id);
+
+    if (the_select.length == 0)
+    {
+        field_id_split = field_id.split("-");
+        field_id_split.splice(field_id_split.length - 2, 1);
+        select_id = field_id_split.join("-");
+        the_select = $("#" + select_id);
+    }
+
+    return the_select.val();
 }
