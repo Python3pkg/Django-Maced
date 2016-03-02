@@ -843,7 +843,7 @@ function get_input_item(action_type, item_name, field_identifier)
     {
         return input.val();
     }
-    else if (input.attr("type") == "color")
+    else if (input.prop("type") == "color")
     {
         return input.val();
     }
@@ -889,7 +889,7 @@ function set_input_item(action_type, item_name, field_identifier, value, merge_p
     {
         input.val(value);
     }
-    else if (input.attr("type") == "color")
+    else if (input.prop("type") == "color")
     {
         input.val(value);
     }
