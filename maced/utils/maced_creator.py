@@ -11,7 +11,8 @@ from django.shortcuts import render
 from maced.utils.constants import PRIMARY_ACTION_TYPES, VALID_INPUT_TYPES, VALID_SELECT_TYPES, ADD, EDIT, MERGE, \
     DELETE, CLONE, INFO, COLOR, TEXT, SELECT
 from maced.utils.errors import MacedProgrammingError
-from maced.utils.misc import validate_select_options, prettify_string
+from maced.utils.misc import validate_select_options, prettify_string, is_item_name_valid, \
+    get_bad_item_name_characters_in_string
 
 
 # The main function to craft html code for each item. This is the only function that should be called directly besides
@@ -57,6 +58,12 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
 
     if not isinstance(item_name, (str, unicode)):
         raise TypeError("item_name must be a string")
+
+    if not is_item_name_valid(item_name):
+        raise ValueError(
+            "item_name was \"" + str(item_name) + "\" but it must not contain " +
+            get_bad_item_name_characters_in_string()
+        )
 
     if not inspect.isclass(item_model):
         raise TypeError("item_model must be a class")
