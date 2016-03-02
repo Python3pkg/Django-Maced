@@ -197,7 +197,7 @@ function merge_item(item_name)
                 merge_items_in_select($(this), item1_id, item2_id, name, should_be_selected);
             });
 
-            // Reset the modal for the next item merge and fill all relative inputs.
+            // Reset the modal for the next item merge and fill all related inputs.
             for (i = 0; i < maced_field_names[item_name].length; i++)
             {
                 field_name = maced_field_names[item_name][i];
@@ -295,7 +295,7 @@ function add_item(item_name)
                 add_item_to_select($(this), id, name, should_be_selected);
             });
 
-            // Reset the modal for the next item addition and fill all relative inputs.
+            // Reset the modal for the next item addition and fill all related inputs.
             for (i = 0; i < maced_field_names[item_name].length; i++)
             {
                 field_name = maced_field_names[item_name][i];
@@ -399,6 +399,24 @@ function clone_item(item_name)
     //            add_item_to_select($(this), id, name, should_be_selected);
     //        });
     //
+    //        // Fill all related inputs
+    //        for (i = 0; i < maced_field_names[item_name].length; i++)
+    //        {
+    //            field_name = maced_field_names[item_name][i];
+    //
+    //            // Fills all fields that are this field for this type of item. Any that need to be empty will be
+    //            // emptied in set_input_item().
+    //            $(get_field_html_class_selector(maced_name, field_name)).each(function()
+    //            {
+    //                var select_value = get_select_value_by_field($(this));
+    //
+    //                if (select_value == item_id)
+    //                {
+    //                    $(this).val(data[field_name]);
+    //                }
+    //            });
+    //        }
+    //
     //        // Fill modals with this new data
     //        get_item(item_name, 0);
     //    },
@@ -470,6 +488,24 @@ function edit_item(item_name)
                 edit_item_name_in_select($(this), item_id, name);
             });
 
+            // Fill all related inputs
+            for (i = 0; i < maced_field_names[item_name].length; i++)
+            {
+                field_name = maced_field_names[item_name][i];
+
+                // Fills all fields that are this field for this type of item. Any that need to be empty will be
+                // emptied in set_input_item().
+                $(get_field_html_class_selector(maced_name, field_name)).each(function()
+                {
+                    var select_value = get_select_value_by_field($(this));
+
+                    if (select_value == item_id)
+                    {
+                        $(this).val(data[field_name]);
+                    }
+                });
+            }
+
             // Fill modals with this new data
             get_item(item_name, 0);
         },
@@ -491,8 +527,6 @@ function delete_item(item_name)
     var spinner = $("#" + action_type + "-" + item_name + "-spinner");
     var error_div = $("#" + action_type + "-" + item_name + "-error-div");
     var item_select = $("#" + item_name + "-select");
-    var merge_item1_select = $("#" + maced_MERGE + "-" + item_name + "1-input");
-    var merge_item2_select = $("#" + maced_MERGE + "-" + item_name + "2-input");
     var item_id = item_select.val();
     var url = maced_urls[item_name];
     var data = {};
