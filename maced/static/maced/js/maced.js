@@ -184,7 +184,7 @@ function merge_item(item_name)
 
             spinner.hide();
             modal.modal("hide");
-            $("#" + action_type + "-" + item_name + "-success-div").show();
+            $("#" + item_name + "-success-b").text("Successfully merged the {{ item_html_name }}.");
 
             // Remove the old options and select the new one on every select that is connected to this base maced_item.
             // Technically this is just deleting the second one and selecting the first one and giving it the new name.
