@@ -307,7 +307,7 @@ function add_item(item_name)
                 {
                     var select_value = get_select_value_by_field($(this));
 
-                    if (select_value == item_id)
+                    if (select_value == id)
                     {
                         $(this).val(data[field_name]);
                     }
