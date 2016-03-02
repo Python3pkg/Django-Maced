@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
 from maced.utils.constants import GET, MERGE, ADD, EDIT, CLONE
-from maced.utils.misc import MissingFromPost, is_item_name_valid, get_bad_item_name_characters_in_string
+from maced.utils.misc import MissingFromPost
 
 
 logger = logging.getLogger("maced")

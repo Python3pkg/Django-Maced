@@ -7,7 +7,7 @@ from django.http import HttpResponse
 
 BAD_ITEM_NAME_CHARACTERS = (
     "!", '"', "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", ".", "/", ":", ";", "<", "=", ">", "?", "@", "[", "\\",
-    "]", "^", "`", "{", "|", "}", "~"
+    "]", "^", "`", "{", "|", "}", "~", " "
 )
 
 class MissingFromPost:
@@ -43,22 +43,24 @@ def is_item_name_valid(item_name):
 
 
 def get_bad_item_name_characters_in_string(add_quotes=False):
-    string = ""
+    message = ""
 
     for character in BAD_ITEM_NAME_CHARACTERS:
         if add_quotes:
-            string += '"'
+            message += '"'
 
-        string += character
+        message += character
 
         if add_quotes:
-            string += '"'
+            message += '"'
 
-        string += " "
+        message += " "
 
-    string.rstrip()
+    message = message.rstrip()
 
-    return string
+    message += " or a space"
+
+    return message
 
 
 def validate_select_options(extra_info, field, item_name, select_type):
