@@ -44,6 +44,7 @@ $(document).ready(function()
         });
     });
 
+    // This is used to set the position of the modal in terms of z.
     modals.on("show.bs.modal", function(event)
     {
         var index = $(".modal:visible").length;
@@ -51,6 +52,7 @@ $(document).ready(function()
         $(this).css("z-index", 1040 + (10 * index));
     });
 
+    // Finishes setting the position in terms of z and focuses on the first input.
     modals.on("shown.bs.modal", function(event)
     {
         var index = ($(".modal:visible").length) -1; // raise backdrop after animation.
@@ -58,6 +60,8 @@ $(document).ready(function()
 
         modal_backdrops.not(".maced-stacked").css("z-index", 1039 + (10 * index));
         modal_backdrops.not(".maced-stacked").addClass("maced-stacked");
+
+        set_focus_to_first_input_in_modal($(this));
     });
 
     maced_item_name_of_last_item_to_load = maced_item_names[maced_item_names.length - 1];
@@ -1080,4 +1084,9 @@ function get_select_value_by_field(field)
     }
 
     return the_select.val();
+}
+
+function set_focus_to_first_input_in_modal(modal)
+{
+    modal.find("input").first().focus();
 }
