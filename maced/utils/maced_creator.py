@@ -521,7 +521,11 @@ def get_items_html_code_for_text(maced_name, item_name, action_type, field_html_
     subcontext["input_id"] = action_type + "-" + item_name + "-" + field_name + "-input"
     subcontext["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
     subcontext["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
-    subcontext["field_html_class_name"] = get_field_html_class_name(maced_name, field_name)
+
+    if action_type == ADD:
+        subcontext["field_html_class_name"] = ""
+    else:
+        subcontext["field_html_class_name"] = get_field_html_class_name(maced_name, field_name)
 
     if action_type == MERGE:
         return render(request=None, template_name="maced/inputs/merge_input.html", context=subcontext).content
@@ -540,7 +544,11 @@ def get_items_html_code_for_color(maced_name, item_name, action_type, field_html
     subcontext["input_id"] = action_type + "-" + item_name + "-" + field_name + "-input"
     subcontext["input_id1"] = action_type + "-" + item_name + "1-" + field_name + "-input"  # Used for merge
     subcontext["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
-    subcontext["field_html_class_name"] = get_field_html_class_name(maced_name, field_name)
+
+    if action_type == ADD:
+        subcontext["field_html_class_name"] = ""
+    else:
+        subcontext["field_html_class_name"] = get_field_html_class_name(maced_name, field_name)
 
     if action_type == MERGE:
         return render(request=None, template_name="maced/inputs/merge_input.html", context=subcontext).content
@@ -561,7 +569,11 @@ def get_items_html_code_for_select(maced_name, item_name, action_type, field_htm
     subcontext["input_id2"] = action_type + "-" + item_name + "2-" + field_name + "-input"  # Used for merge
     subcontext["options_html_code"] = options_html_code
     subcontext["item_html_class_name"] = get_item_html_class_name(maced_name)
-    subcontext["field_html_class_name"] = get_field_html_class_name(maced_name, field_name)
+
+    if action_type == ADD:
+        subcontext["field_html_class_name"] = ""
+    else:
+        subcontext["field_html_class_name"] = get_field_html_class_name(maced_name, field_name)
 
     if action_type == MERGE:
         return render(request=None, template_name="maced/inputs/merge_input.html", context=subcontext).content

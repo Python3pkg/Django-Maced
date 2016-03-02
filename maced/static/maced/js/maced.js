@@ -301,12 +301,17 @@ function add_item(item_name)
                 field_name = maced_field_names[item_name][i];
                 field_identifier = maced_field_identifiers[item_name][i];
 
-                //// Fills all fields that are this field for this type of item. Any that need to be empty will be
-                //// emptied in set_input_item().
-                //$(get_field_html_class_selector(maced_name, field_name)).each(function()
-                //{
-                //    $(this).val(data[field_name]);
-                //});
+                // Fills all fields that are this field for this type of item. Any that need to be empty will be
+                // emptied in set_input_item().
+                $(get_field_html_class_selector(maced_name, field_name)).each(function()
+                {
+                    var select_value = get_select_value_by_field($(this));
+
+                    if (select_value == item_id)
+                    {
+                        $(this).val(data[field_name]);
+                    }
+                });
 
                 set_input_item(action_type, item_name, field_identifier, "", null);
             }
