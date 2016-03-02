@@ -138,11 +138,6 @@ def get_post_data(request, item_model, item_name_field_name, action_type):
             logger.error(message)
 
             return HttpResponse(content=message, status=500)
-        elif not is_item_name_valid(item_name):
-            message = str(item_name_field_name) + " name must not contain " + get_bad_item_name_characters_in_string()
-            logger.error(message)
-
-            return HttpResponse(content=message, status=500)
     else:
         item_name = None
 
