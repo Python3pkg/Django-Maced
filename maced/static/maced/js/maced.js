@@ -1065,7 +1065,7 @@ function get_field_html_class_selector(maced_name, field_name)
     return get_item_html_class_selector(maced_name) + "-" + field_name;
 }
 
-// Black magic
+// Black magic (Later this should be changed to use a data attribute on the field that contains the select id)
 function get_select_value_by_field(field)
 {
     var field_id = field.prop("id");
