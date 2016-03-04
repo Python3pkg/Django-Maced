@@ -51,7 +51,7 @@ def merge_item(item_model, fields_to_save, item_name, item1_id, item2_id, item_n
         return HttpResponse(content=message, status=500)
     except ValueError as error:
         message = "An invalid value was received for a field, if you are using select-object, be sure to supply " + \
-                  "the select_object_models_info list in the kwargs. Reported error: " + str(error),
+                  "the select_object_models_info list in the kwargs. Reported error: " + str(error)
         logger.error(message)
 
         return HttpResponse(content=message, status=500)
@@ -74,13 +74,13 @@ def add_item(item_model, fields_to_save, item_name):
         item = item_model.objects.create(**fields_to_save)
     except IntegrityError as error:
         message = "An object related to this already exists or there is a problem with this item. Reported error: " + \
-                  str(error),
+                  str(error)
         logger.error(message)
 
         return HttpResponse(content=message, status=500)
     except ValueError as error:
         message = "An invalid value was received for a field, if you are using select-object, be sure to supply " + \
-                  "the select_object_models_info list in the kwargs. Reported error: " + str(error),
+                  "the select_object_models_info list in the kwargs. Reported error: " + str(error)
         logger.error(message)
 
         return HttpResponse(content=message, status=500)
@@ -107,13 +107,13 @@ def edit_item(item_model, fields_to_save, item_name, item_id):
         item_model.objects.filter(id=item_id).update(**fields_to_save)
     except IntegrityError as error:
         message = "An object related to this already exists or there is a problem with this item. Reported error: " + \
-                  str(error),
+                  str(error)
         logger.error(message)
 
         return HttpResponse(content=message, status=500)
     except ValueError as error:
         message = "An invalid value was received for a field, if you are using select-object, be sure to supply " + \
-                  "the select_object_models_info list in the kwargs. Reported error: " + str(error),
+                  "the select_object_models_info list in the kwargs. Reported error: " + str(error)
         logger.error(message)
 
         return HttpResponse(content=message, status=500)
