@@ -106,10 +106,15 @@ def get_and_validate_kwargs(**kwargs):
     else:
         select_object_models_info = None
 
-    return need_authentication, item_name_field_name, item_model, select_object_models_info
+    if "required_fields_info" in kwargs:
+        required_fields_info = kwargs["select_object_models_info"]  # Validation needs to be added later
+    else:
+        required_fields_info = None
+
+    return need_authentication, item_name_field_name, item_model, select_object_models_info, required_fields_info
 
 
-def get_post_data(request, item_model, item_name_field_name, action_type):
+def get_post_data(request, item_model, item_name_field_name, action_type, required_fields_info):
     # Get all fields on the model
     fields = item_model._meta.fields
 

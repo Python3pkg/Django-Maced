@@ -43,6 +43,7 @@ def maced_view(request, **kwargs):
     item_name_field_name = kwargs_result[1]
     item_model = kwargs_result[2]
     select_object_models_info = kwargs_result[3]
+    required_fields_info = kwargs_result[4]
 
     data = {}
 
@@ -75,7 +76,8 @@ def maced_view(request, **kwargs):
         # Get all the fields that were given in the post, along with the item_name (the value associated with the
         # item_name_field_name)
         fields_result = get_post_data(
-            request=request, item_model=item_model, item_name_field_name=item_name_field_name, action_type=action_type
+            request=request, item_model=item_model, item_name_field_name=item_name_field_name, action_type=action_type,
+            required_fields_info=required_fields_info
         )
 
         # This will be a tuple as long as it succeeded, otherwise it will be an HttpResponse
