@@ -5,8 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
 from maced.utils.constants import GET, MERGE, ADD, EDIT, CLONE
-from maced.utils.misc import MissingFromPost
-
+from maced.utils.misc import MissingFromPost, prettify_string
 
 logger = logging.getLogger("maced")
 
@@ -107,7 +106,23 @@ def get_and_validate_kwargs(**kwargs):
         select_object_models_info = None
 
     if "required_fields_info" in kwargs:
-        required_fields_info = kwargs["select_object_models_info"]  # Validation needs to be added later
+        required_fields_info = kwargs["select_object_models_info"]
+
+        if isinstance(required_fields_info, list):
+            count = 0
+
+            for required_field_info in required_fields_info:
+                if not isinstance(required_field_info, (str, unicode)):
+                    message = "Required field number " + str(count) + " is not a string."
+                    logger.error(message)
+
+                    return HttpResponse(content=message, status=500)
+        else:
+            message = "required_fields_info must be a list."
+            logger.error(message)
+
+            return HttpResponse(content=message, status=500)
+
     else:
         required_fields_info = None
 
@@ -139,12 +154,22 @@ def get_post_data(request, item_model, item_name_field_name, action_type, requir
             return HttpResponse(content=message, status=500)
 
         if item_name == "":
-            message = str(item_name_field_name) + " is required."
-            logger.error(message)
-
-            return HttpResponse(content=message, status=500)
+            missing_field_names.append(item_name_field_name)
     else:
         item_name = None
+
+    message = ""
+    has_missing_required_fields = False
+
+    for missing_field_name in missing_field_names:
+        if missing_field_name == item_name_field_name or missing_field_name in required_fields_info:
+            message += prettify_string(item_name_field_name) + " is required. "
+            has_missing_required_fields = True
+
+    if has_missing_required_fields:
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
 
     item_id = None
     item2_id = None
