@@ -3,9 +3,10 @@ import logging
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
+from django.db import models
 
 from maced.utils.constants import GET, MERGE, ADD, EDIT, CLONE
-from maced.utils.misc import MissingFromPost, prettify_string
+from maced.utils.misc import prettify_string
 
 logger = logging.getLogger("maced")
 
@@ -106,14 +107,12 @@ def get_and_validate_kwargs(**kwargs):
         select_object_models_info = None
 
     if "required_fields_info" in kwargs:
-        required_fields_info = kwargs["select_object_models_info"]
+        required_fields_info = kwargs["required_fields_info"]
 
         if isinstance(required_fields_info, list):
-            count = 0
-
-            for required_field_info in required_fields_info:
-                if not isinstance(required_field_info, (str, unicode)):
-                    message = "Required field number " + str(count) + " is not a string."
+            for i in range(len(required_fields_info)):
+                if not isinstance(required_fields_info[i], (str, unicode)):
+                    message = "Required field number " + str(i) + " is not a string."
                     logger.error(message)
 
                     return HttpResponse(content=message, status=500)
@@ -122,9 +121,10 @@ def get_and_validate_kwargs(**kwargs):
             logger.error(message)
 
             return HttpResponse(content=message, status=500)
-
     else:
-        required_fields_info = None
+        required_fields_info = []
+
+    required_fields_info.append(item_name_field_name)
 
     return need_authentication, item_name_field_name, item_model, select_object_models_info, required_fields_info
 
@@ -138,38 +138,31 @@ def get_post_data(request, item_model, item_name_field_name, action_type, requir
 
     # Build a list of potential fields to fill in
     for field in fields:
-        fields_to_save[field.name] = request.POST.get(field.name, MissingFromPost())
+        fields_to_save[field.name] = request.POST.get(field.name, "")
 
-        if fields_to_save[field.name].__class__ is MissingFromPost:
+        if fields_to_save[field.name] == "":
             missing_field_names.append(field.name)
             fields_to_save.pop(field.name, None)
-
-    if action_type == MERGE or action_type == ADD or action_type == CLONE or action_type == EDIT:
-        item_name = fields_to_save[item_name_field_name]
-
-        if item_name.__class__ is MissingFromPost:
-            message = str(item_name_field_name) + " was not in the post but is set as the name field for this object"
-            logger.error(message)
-
-            return HttpResponse(content=message, status=500)
-
-        if item_name == "":
-            missing_field_names.append(item_name_field_name)
-    else:
-        item_name = None
 
     message = ""
     has_missing_required_fields = False
 
-    for missing_field_name in missing_field_names:
-        if missing_field_name == item_name_field_name or missing_field_name in required_fields_info:
-            message += prettify_string(item_name_field_name) + " is required. "
-            has_missing_required_fields = True
+    if action_type == MERGE or action_type == ADD or action_type == CLONE or action_type == EDIT:
+        # Check if other required fields are missing from the post
+        for missing_field_name in missing_field_names:
+            if missing_field_name in required_fields_info:
+                message += prettify_string(missing_field_name) + " is required. "
+                has_missing_required_fields = True
 
-    if has_missing_required_fields:
-        logger.error(message)
+        # If anything was missing, return an error with the list of missing required fields
+        if has_missing_required_fields:
+            logger.error(message)
 
-        return HttpResponse(content=message, status=500)
+            return HttpResponse(content=message, status=500)
+
+        item_name = fields_to_save[item_name_field_name]  # This will be in the list if we made it this far
+    else:
+        item_name = None
 
     item_id = None
     item2_id = None
@@ -177,6 +170,7 @@ def get_post_data(request, item_model, item_name_field_name, action_type, requir
     if "item_id" in request.POST:
         item_id = request.POST["item_id"]
 
+    # This will only be sent if it is a merge
     if "item2_id" in request.POST:
         item2_id = request.POST["item2_id"]
 
