@@ -105,6 +105,9 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
 
     maced_data = context["maced_data"]
 
+    if "items_to_remove" not in maced_data:
+        maced_data["items_to_remove"] = []
+
     if "item_names" not in maced_data:
         maced_data["item_names"] = []
 
@@ -114,8 +117,8 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     if "maced_names" not in maced_data:
         maced_data["maced_names"] = {}
 
-    if "items_to_remove" not in maced_data:
-        maced_data["items_to_remove"] = []
+    if "item_html_names" not in maced_data:
+        maced_data["item_html_names"] = {}
 
     if "field_names" not in maced_data:
         maced_data["field_names"] = {}
@@ -141,6 +144,7 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
         field_to_order_by = item_name_field_name
 
     maced_data["maced_names"][item_name] = item_name
+    maced_data["item_html_names"][item_name] = item_html_name
 
     initialize_fields_for_item_in_maced_data(maced_data=maced_data, item_name=item_name)
     context[item_name + "_dependencies"] = []
@@ -252,15 +256,15 @@ def finalize_context_for_items(context, login_url=None):
 
 
 # original_dictionary is the dictionary that is being built up for a particular maced_item object.
-#   When it is complete, it should be sent to get_context_data_for_maced_items to be added to the context.
+#       When it is complete, it should be sent to get_context_data_for_maced_items to be added to the context.
 # maced_name is the name of the model.
 # item_name is the name of this instance of this item.
 # field_type is small set of predefined constants to support various html input types.
 # field_html_name is the name that will be shown to the user for the modal that pops up after clicking add, edit, merge
-#   or delete
+#       or delete
 # field_name is the name of the field on the model
 # extra_info is an optional parameter that is used for special purposes depending on the item_type if the type uses it.
-#   Example: Select uses extra_info for options information
+#       Example: Select uses extra_info for options information
 def insert_items_html_code(
         original_dictionary, maced_name, item_name, field_type, field_html_name, field_name, extra_info=None):
     if field_type == "maced":
@@ -643,6 +647,7 @@ def get_html_code_for_maced_fields(context, maced_name, action_type, item_path):
 
         # Add the other pieces to the context. maced_data is a part of the context
         maced_data["item_names"].append(full_child_name)
+        maced_data["item_html_names"][full_child_name] = child_builder["item_html_name"]
         maced_data["urls"][full_child_name] = maced_data["urls"][childs_maced_name]
 
         # Now go recursive and go down a child generation and add it to the blob
@@ -679,6 +684,7 @@ def get_html_code_for_maced_fields(context, maced_name, action_type, item_path):
 
     # Add the other pieces to the context. maced_data is part of the context
     maced_data["item_names"].append(full_name)
+    maced_data["item_html_names"][full_name] = builder["item_html_name"]
     maced_data["urls"][full_name] = maced_data["urls"][maced_name]
 
     return html_code_to_return

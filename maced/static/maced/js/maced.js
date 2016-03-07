@@ -13,6 +13,7 @@ var maced_ACTION_TYPES = [maced_ADD, maced_EDIT, maced_MERGE, maced_DELETE, mace
 
 var maced_item_names = maced_data["item_names"];
 var maced_names = maced_data["maced_names"];
+var maced_item_html_names = maced_data["item_html_names"];
 var maced_field_names = JSON.parse(maced_data["field_names"]);
 var maced_field_identifiers = JSON.parse(maced_data["field_identifiers"]);
 var maced_urls = JSON.parse(maced_data["urls"]);
