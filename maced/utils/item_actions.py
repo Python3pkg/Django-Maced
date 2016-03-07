@@ -121,8 +121,9 @@ def edit_item(item_model, fields_to_save, item_name, item_id):
     return data
 
 
-def delete_item(item_model, item_id):
+def delete_item(item_model, item_name, item_id):
     data = {}
+    data["name"] = item_name
 
     try:
         item_model.objects.get(id=item_id).delete()
