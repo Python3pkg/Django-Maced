@@ -185,8 +185,8 @@ function merge_item(item_name)
             var item_html_name = maced_item_html_names[item_name];
             var name1 = get_name_of_selected_item(merge_item1_select);
             var name2 = get_name_of_selected_item(merge_item2_select);
-            var success_text = "Successfully merged the " + item_html_name + " named " + name1 + " and " +
-                                name2 + " into " + name + ".";
+            var success_text = "Successfully merged the " + item_html_name + " named \"" + name1 + "\" and \"" +
+                                name2 + "\" into \"" + name + "\".";
 
             spinner.hide();
             modal.modal("hide");
@@ -284,7 +284,7 @@ function add_item(item_name)
             var name = out_data_json["name"];
             var maced_name = maced_names[item_name];
             var item_html_name = maced_item_html_names[item_name];
-            var success_text = "Successfully added the " + item_html_name + " named " + name + ".";
+            var success_text = "Successfully added the " + item_html_name + " named \"" + name + "\".";
 
             spinner.hide();
             modal.modal("hide");
@@ -389,7 +389,8 @@ function clone_item(item_name)
     //        var maced_name = maced_names[item_name];
     //        var item_html_name = maced_item_html_names[item_name];
     //        var original_name = get_name_of_selected_item(item_select);
-    //        var success_text = "Successfully cloned the " + item_html_name + " named " + original_name + " and created " + name + ".";
+    //        var success_text = "Successfully cloned the " + item_html_name + " named \"" + original_name +
+    //                            "\" and created \"" + name + "\".";
     //
     //        spinner.hide();
     //        modal.modal("hide");
@@ -492,8 +493,14 @@ function edit_item(item_name)
             var maced_name = maced_names[item_name];
             var item_html_name = maced_item_html_names[item_name];
             var original_name = get_name_of_selected_item(item_select);
-            var success_text = "Successfully edited the " + item_html_name + " named " + original_name +
-                                " (name may have changed).";
+            var success_text = "Successfully edited the " + item_html_name + " named \"" + original_name + "\"";
+
+            if (original_name != name)
+            {
+                success_text += " (now called \"" + name + "\")";
+            }
+
+            success_text += ".";
 
             spinner.hide();
             modal.modal("hide");
@@ -571,7 +578,7 @@ function delete_item(item_name)
             var name = out_data_json["name"];
             var maced_name = maced_names[item_name];
             var item_html_name = maced_item_html_names[item_name];
-            var success_text = "Successfully deleted the " + item_html_name + " named " + name + ".";
+            var success_text = "Successfully deleted the " + item_html_name + " named \"" + name + "\".";
 
             spinner.hide();
             modal.modal("hide");
