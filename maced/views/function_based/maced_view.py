@@ -113,7 +113,7 @@ def maced_view(request, **kwargs):
                 item_model=item_model, fields_to_save=fields_to_save, item_name=item_name, item_id=item_id
             )
         elif action_type == DELETE:
-            action_result = delete_item(item_model=item_model, item_name=item_name, item_id=item_id)
+            action_result = delete_item(item_model=item_model, item_id=item_id)
         elif action_type == GET:
             action_result = get_item(item_model, select_object_models_info=select_object_models_info, item_id=item_id)
         elif action_type == INFO:

@@ -575,9 +575,9 @@ function delete_item(item_name)
         success: function(out_data)
         {
             var out_data_json = JSON.parse(out_data);
-            var name = out_data_json["name"];
             var maced_name = maced_names[item_name];
             var item_html_name = maced_item_html_names[item_name];
+            var name = get_name_of_selected_item(item_select);
             var success_text = "Successfully deleted the " + item_html_name + " named \"" + name + "\".";
 
             spinner.hide();
