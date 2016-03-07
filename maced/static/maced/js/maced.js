@@ -78,7 +78,7 @@ $(document).ready(function()
         {
             $("#" + maced_ACTION_TYPES[action_type] + "-" + item_name + "-button").click({item_name: item_name}, function(event)
             {
-                remove_success_divs(event.data.item_name);
+                set_success_text_for_item(event.data.item_name, "");
             });
         }
 
@@ -95,7 +95,7 @@ $(document).ready(function()
         // Add click events for all selects to remove success divs
         item_select.click({item_name: item_name}, function(event)
         {
-            remove_success_divs(event.data.item_name);
+            set_success_text_for_item(event.data.item_name, "");
         });
 
         // Add change events for all selects to cause data loads
@@ -182,10 +182,15 @@ function merge_item(item_name)
             var out_data_json = JSON.parse(out_data);
             var name = out_data_json["name"];
             var maced_name = maced_names[item_name];
+            var item_html_name = maced_item_html_names[item_name];
+            var name1 = get_name_of_selected_item(merge_item1_select);
+            var name2 = get_name_of_selected_item(merge_item2_select);
+            var success_text = "Successfully merged the " + item_html_name + " named " + name1 + " and " +
+                                name2 + " into " + name + ".";
 
             spinner.hide();
             modal.modal("hide");
-            $("#" + item_name + "-success-b").text("Successfully merged the {{ item_html_name }}.");
+            set_success_text_for_item(item_name, success_text);
 
             // Remove the old options and select the new one on every select that is connected to this base maced_item.
             // Technically this is just deleting the second one and selecting the first one and giving it the new name.
@@ -278,10 +283,12 @@ function add_item(item_name)
             var id = out_data_json["id"];
             var name = out_data_json["name"];
             var maced_name = maced_names[item_name];
+            var item_html_name = maced_item_html_names[item_name];
+            var success_text = "Successfully added the " + item_html_name + " named " + name + ".";
 
             spinner.hide();
             modal.modal("hide");
-            $("#" + action_type + "-" + item_name + "-success-div").show();
+            set_success_text_for_item(item_name, success_text);
 
             // Add the new option to every select that is connected to this base maced_item and select it if necessary
             $(get_item_html_class_selector(maced_name)).each(function()
@@ -344,7 +351,6 @@ function clone_item(item_name)
     //var error_div = $("#" + action_type + "-" + item_name + "-error-div");
     //var item_select = $("#" + item_name + "-select");
     //var merge_item1_select = $("#" + maced_MERGE + "-" + item_name + "1-input");
-    //var merge_item2_select = $("#" + maced_MERGE + "-" + item_name + "2-input");
     //var data = {};
     //var item_id = item_select.val();
     //var url = maced_urls[item_name];
@@ -381,10 +387,13 @@ function clone_item(item_name)
     //        var id = out_data_json["id"];
     //        var name = out_data_json["name"];
     //        var maced_name = maced_names[item_name];
+    //        var item_html_name = maced_item_html_names[item_name];
+    //        var original_name = get_name_of_selected_item(item_select);
+    //        var success_text = "Successfully cloned the " + item_html_name + " named " + original_name + " and created " + name + ".";
     //
     //        spinner.hide();
     //        modal.modal("hide");
-    //        $("#" + action_type + "-" + item_name + "-success-div").show();
+    //        set_success_text_for_item(item_name, success_text);
     //
     //
     //        // Add the new option to every select that is connected to this base maced_item and select it if necessary
@@ -481,10 +490,14 @@ function edit_item(item_name)
             var out_data_json = JSON.parse(out_data);
             var name = out_data_json["name"];
             var maced_name = maced_names[item_name];
+            var item_html_name = maced_item_html_names[item_name];
+            var original_name = get_name_of_selected_item(item_select);
+            var success_text = "Successfully edited the " + item_html_name + " named " + original_name +
+                                " (name may have changed).";
 
             spinner.hide();
             modal.modal("hide");
-            $("#" + action_type + "-" + item_name + "-success-div").show();
+            set_success_text_for_item(item_name, success_text);
 
             // Update the option with the new name (could be the same name though) to every select that is connected
             // to this base maced_item
@@ -555,11 +568,14 @@ function delete_item(item_name)
         success: function(out_data)
         {
             var out_data_json = JSON.parse(out_data);
+            var name = out_data_json["name"];
             var maced_name = maced_names[item_name];
+            var item_html_name = maced_item_html_names[item_name];
+            var success_text = "Successfully deleted the " + item_html_name + " named " + name + ".";
 
             spinner.hide();
             modal.modal("hide");
-            $("#" + action_type + "-" + item_name + "-success-div").show();
+            set_success_text_for_item(item_name, success_text);
 
             // Remove the option from every select that is connected to this base maced_item
             $(get_item_html_class_selector(maced_name)).each(function()
@@ -819,13 +835,9 @@ function get_authentication(item_name)
     });
 }
 
-function remove_success_divs(item_name)
+function set_success_text_for_item(item_name, success_text)
 {
-    $("#" + maced_MERGE + "-" + item_name + "-success-div").hide();
-    $("#" + maced_ADD + "-" + item_name + "-success-div").hide();
-    $("#" + maced_CLONE + "-" + item_name + "-success-div").hide();
-    $("#" + maced_EDIT + "-" + item_name + "-success-div").hide();
-    $("#" + maced_DELETE + "-" + item_name + "-success-div").hide();
+    $("#" + item_name + "-success-b").text(success_text);
 }
 
 // Get value from an input for the related item
@@ -985,20 +997,6 @@ function disable_buttons(item_name)
     //info_button.prop("disabled", true);
 }
 
-function change_item_visibility(item_name, should_turn_on)
-{
-    var item_tr = $("#" + item_name + "-tr");
-
-    if (should_turn_on)
-    {
-        item_tr.show();
-    }
-    else
-    {
-        item_tr.hide();
-    }
-}
-
 function merge_into_middle(from_id, to_id)
 {
     var from_input = $("#" + from_id);
@@ -1090,4 +1088,23 @@ function get_select_value_by_field(field)
 function set_focus_to_first_input_in_modal(modal)
 {
     modal.find("input").first().focus();
+}
+
+function get_name_of_selected_item(select)
+{
+    return select.find(":selected").text().trim();
+}
+
+function change_item_visibility(item_name, should_turn_on)
+{
+    var item_tr = $("#" + item_name + "-tr");
+
+    if (should_turn_on)
+    {
+        item_tr.show();
+    }
+    else
+    {
+        item_tr.hide();
+    }
 }
