@@ -5,6 +5,7 @@ import inspect
 import json
 from copy import deepcopy
 
+import sys
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
@@ -13,6 +14,11 @@ from maced.utils.constants import PRIMARY_ACTION_TYPES, VALID_INPUT_TYPES, VALID
 from maced.utils.errors import MacedProgrammingError
 from maced.utils.misc import validate_select_options, prettify_string, is_item_name_valid, \
     get_bad_item_name_characters_in_string
+
+if (sys.version_info > (3, 0)):
+    STR_UNICODE = (str, )
+else:
+    STR_UNICODE = (str, unicode)
 
 
 # The main function to craft html code for each item. This is the only function that should be called directly besides
@@ -52,11 +58,11 @@ from maced.utils.misc import validate_select_options, prettify_string, is_item_n
 #       a maced item and a maced field for another maced item, then keep this as False and all will be fine.
 def add_item_to_context(context, item_name, item_model, item_name_field_name, field_list,
                         name_of_app_with_url, current_item_id, item_html_name=None, allow_empty=True,
-                        field_to_order_by=None, is_used_only_for_maced_fields=False):
+                        field_to_order_by=None, is_used_only_for_maced_fields=False, filters=None):
     if not isinstance(context, dict):
         raise TypeError("Please provide a valid context")
 
-    if not isinstance(item_name, (str, unicode)):
+    if not isinstance(item_name, STR_UNICODE):
         raise TypeError("item_name must be a string")
 
     if not is_item_name_valid(item_name):
@@ -68,25 +74,25 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     if not inspect.isclass(item_model):
         raise TypeError("item_model must be a class")
 
-    if not isinstance(item_name_field_name, (str, unicode)):
+    if not isinstance(item_name_field_name, STR_UNICODE):
         raise TypeError("object_name_field_name must be a string")
 
     if not isinstance(field_list, list):
         raise TypeError("field_list must be a list")
 
-    if not isinstance(name_of_app_with_url, (str, unicode)):
+    if not isinstance(name_of_app_with_url, STR_UNICODE):
         raise TypeError("name_of_app_with_url must be a string")
 
     if not isinstance(current_item_id, int):
         raise TypeError("current_item_id must be a integer")
 
-    if not isinstance(item_html_name, (str, unicode)) and item_html_name is not None:
+    if not isinstance(item_html_name, STR_UNICODE) and item_html_name is not None:
         raise TypeError("item_html_name must be a string or None")
 
     if not isinstance(allow_empty, bool):
         raise TypeError("allow_empty must be a bool")
 
-    if not isinstance(field_to_order_by, (str, unicode)) and field_to_order_by is not None:
+    if not isinstance(field_to_order_by, STR_UNICODE) and field_to_order_by is not None:
         raise TypeError(
             "field_to_order_by must be a string that is the name of the field you want to order your objects by or None"
         )
@@ -150,7 +156,7 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     context[item_name + "_dependencies"] = []
 
     # Get all items of this type
-    items = get_items(item_model=item_model, field_to_order_by=field_to_order_by)
+    items = get_items(item_model=item_model, field_to_order_by=field_to_order_by, filters=filters)
 
     # Create an option_tuple_list which is a list of tuples defined as (id_of_the_item, name_of_the_item). This will
     # be used in the merge function.
@@ -166,7 +172,7 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     # Make a builder so we can reuse it later for maced fields
     context[item_name + "_builder"] = build_builder(
         item_name=item_name, item_html_name=item_html_name, item_model=item_model, field_to_order_by=field_to_order_by,
-        url=url, options_html_code=options_html_code, field_list=field_list, allow_empty=allow_empty
+        url=url, options_html_code=options_html_code, field_list=field_list, allow_empty=allow_empty, filters=filters
     )
 
     # All the special html that is dynamically generated
@@ -193,7 +199,7 @@ def get_current_item_id(model_instance, field_name):
     if model_instance is None:
         return 0
 
-    if not isinstance(field_name, (str, unicode)):
+    if not isinstance(field_name, STR_UNICODE):
         raise TypeError("field_name must be a string")
 
     if field_name == "":
@@ -286,10 +292,12 @@ def insert_items_html_code(
                 field_name=field_name
             )
     elif field_type == "select":
+        options_html_code = get_html_code_for_options(option_tuple_list=extra_info)
+
         for action_type in PRIMARY_ACTION_TYPES:
             original_dictionary[item_name][action_type] += get_items_html_code_for_select(
                 maced_name=maced_name, item_name=item_name, action_type=action_type, field_html_name=field_html_name,
-                field_name=field_name, options_html_code=extra_info
+                field_name=field_name, options_html_code=options_html_code
             )
     else:
         raise TypeError(
@@ -298,11 +306,23 @@ def insert_items_html_code(
 
 
 # Later, restrictions will be applied to incorporate permissions/public/private/etc.
-def get_items(item_model, field_to_order_by=None):
+def get_items(item_model, field_to_order_by=None, filters=None):
     if field_to_order_by is None:
-        items = item_model.objects.all()
+        if filters:
+            if isinstance(filters, dict):
+                items = item_model.objects.filter(**filters)
+            else:
+                items = item_model.objects.filter(filters)
+        else:
+            items = item_model.objects.all()
     else:
-        items = item_model.objects.all().order_by(field_to_order_by)
+        if filters:
+            if isinstance(filters, dict):
+                items = item_model.objects.filter(**filters).order_by(field_to_order_by)
+            else:
+                items = item_model.objects.filter(filters).order_by(field_to_order_by)
+        else:
+            items = item_model.objects.all().order_by(field_to_order_by)
 
     return items
 
@@ -444,11 +464,11 @@ def build_url(item_name, name_of_app_with_url):
 
 
 def build_builder(item_name, item_html_name, item_model, field_to_order_by, url, options_html_code, field_list,
-                  allow_empty):
+                  allow_empty, filters):
     builder = {}
     builder["item_name"] = item_name
     builder["item_html_name"] = item_html_name
-    builder["items"] = get_items(item_model=item_model, field_to_order_by=field_to_order_by)
+    builder["items"] = get_items(item_model=item_model, field_to_order_by=field_to_order_by, filters=filters)
     builder["options_html_code"] = options_html_code
     builder["field_list"] = field_list
     builder["url"] = url
