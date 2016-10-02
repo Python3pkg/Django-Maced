@@ -1,6 +1,7 @@
 import inspect
 import logging
 
+import sys
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.db import models
@@ -9,6 +10,11 @@ from maced.utils.constants import GET, MERGE, ADD, EDIT, CLONE
 from maced.utils.misc import prettify_string
 
 logger = logging.getLogger("maced")
+
+if (sys.version_info > (3, 0)):
+    STR_UNICODE = (str, )
+else:
+    STR_UNICODE = (str, unicode)
 
 
 def get_and_validate_kwargs(**kwargs):
@@ -54,7 +60,7 @@ def get_and_validate_kwargs(**kwargs):
             for select_object_model_info in select_object_models_info:
                 if isinstance(select_object_model_info, tuple):
                     if len(select_object_model_info) == 2 or len(select_object_model_info) == 3:
-                        if isinstance(select_object_model_info[0], (str, unicode)):
+                        if isinstance(select_object_model_info[0], STR_UNICODE):
                             # This should really be checking if it is a model, not a class.
                             if inspect.isclass(select_object_model_info[1]):
                                 if len(select_object_model_info) == 3:
@@ -111,7 +117,7 @@ def get_and_validate_kwargs(**kwargs):
 
         if isinstance(required_fields_info, list):
             for i in range(len(required_fields_info)):
-                if not isinstance(required_fields_info[i], (str, unicode)):
+                if not isinstance(required_fields_info[i], STR_UNICODE):
                     message = "Required field number " + str(i) + " is not a string."
                     logger.error(message)
 

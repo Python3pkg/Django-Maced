@@ -3,12 +3,19 @@ import random
 import string
 import json
 
+import sys
 from django.http import HttpResponse
 
 BAD_ITEM_NAME_CHARACTERS = (
     "!", '"', "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", ".", "/", ":", ";", "<", "=", ">", "?", "@", "[", "\\",
     "]", "^", "`", "{", "|", "}", "~", " "
 )
+
+if (sys.version_info > (3, 0)):
+    STR_UNICODE = (str, )
+else:
+    STR_UNICODE = (str, unicode)
+
 
 class MissingFromPost:
     pass
@@ -70,7 +77,7 @@ def validate_select_options(extra_info, field, item_name, select_type):
         for option in extra_info:
             if isinstance(option, tuple):
                 if len(option) == 2:
-                    if isinstance(option[0], (int, str, unicode)):
+                    if isinstance(option[0], (int,) + STR_UNICODE):
                         if select_type == "object":
                             try:
                                 int(option[0])
@@ -84,7 +91,7 @@ def validate_select_options(extra_info, field, item_name, select_type):
                         elif select_type == "string":
                             pass  # Currently no validation
 
-                        if not isinstance(option[1], (str, unicode)):
+                        if not isinstance(option[1], STR_UNICODE):
                             raise TypeError(
                                 "Name in option number " + str(option_count) + " in field " +
                                 str(field["name"]) + " in field_list for " + str(item_name) +

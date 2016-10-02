@@ -1,6 +1,7 @@
 import json
 import logging
 
+import sys
 from django.db import transaction
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -14,6 +15,11 @@ from maced.utils.misc import serialize_item_action_data
 
 
 logger = logging.getLogger("maced")
+
+if (sys.version_info > (3, 0)):
+    STR_UNICODE = (str, )
+else:
+    STR_UNICODE = (str, unicode)
 
 
 @transaction.atomic
@@ -131,7 +137,7 @@ def maced_view(request, **kwargs):
     data_json_string = serialize_item_action_data(action_result)
 
     # This will be a string as long as it succeeded, otherwise it will be an HttpResponse
-    if not isinstance(data_json_string, (str, unicode)):
+    if not isinstance(data_json_string, STR_UNICODE):
         return data_json_string
 
     return HttpResponse(content=data_json_string)
