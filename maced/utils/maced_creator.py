@@ -249,13 +249,17 @@ def finalize_context_for_items(context, login_url=None):
 
     delete_list = ("_builder", "_options_html_code", "_dependencies")
 
+    temp_context = context
+
     for key in context.keys():
         if any(delete_item in key for delete_item in delete_list):
-            del context[key]
+            del temp_context[key]
 
     for item_name in maced_data["items_to_remove"]:
-        del context[item_name + "_item"]
-        del context["individual_maced_modals"][item_name]
+        del temp_context[item_name + "_item"]
+        del temp_context["individual_maced_modals"][item_name]
+
+    context = temp_context
 
     for item_name in context["individual_maced_modals"]:
         context["maced_modals"] += context["individual_maced_modals"][item_name]
