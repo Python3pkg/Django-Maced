@@ -249,7 +249,7 @@ def finalize_context_for_items(context, login_url=None):
 
     delete_list = ("_builder", "_options_html_code", "_dependencies")
 
-    temp_context = context
+    temp_context = dict(context)
 
     for key in context.keys():
         if any(delete_item in key for delete_item in delete_list):
