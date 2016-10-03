@@ -367,7 +367,7 @@ def build_html_code(context, options_html_code, item_name, item_html_name, field
 
     html_code_dictionary[item_name][MERGE] = render(
         request=None, template_name="maced/merge_table_row_1.html", context=merge_context
-    ).content
+    ).content.strip().decode('ascii')
 
     # Create html input fields for each field on the model
     for field in field_list:
@@ -488,8 +488,13 @@ def build_templates(builder, html_code_dictionary, item_id, maced_name):
     subcontext["delete_html_code"] = html_code_dictionary[item_name][DELETE]
     subcontext["item_html_class_name"] = get_item_html_class_name(maced_name)
 
-    maced_html_code = render(request=None, template_name="maced/container.html", context=subcontext).content
-    maced_modal_html_code = render(request=None, template_name="maced/modal_list.html", context=subcontext).content
+    maced_html_code = render(
+        request=None, template_name="maced/container.html", context=subcontext
+    ).content.strip().decode('ascii')
+
+    maced_modal_html_code = render(
+        request=None, template_name="maced/modal_list.html", context=subcontext
+    ).content.strip().decode('ascii')
 
     return maced_html_code, maced_modal_html_code
 
