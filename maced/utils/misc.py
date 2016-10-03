@@ -12,9 +12,9 @@ BAD_ITEM_NAME_CHARACTERS = (
 )
 
 if (sys.version_info > (3, 0)):
-    STR_UNICODE = (str, )
+    STR_UNICODE_TUPLE = (str, )
 else:
-    STR_UNICODE = (str, unicode)
+    STR_UNICODE_TUPLE = (str, unicode)
 
 
 class MissingFromPost:
@@ -77,7 +77,7 @@ def validate_select_options(extra_info, field, item_name, select_type):
         for option in extra_info:
             if isinstance(option, tuple):
                 if len(option) == 2:
-                    if isinstance(option[0], (int,) + STR_UNICODE):
+                    if isinstance(option[0], (int,) + STR_UNICODE_TUPLE):
                         if select_type == "object":
                             try:
                                 int(option[0])
@@ -91,7 +91,7 @@ def validate_select_options(extra_info, field, item_name, select_type):
                         elif select_type == "string":
                             pass  # Currently no validation
 
-                        if not isinstance(option[1], STR_UNICODE):
+                        if not isinstance(option[1], STR_UNICODE_TUPLE):
                             raise TypeError(
                                 "Name in option number " + str(option_count) + " in field " +
                                 str(field["name"]) + " in field_list for " + str(item_name) +

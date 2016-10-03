@@ -17,9 +17,9 @@ from maced.utils.misc import serialize_item_action_data
 logger = logging.getLogger("maced")
 
 if (sys.version_info > (3, 0)):
-    STR_UNICODE = (str, )
+    STR_UNICODE_TUPLE = (str, )
 else:
-    STR_UNICODE = (str, unicode)
+    STR_UNICODE_TUPLE = (str, unicode)
 
 
 @transaction.atomic
@@ -137,7 +137,7 @@ def maced_view(request, **kwargs):
     data_json_string = serialize_item_action_data(action_result)
 
     # This will be a string as long as it succeeded, otherwise it will be an HttpResponse
-    if not isinstance(data_json_string, STR_UNICODE):
+    if not isinstance(data_json_string, STR_UNICODE_TUPLE):
         return data_json_string
 
     return HttpResponse(content=data_json_string)

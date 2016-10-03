@@ -16,9 +16,9 @@ from maced.utils.misc import validate_select_options, prettify_string, is_item_n
     get_bad_item_name_characters_in_string
 
 if (sys.version_info > (3, 0)):
-    STR_UNICODE = (str, )
+    STR_UNICODE_TUPLE = (str, )
 else:
-    STR_UNICODE = (str, unicode)
+    STR_UNICODE_TUPLE = (str, unicode)
 
 
 # The main function to craft html code for each item. This is the only function that should be called directly besides
@@ -62,7 +62,7 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     if not isinstance(context, dict):
         raise TypeError("Please provide a valid context")
 
-    if not isinstance(item_name, STR_UNICODE):
+    if not isinstance(item_name, STR_UNICODE_TUPLE):
         raise TypeError("item_name must be a string")
 
     if not is_item_name_valid(item_name):
@@ -74,25 +74,25 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     if not inspect.isclass(item_model):
         raise TypeError("item_model must be a class")
 
-    if not isinstance(item_name_field_name, STR_UNICODE):
+    if not isinstance(item_name_field_name, STR_UNICODE_TUPLE):
         raise TypeError("object_name_field_name must be a string")
 
     if not isinstance(field_list, list):
         raise TypeError("field_list must be a list")
 
-    if not isinstance(name_of_app_with_url, STR_UNICODE):
+    if not isinstance(name_of_app_with_url, STR_UNICODE_TUPLE):
         raise TypeError("name_of_app_with_url must be a string")
 
     if not isinstance(current_item_id, int):
         raise TypeError("current_item_id must be a integer")
 
-    if not isinstance(item_html_name, STR_UNICODE) and item_html_name is not None:
+    if not isinstance(item_html_name, STR_UNICODE_TUPLE) and item_html_name is not None:
         raise TypeError("item_html_name must be a string or None")
 
     if not isinstance(allow_empty, bool):
         raise TypeError("allow_empty must be a bool")
 
-    if not isinstance(field_to_order_by, STR_UNICODE) and field_to_order_by is not None:
+    if not isinstance(field_to_order_by, STR_UNICODE_TUPLE) and field_to_order_by is not None:
         raise TypeError(
             "field_to_order_by must be a string that is the name of the field you want to order your objects by or None"
         )
@@ -199,7 +199,7 @@ def get_current_item_id(model_instance, field_name):
     if model_instance is None:
         return 0
 
-    if not isinstance(field_name, STR_UNICODE):
+    if not isinstance(field_name, STR_UNICODE_TUPLE):
         raise TypeError("field_name must be a string")
 
     if field_name == "":
@@ -249,7 +249,7 @@ def finalize_context_for_items(context, login_url=None):
 
     delete_list = ("_builder", "_options_html_code", "_dependencies")
 
-    temp_context = dict(context)
+    temp_context = context.copy()
 
     for key in context.keys():
         if any(delete_item in key for delete_item in delete_list):
