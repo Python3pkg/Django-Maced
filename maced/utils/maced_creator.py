@@ -249,17 +249,25 @@ def finalize_context_for_items(context, login_url=None):
 
     delete_list = ("_builder", "_options_html_code", "_dependencies")
 
-    temp_context = context.copy()
+    # These lists are needed as a workaround to deleting keys in a dictionary while looping over the dictionary.
+    # Can't use context.copy() nor copy.deepcopy(context). There are StringIO objects in the dictionary and they don't
+    # "pickle" so we instead mark keys for deletion and then delete them afterwards.
+    keys_to_be_deleted = []
+    individual_maced_modals_keys_to_be_deleted = []
 
     for key in context.keys():
         if any(delete_item in key for delete_item in delete_list):
-            del temp_context[key]
+            keys_to_be_deleted.append(key)
 
     for item_name in maced_data["items_to_remove"]:
-        del temp_context[item_name + "_item"]
-        del temp_context["individual_maced_modals"][item_name]
+        keys_to_be_deleted.append(item_name + "_item")
+        individual_maced_modals_keys_to_be_deleted.append(item_name)
 
-    context = temp_context
+    for key in keys_to_be_deleted:
+        del context[key]
+
+    for key in individual_maced_modals_keys_to_be_deleted:
+        del context["individual_maced_modals"][key]
 
     for item_name in context["individual_maced_modals"]:
         context["maced_modals"] += context["individual_maced_modals"][item_name]
