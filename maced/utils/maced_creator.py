@@ -564,9 +564,13 @@ def get_items_html_code_for_text(maced_name, item_name, action_type, field_html_
         subcontext["field_html_class_name"] = get_field_html_class_name(maced_name, field_name)
 
     if action_type == MERGE:
-        return render(request=None, template_name="maced/inputs/merge_input.html", context=subcontext).content
+        return render(
+            request=None, template_name="maced/inputs/merge_input.html", context=subcontext
+        ).content.strip().decode('utf-8')
 
-    return render(request=None, template_name="maced/inputs/regular_input.html", context=subcontext).content
+    return render(
+        request=None, template_name="maced/inputs/regular_input.html", context=subcontext
+    ).content.strip().decode('utf-8')
 
 
 # COLOR
@@ -587,9 +591,13 @@ def get_items_html_code_for_color(maced_name, item_name, action_type, field_html
         subcontext["field_html_class_name"] = get_field_html_class_name(maced_name, field_name)
 
     if action_type == MERGE:
-        return render(request=None, template_name="maced/inputs/merge_input.html", context=subcontext).content
+        return render(
+            request=None, template_name="maced/inputs/merge_input.html", context=subcontext
+        ).content.strip().decode('utf-8')
 
-    return render(request=None, template_name="maced/inputs/regular_input.html", context=subcontext).content
+    return render(
+        request=None, template_name="maced/inputs/regular_input.html", context=subcontext
+    ).content.strip().decode('utf-8')
 
 
 # SELECT
@@ -612,9 +620,13 @@ def get_items_html_code_for_select(maced_name, item_name, action_type, field_htm
         subcontext["field_html_class_name"] = get_field_html_class_name(maced_name, field_name)
 
     if action_type == MERGE:
-        return render(request=None, template_name="maced/inputs/merge_input.html", context=subcontext).content
+        return render(
+            request=None, template_name="maced/inputs/merge_input.html", context=subcontext
+        ).content.strip().decode('utf-8')
 
-    return render(request=None, template_name="maced/inputs/regular_input.html", context=subcontext).content
+    return render(
+        request=None, template_name="maced/inputs/regular_input.html", context=subcontext
+    ).content.strip().decode('utf-8')
 
 
 # OPTIONS FOR SELECT
@@ -622,7 +634,9 @@ def get_html_code_for_options(option_tuple_list):
     subcontext = {}
     subcontext["option_tuple_list"] = option_tuple_list
 
-    return render(request=None, template_name="maced/inputs/options.html", context=subcontext).content
+    return render(
+        request=None, template_name="maced/inputs/options.html", context=subcontext
+    ).content.strip().decode('utf-8')
 
 
 # OTHER
