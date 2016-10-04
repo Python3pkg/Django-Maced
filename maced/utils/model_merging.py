@@ -2,13 +2,27 @@
 # Some modifications were made by Keith Hostetler to reflect django changes since the original version was written
 # and a few minor bug fixes and edge cases.
 
-# Notes:  Django 1.10 is going to deprecate get_all_related_objects() so it will have to be changed for that.
-#       This goes into more detail https://github.com/tomchristie/django-rest-framework/pull/3511
-
 from django.db import transaction
 from django.apps import apps
 from django.db.models import Model
 from django.contrib.contenttypes.fields import GenericForeignKey
+
+
+def get_all_related_objects(MyModel):
+    # Taken from https://docs.djangoproject.com/en/1.9/ref/models/meta/#migrating-from-the-old-api
+    return [
+        f for f in MyModel._meta.get_fields()
+        if (f.one_to_many or f.one_to_one)
+        and f.auto_created and not f.concrete
+    ]
+
+
+def get_all_related_many_to_many_objects(MyModel):
+    # Taken from https://docs.djangoproject.com/en/1.9/ref/models/meta/#migrating-from-the-old-api
+    return [
+        f for f in MyModel._meta.get_fields(include_hidden=True)
+        if f.many_to_many and f.auto_created
+    ]
 
 
 @transaction.atomic
@@ -62,7 +76,7 @@ def merge_model_objects(primary_object, original_alias_objects=None, keep_old=Fa
     # Loop through all alias objects and migrate their data to the primary object.
     for alias_object in alias_objects:
         # Migrate all foreign key references from alias object to primary object.
-        for related_object in alias_object._meta.get_all_related_objects():
+        for related_object in get_all_related_objects(alias_object):
             # The variable name on the alias_object model.
             alias_varname = related_object.get_accessor_name()
             # The variable name on the related model.
@@ -80,7 +94,7 @@ def merge_model_objects(primary_object, original_alias_objects=None, keep_old=Fa
                 obj.save()
 
         # Migrate all many to many references from alias object to primary object.
-        for related_many_object in alias_object._meta.get_all_related_many_to_many_objects():
+        for related_many_object in get_all_related_many_to_many_objects(alias_object):
             alias_varname = related_many_object.get_accessor_name()
             obj_varname = related_many_object.field.name
 
