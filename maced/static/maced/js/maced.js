@@ -446,7 +446,6 @@ function clone_item(item_name)
     //    }
     //});
 
-    // alert("Clone is not implemented yet.");
     console.log("Clone is not implemented yet.");
 }
 
@@ -637,13 +636,9 @@ function get_item(item_name, merge_select_number)
             item_select = merge_select1;
             break;
         case 2:  // Right merge select get
-            item_select = $("#" + maced_MERGE + "-" + item_name + "2-input");  // 2 is for the left select
+            item_select = $("#" + maced_MERGE + "-" + item_name + "2-input");  // 2 is for the right select
             break;
         default:
-            // alert(
-            //     "Invalid merge_select_number of \"" + merge_select_number + "\". This is probably a problem with " +
-            //     "django-maced."
-            // );
             console.log(
                 "Invalid merge_select_number of \"" + merge_select_number + "\". This is probably a problem with " +
                 "django-maced."
@@ -654,12 +649,6 @@ function get_item(item_name, merge_select_number)
     // This suggests we have the wrong name for the select. Alternatively it was removed some how.
     if (item_select.length == 0)
     {
-        // alert(
-        //     "The select with id \"" + item_name + "-select\" is not on the page. Perhaps the id is wrong or it " +
-        //     "was removed from the page dynamically or you didn't set is_used_only_for_maced_fields to True or it " +
-        //     "was just simply forgotten."
-        // );
-
         console.log(
             "The select with id \"" + item_name + "-select\" is not on the page. Perhaps the id is wrong or it " +
             "was removed from the page dynamically or you didn't set is_used_only_for_maced_fields to True or it " +
@@ -786,7 +775,6 @@ function get_item(item_name, merge_select_number)
             }
             else
             {
-                // alert(XMLHttpRequest.responseText);
                 console.log(XMLHttpRequest.responseText);
             }
         }
@@ -795,7 +783,6 @@ function get_item(item_name, merge_select_number)
 
 function info_item(item_name)
 {
-    // alert("Info is not implemented yet.");
     console.log("Info is not implemented yet.");
 }
 
@@ -809,12 +796,6 @@ function get_authentication(item_name)
     // This suggests we have the wrong name for the select. Alternatively it was removed some how.
     if (item_select.length == 0)
     {
-        // alert(
-        //     "The select with id \"" + item_name + "-select\" is not on the page. Perhaps the id is wrong or it was " +
-        //     "removed from the page dynamically or you didn't set is_used_only_for_maced_fields to True or it was " +
-        //     "just simply forgotten."
-        // );
-
         console.log(
             "The select with id \"" + item_name + "-select\" is not on the page. Perhaps the id is wrong or it was " +
             "removed from the page dynamically or you didn't set is_used_only_for_maced_fields to True or it was " +
@@ -854,7 +835,6 @@ function get_authentication(item_name)
 
         error: function(XMLHttpRequest, textStatus, errorThrown)
         {
-            // alert(XMLHttpRequest.responseText);
             console.log(XMLHttpRequest.responseText);
 
             reenable_buttons(item_name);
@@ -897,7 +877,6 @@ function get_input_item(action_type, item_name, field_identifier)
     }
     else
     {
-        // alert("Input type not implemented for get_input_item()");
         console.log("Input type not implemented for get_input_item()");
     }
 }
@@ -947,14 +926,6 @@ function set_input_item(action_type, item_name, field_identifier, value, merge_p
     }
     else
     {
-        //alert(
-        //    "action_type = " + action_type + "\nitem_name = " + item_name + "\nfield_identifier = " + field_identifier +
-        //    "\nmerge_panel_number = " + merge_panel_number + "\nvalue = " + value + "\ninput.length = " +
-        //    input.length
-        //);
-        // alert("Ensure that you have added \"" + item_name + "\" to the page");
-        // alert("Input type not implemented for set_input_item()");
-
         console.log("Ensure that you have added \"" + item_name + "\" to the page");
         console.log("Input type not implemented for set_input_item()");
     }
