@@ -11,7 +11,7 @@ from maced.utils.misc import prettify_string
 
 logger = logging.getLogger("maced")
 
-if (sys.version_info > (3, 0)):
+if sys.version_info > (3, 0):
     STR_UNICODE_TUPLE = (str, )
 else:
     STR_UNICODE_TUPLE = (str, unicode)
@@ -196,7 +196,7 @@ def convert_foreign_keys_to_objects(fields_to_save, select_object_models_info, a
         if (len(select_object_model_info) == 3 and action_type != GET):
             continue
 
-        for field_name2, field_value in fields_to_save.iteritems():
+        for field_name2, field_value in fields_to_save.items():
             if field_name2 == field_name1:
                 if field_value == "":
                     break
@@ -231,7 +231,7 @@ def convert_objects_to_foreign_keys(fields_to_load, select_object_models_info):
     for select_object_model_info in select_object_models_info:
         field_name1 = select_object_model_info[0]
 
-        for field_name2, field_value in fields_to_load.iteritems():
+        for field_name2, field_value in fields_to_load.items():
             if field_name2 == field_name1:
                 try:
                     fields_to_load[field_name2] = field_value.id

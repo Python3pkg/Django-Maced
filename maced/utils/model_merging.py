@@ -1,7 +1,7 @@
 # The original version of this code was written by xaralis and posted here: https://djangosnippets.org/snippets/2283/
 # Some modifications were made by Keith Hostetler to reflect django changes since the original version was written
 # and a few minor bug fixes and edge cases.
-
+import sys
 from django.db import transaction
 from django.apps import apps
 from django.db.models import Model
@@ -68,8 +68,14 @@ def merge_model_objects(primary_object, original_alias_objects=None, keep_old=Fa
     models = apps.get_models()
 
     for model in models:
-        for field_name, field in filter(lambda x: isinstance(x[1], GenericForeignKey), model.__dict__.iteritems()):
-            generic_fields.append(field)
+        # I don't know if this is necessary, but the 2.7 version used iteritems for the filter and so I am preserving
+        # it just in case. Some day I'll test it and see if it is necessary.
+        if sys.version_info > (3, 0):
+            for field_name, field in filter(lambda x: isinstance(x[1], GenericForeignKey), model.__dict__.items()):
+                generic_fields.append(field)
+        else:
+            for field_name, field in filter(lambda x: isinstance(x[1], GenericForeignKey), model.__dict__.iteritems()):
+                generic_fields.append(field)
 
     blank_local_fields = set([field.attname for field in primary_object._meta.local_fields if getattr(primary_object, field.attname) in [None, '']])
 

@@ -15,7 +15,7 @@ from maced.utils.errors import MacedProgrammingError
 from maced.utils.misc import validate_select_options, prettify_string, is_item_name_valid, \
     get_bad_item_name_characters_in_string
 
-if (sys.version_info > (3, 0)):
+if sys.version_info > (3, 0):
     STR_UNICODE_TUPLE = (str, )
 else:
     STR_UNICODE_TUPLE = (str, unicode)

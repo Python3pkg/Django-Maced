@@ -11,7 +11,7 @@ BAD_ITEM_NAME_CHARACTERS = (
     "]", "^", "`", "{", "|", "}", "~", " "
 )
 
-if (sys.version_info > (3, 0)):
+if sys.version_info > (3, 0):
     STR_UNICODE_TUPLE = (str, )
 else:
     STR_UNICODE_TUPLE = (str, unicode)
@@ -32,7 +32,7 @@ class MissingFromPost:
 
 # Something I found here: http://stackoverflow.com/questions/3232943/update-value-of-a-nested-dictionary-of-varying-depth
 def update_dictionary(dictionary_to_update, dictionary_to_update_with):
-    for key, value in dictionary_to_update_with.iteritems():
+    for key, value in dictionary_to_update_with.items():
         if isinstance(value, collections.Mapping):
             recursion = update_dictionary(dictionary_to_update.get(key, {}), value)
             dictionary_to_update[key] = recursion
