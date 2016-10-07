@@ -434,7 +434,7 @@ def build_html_code(context, options_html_code, item_name, item_html_name, field
                     "By default, \"name\" is used."
                 )
 
-            if item_name + "_dependencies" not in context:
+            if maced_name + "_dependencies" not in context:
                 raise RuntimeError("\"" + item_name + "_dependencies\" was not in the context. Did you overwrite it?")
 
             if field["maced_name"] + "_builder" not in context:
@@ -443,9 +443,10 @@ def build_html_code(context, options_html_code, item_name, item_html_name, field
             # Add this maced item as a dependency of the main item
             dependency = {}
             dependency["maced_name"] = field["maced_name"]
+            dependency["parents_name_for_child"] = field["name"]
             dependency["builder"] = context[field["maced_name"] + "_builder"]
 
-            context[item_name + "_dependencies"].append(dependency)
+            context[maced_name + "_dependencies"].append(dependency)
 
             extra_info = {}
             extra_info["context"] = context
