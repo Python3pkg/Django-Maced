@@ -205,7 +205,7 @@ def convert_foreign_keys_to_objects(fields_to_save, select_object_models_info, a
                     fields_to_save[field_name2] = select_object_model_info[1].objects.get(id=field_value)
                 except ObjectDoesNotExist:
                     message = "Tried to load id " + field_value + " on model named \"" + \
-                              select_object_model_info[1].__class__.__name__ + "\" to be used with field named \"" + \
+                              select_object_model_info[1].__name__ + "\" to be used with field named \"" + \
                               field_name2 + "\". (item_action_helpers:convert_foreign_keys_to_objects)"
                     logger.error(message)
 
@@ -213,7 +213,7 @@ def convert_foreign_keys_to_objects(fields_to_save, select_object_models_info, a
                 break
         else:
             message = "Could not find field name of \"" + field_name1 + "\" associated with the model named \"" + \
-                      select_object_model_info.__class__.__name__ + "\" in fields_to_save. Check for typos in " + \
+                      select_object_model_info[1].__name__ + "\" in fields_to_save. Check for typos in " + \
                       "kwargs and item_names. (item_action_helpers:convert_foreign_keys_to_objects)"
             logger.error(message)
 
@@ -246,7 +246,7 @@ def convert_objects_to_foreign_keys(fields_to_load, select_object_models_info):
                 break
         else:
             message = "Could not find field name of \"" + field_name1 + "\" associated with the model named \"" + \
-                      select_object_model_info.__class__.__name__ + "\" in fields_to_load. Check for typos in " + \
+                      select_object_model_info[1].__name__ + "\" in fields_to_load. Check for typos in " + \
                       "kwargs and item_names. (item_action_helpers:convert_objects_to_foreign_keys)"
             logger.error(message)
 
