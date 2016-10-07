@@ -206,7 +206,7 @@ def convert_foreign_keys_to_objects(fields_to_save, select_object_models_info, a
                 except ObjectDoesNotExist:
                     message = "Tried to load id " + field_value + " on model named \"" + \
                               select_object_model_info[1].__class__.__name__ + "\" to be used with field named \"" + \
-                              field_name2 + "\"."
+                              field_name2 + "\". (item_action_helpers:convert_foreign_keys_to_objects)"
                     logger.error(message)
 
                     return HttpResponse(content=message, status=500)
@@ -214,7 +214,7 @@ def convert_foreign_keys_to_objects(fields_to_save, select_object_models_info, a
         else:
             message = "Could not find field name of \"" + field_name1 + "\" associated with the model named \"" + \
                       select_object_model_info.__class__.__name__ + "\" in fields_to_save. Check for typos in " + \
-                      "kwargs and item_names. "
+                      "kwargs and item_names. (item_action_helpers:convert_foreign_keys_to_objects)"
             logger.error(message)
 
             return HttpResponse(content=message, status=500)
@@ -238,7 +238,8 @@ def convert_objects_to_foreign_keys(fields_to_load, select_object_models_info):
                 except AttributeError:
                     message = "Tried to get id from model but \"" + field_value.__class__.__name__ + \
                               "\" is not a model. Please check kwargs and item_names for a field named \"" + \
-                              field_name2 + "\" and check for typos."
+                              field_name2 + "\" and check for typos. " + \
+                              "(item_action_helpers:convert_objects_to_foreign_keys)"
                     logger.error(message)
 
                     return HttpResponse(content=message, status=500)
@@ -246,7 +247,7 @@ def convert_objects_to_foreign_keys(fields_to_load, select_object_models_info):
         else:
             message = "Could not find field name of \"" + field_name1 + "\" associated with the model named \"" + \
                       select_object_model_info.__class__.__name__ + "\" in fields_to_load. Check for typos in " + \
-                      "kwargs and item_names. "
+                      "kwargs and item_names. (item_action_helpers:convert_objects_to_foreign_keys)"
             logger.error(message)
 
             return HttpResponse(content=message, status=500)
