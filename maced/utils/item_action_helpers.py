@@ -196,18 +196,25 @@ def get_post_data(request, item_model, item_name_field_name, action_type, requir
     # Build a list of potential fields to fill in
     for field in fields:
         fields_to_save[field.name] = request.POST.get(field.name, "")
+        field_is_missing = False
 
         if fields_to_save[field.name] == "":
-            for hidden_field_tuple in hidden_field_tuples:
-                if field.name == hidden_field_tuple[0]:
-                    if hidden_field_tuple[1] is None:
-                        fields_to_save[field.name] = request.user
-                    else:
-                        fields_to_save[field.name] = getattr(request.user, hidden_field_tuple[1])
+            if hidden_field_tuples:
+                for hidden_field_tuple in hidden_field_tuples:
+                    if field.name == hidden_field_tuple[0]:
+                        if hidden_field_tuple[1] is None:
+                            fields_to_save[field.name] = request.user
+                        else:
+                            fields_to_save[field.name] = getattr(request.user, hidden_field_tuple[1])
 
-                    break
+                        break
+                else:
+                    # For-else means if it wasn't found
+                    field_is_missing = True
             else:
-                # For-else means if it wasn't found
+                field_is_missing = True
+
+            if field_is_missing:
                 missing_field_names.append(field.name)
                 fields_to_save.pop(field.name, None)
 
