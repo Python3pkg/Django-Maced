@@ -143,7 +143,7 @@ def get_and_validate_kwargs(**kwargs):
                 if isinstance(hidden_field_tuple, tuple):
                     if len(hidden_field_tuple) == 2:
                         if isinstance(hidden_field_tuple[0], STR_UNICODE_TUPLE):
-                            if not isinstance(hidden_field_tuple[1], STR_UNICODE_TUPLE + tuple(None)):
+                            if not isinstance(hidden_field_tuple[1], STR_UNICODE_TUPLE) and hidden_field_tuple[1] is not None:
                                 message = "Hidden field tuple number " + str(count) + \
                                           "'s model is not a string nor None."
                                 logger.error(message)
