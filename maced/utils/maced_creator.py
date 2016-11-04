@@ -153,14 +153,14 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     maced_data["item_html_names"][item_name] = item_html_name
 
     initialize_fields_for_item_in_maced_data(maced_data=maced_data, item_name=item_name)
-    context[item_name + "_dependencies"] = []
+    context[str(item_name) + "_dependencies"] = []
 
     # Get all items of this type
     items = get_items(item_model=item_model, field_to_order_by=field_to_order_by, filters=filters)
 
     # Create an option_tuple_list which is a list of tuples defined as (id_of_the_item, name_of_the_item). This will
     # be used in the merge function.
-    option_tuple_list = [(item.id, getattr(item, item_name_field_name)) for item in items]
+    option_tuple_list = [(item.id, getattr(item, str(item_name_field_name))) for item in items]
     options_html_code = get_html_code_for_options(option_tuple_list=option_tuple_list)
 
     # Constructs url
@@ -170,7 +170,7 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     maced_data["urls"][item_name] = url
 
     # Make a builder so we can reuse it later for maced fields
-    context[item_name + "_builder"] = build_builder(
+    context[str(item_name) + "_builder"] = build_builder(
         item_name=item_name, item_html_name=item_html_name, item_model=item_model, field_to_order_by=field_to_order_by,
         url=url, options_html_code=options_html_code, field_list=field_list, allow_empty=allow_empty, filters=filters
     )
@@ -184,13 +184,13 @@ def add_item_to_context(context, item_name, item_model, item_name_field_name, fi
     # The final step of putting it all together to make 2 sets of html;
     # one for the item on the page and one for the modal that pops up.
     maced_html_code, maced_modal_html_code = build_templates(
-        builder=context[item_name + "_builder"], html_code_dictionary=html_code_dictionary, item_id=current_item_id,
-        maced_name=item_name
+        builder=context[str(item_name) + "_builder"], html_code_dictionary=html_code_dictionary,
+        item_id=current_item_id, maced_name=item_name
     )
 
-    context[item_name + "_item"] = maced_html_code
+    context[str(item_name) + "_item"] = maced_html_code
     context["individual_maced_modals"][item_name] = maced_modal_html_code  # This will be added to "maced_modals" later
-    context[item_name + "_options_html_code"] = options_html_code
+    context[str(item_name) + "_options_html_code"] = options_html_code
 
 
 # A nice helper function to simplify code for whoever is using this app. Since current_item_id is required, this makes
@@ -202,12 +202,15 @@ def get_current_item_id(model_instance, field_name):
     if not isinstance(field_name, STR_UNICODE_TUPLE):
         raise TypeError("field_name must be a string")
 
+    field_name = str(field_name)
+
     if field_name == "":
         raise ValueError("field_name must not be an empty string")
 
     split_field_names = field_name.split(".")
     parent = model_instance
     path = model_instance.__class__.__name__
+    field = None
 
     for split_field_name in split_field_names:
         if not hasattr(parent, split_field_name):
@@ -221,8 +224,6 @@ def get_current_item_id(model_instance, field_name):
         parent = field
         path += "." + split_field_name
 
-    # Ignore this warning. It is not possible to have a split_field_names length of 0, and even if it were possible,
-    # catching that situation doesn't stop compilers from complaining about this anyway.
     return field.id
 
 
