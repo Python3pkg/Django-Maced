@@ -4,8 +4,8 @@
 import inspect
 import json
 from copy import deepcopy
-
 import sys
+
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
@@ -27,9 +27,6 @@ else:
 #       this will currently requires you to have 2 sets of urls which is kind of dumb, but still possible.
 # item_html_name is the name that will show up on the frontend to the users. This is also the name used on the modals.
 # item_model is the class of the model. Be sure to send in the class, not the instance of the class.
-# item_name_field_name is the name of the field that stores the name for this model. Example: You have a model called
-#       Gender. It will have some kind of field to identify the gender by. This will likely be called "name", but
-#       could be called anything so it is required to be able to identify the object on the frontend.
 # field_list is the specially formatted list of fields and their info. For more information please refer to the
 #       README.md file.
 # name_of_app_with_url is the name of the app that has the urls that will be used for performing all of the actions
@@ -47,6 +44,9 @@ else:
 #       Instead use get_current_item_id(person, "city") and it will do the work for you and raise errors appropriately.
 #       If city isn't set for this person, it will return 0, which will result in the first select item to be
 #       preselected (should be a blank entry in the select in this case since city isn't required).
+# item_name_field_name is the name of the field that stores the name for this model. Example: You have a model called
+#       Gender. It will have some kind of field to identify the gender by. This will likely be called "name", but
+#       could be called anything so it is required to be able to identify the object on the frontend.
 # allow_empty simply sets whether or not a blank will be inserted into the select. This defaults to True. Set this to
 #       False if you want this field to be required. One caveat is that if you don't have any instances of this model
 #       in the system yet and you make it required, nothing will prevent it from allowing you to submit the form and
@@ -56,9 +56,9 @@ else:
 # is_used_only_for_maced_fields is used to signal that this will not be used on the page directly, but as a part of
 #       another maced item as a maced field. Defaults to False since this is less common. If you need to use it as both
 #       a maced item and a maced field for another maced item, then keep this as False and all will be fine.
-def add_item_to_context(context, item_name, item_model, item_name_field_name, field_list,
-                        name_of_app_with_url, current_item_id, item_html_name=None, allow_empty=True,
-                        field_to_order_by=None, is_used_only_for_maced_fields=False, filters=None):
+def add_item_to_context(context, item_name, item_model, field_list, name_of_app_with_url, current_item_id,
+                        item_name_field_name="name", item_html_name=None, allow_empty=True, field_to_order_by=None,
+                        is_used_only_for_maced_fields=False, filters=None):
     if not isinstance(context, dict):
         raise TypeError("Please provide a valid context")
 
