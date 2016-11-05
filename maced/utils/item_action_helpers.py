@@ -205,7 +205,7 @@ def get_post_data(request, item_model, item_name_field_name, action_type, requir
                         if hidden_field_tuple[1] is None:
                             fields_to_save[field.name] = request.user
                         else:
-                            fields_to_save[field.name] = getattr(request.user, hidden_field_tuple[1])
+                            fields_to_save[field.name] = getattr(request.user, hidden_field_tuple[1]).id
 
                         break
                 else:
