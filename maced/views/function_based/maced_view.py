@@ -30,7 +30,7 @@ def maced_view(request, **kwargs):
     #       It will be used like ObjectToCreate(name=some_name), where name is the default value but it could be
     #       something else.
     # item_model is the model that the item is referring to. This is the class, not an instance.
-    # select_object_model_tuples is the info supplied by the kwargs that is related to selects using objects for their
+    # model_dependency_tuples is the info supplied by the kwargs that is related to selects using objects for their
     #       options.
     # data is the necessary info to send back through the ajax call in order to handle the frontend properly.
     # fields_to_save are the fields found in the post
@@ -48,7 +48,7 @@ def maced_view(request, **kwargs):
     need_authentication = kwargs_result[0]
     item_name_field_name = kwargs_result[1]
     item_model = kwargs_result[2]
-    select_object_model_tuples = kwargs_result[3]
+    model_dependency_tuples = kwargs_result[3]
     required_fields = kwargs_result[4]
     hidden_field_tuples = kwargs_result[5]
 
@@ -98,7 +98,7 @@ def maced_view(request, **kwargs):
 
         # If merging, adding, or editing, we ned to convert the number values for foreign keys into their actual objects
         if action_type == MERGE or action_type == ADD or action_type == EDIT:
-            conversion_result = convert_foreign_keys_to_objects(fields_to_save, select_object_model_tuples, action_type)
+            conversion_result = convert_foreign_keys_to_objects(fields_to_save, model_dependency_tuples, action_type)
 
             # This will be a bool as long as it succeeded, otherwise it will be an HttpResponse. Since there are no safe
             # failures for this, there will never need to be a False returned.
@@ -122,7 +122,7 @@ def maced_view(request, **kwargs):
         elif action_type == DELETE:
             action_result = delete_item(item_model=item_model, item_id=item_id)
         elif action_type == GET:
-            action_result = get_item(item_model, select_object_model_tuples=select_object_model_tuples, item_id=item_id)
+            action_result = get_item(item_model, model_dependency_tuples=model_dependency_tuples, item_id=item_id)
         elif action_type == INFO:
             action_result = info_item()
         else:

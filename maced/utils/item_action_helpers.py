@@ -50,22 +50,22 @@ def get_and_validate_kwargs(**kwargs):
 
         return HttpResponse(content=message, status=500)
 
-    # Get any select_object_model_tuples
-    if "select_object_model_tuples" in kwargs:
-        select_object_model_tuples = kwargs["select_object_model_tuples"]
+    # Get any model_dependency_tuples
+    if "model_dependency_tuples" in kwargs:
+        model_dependency_tuples = kwargs["model_dependency_tuples"]
 
-        if isinstance(select_object_model_tuples, list):
+        if isinstance(model_dependency_tuples, list):
             count = 0
 
-            for select_object_model_info in select_object_model_tuples:
-                if isinstance(select_object_model_info, tuple):
-                    if len(select_object_model_info) == 2 or len(select_object_model_info) == 3:
-                        if isinstance(select_object_model_info[0], STR_UNICODE_TUPLE):
+            for model_dependency_tuple in model_dependency_tuples:
+                if isinstance(model_dependency_tuple, tuple):
+                    if len(model_dependency_tuple) == 2 or len(model_dependency_tuple) == 3:
+                        if isinstance(model_dependency_tuple[0], STR_UNICODE_TUPLE):
                             # This should really be checking if it is a model, not a class.
-                            if inspect.isclass(select_object_model_info[1]):
-                                if len(select_object_model_info) == 3:
-                                    if isinstance(select_object_model_info[2], bool):
-                                        if not select_object_model_info[2]:
+                            if inspect.isclass(model_dependency_tuple[1]):
+                                if len(model_dependency_tuple) == 3:
+                                    if isinstance(model_dependency_tuple[2], bool):
+                                        if not model_dependency_tuple[2]:
                                             message = "Select object model number " + str(count) + \
                                                       "'s tuple's inheritance bool must not be False."
                                             logger.error(message)
@@ -91,7 +91,7 @@ def get_and_validate_kwargs(**kwargs):
                             return HttpResponse(content=message, status=500)
                     else:
                         message = "Select object model number " + str(count) + " is a tuple of size " + \
-                                  str(len(select_object_model_info)) + " but should be size of 2 like this " + \
+                                  str(len(model_dependency_tuple)) + " but should be size of 2 like this " + \
                                   "(field_name, class), or a size of 3 like this " + \
                                   "(pointer_field_name, parent_class, True)"
                         logger.error(message)
@@ -110,7 +110,7 @@ def get_and_validate_kwargs(**kwargs):
 
             return HttpResponse(content=message, status=500)
     else:
-        select_object_model_tuples = None
+        model_dependency_tuples = None
 
     if "required_fields" in kwargs:
         required_fields = kwargs["required_fields"]
@@ -180,7 +180,7 @@ def get_and_validate_kwargs(**kwargs):
         hidden_field_tuples = None
 
     return \
-        need_authentication, item_name_field_name, item_model, select_object_model_tuples, required_fields, \
+        need_authentication, item_name_field_name, item_model, model_dependency_tuples, required_fields, \
         hidden_field_tuples
 
 
@@ -251,17 +251,17 @@ def get_post_data(request, item_model, item_name_field_name, action_type, requir
     return fields_to_save, item_name, item_id, item2_id
 
 
-# It is assumed that select_object_model_tuples has been validated by this point.
+# It is assumed that model_dependency_tuples has been validated by this point.
 # It should have been checked in get_and_validate_kwargs_view().
-def convert_foreign_keys_to_objects(fields_to_save, select_object_model_tuples, action_type):
-    if select_object_model_tuples is None:
+def convert_foreign_keys_to_objects(fields_to_save, model_dependency_tuples, action_type):
+    if model_dependency_tuples is None:
         return True  # True just means it succeeded (there was nothing to do).
 
-    for select_object_model_info in select_object_model_tuples:
-        field_name1 = select_object_model_info[0]
+    for model_dependency_tuple in model_dependency_tuples:
+        field_name1 = model_dependency_tuple[0]
 
         # If this entry is for inheritance and we are not doing a get_item call
-        if len(select_object_model_info) == 3 and action_type != GET:
+        if len(model_dependency_tuple) == 3 and action_type != GET:
             continue
 
         for field_name2, field_value in fields_to_save.items():
@@ -270,10 +270,10 @@ def convert_foreign_keys_to_objects(fields_to_save, select_object_model_tuples, 
                     break
 
                 try:
-                    fields_to_save[field_name2] = select_object_model_info[1].objects.get(id=field_value)
+                    fields_to_save[field_name2] = model_dependency_tuple[1].objects.get(id=field_value)
                 except ObjectDoesNotExist:
                     message = "Tried to load id " + field_value + " on model named \"" + \
-                              select_object_model_info[1].__name__ + "\" to be used with field named \"" + \
+                              model_dependency_tuple[1].__name__ + "\" to be used with field named \"" + \
                               field_name2 + "\". (item_action_helpers:convert_foreign_keys_to_objects)"
                     logger.error(message)
 
@@ -281,7 +281,7 @@ def convert_foreign_keys_to_objects(fields_to_save, select_object_model_tuples, 
                 break
         else:
             message = "Could not find field name of \"" + field_name1 + "\" associated with the model named \"" + \
-                      select_object_model_info[1].__name__ + "\" in fields_to_save. Check for typos in " + \
+                      model_dependency_tuple[1].__name__ + "\" in fields_to_save. Check for typos in " + \
                       "kwargs and item_names. (item_action_helpers:convert_foreign_keys_to_objects)"
             logger.error(message)
 
@@ -290,14 +290,14 @@ def convert_foreign_keys_to_objects(fields_to_save, select_object_model_tuples, 
     return True  # True just means it succeeded.
 
 
-# It is assumed that select_object_model_tuples has been validated by this point.
+# It is assumed that model_dependency_tuples has been validated by this point.
 # It should have been checked in get_and_validate_kwargs_view().
-def convert_objects_to_foreign_keys(fields_to_load, select_object_model_tuples):
-    if select_object_model_tuples is None:
+def convert_objects_to_foreign_keys(fields_to_load, model_dependency_tuples):
+    if model_dependency_tuples is None:
         return True  # True just means it succeeded (there was nothing to do).
 
-    for select_object_model_info in select_object_model_tuples:
-        field_name1 = select_object_model_info[0]
+    for model_dependency_tuple in model_dependency_tuples:
+        field_name1 = model_dependency_tuple[0]
 
         for field_name2, field_value in fields_to_load.items():
             if field_name2 == field_name1:
@@ -314,7 +314,7 @@ def convert_objects_to_foreign_keys(fields_to_load, select_object_model_tuples):
                 break
         else:
             message = "Could not find field name of \"" + field_name1 + "\" associated with the model named \"" + \
-                      select_object_model_info[1].__name__ + "\" in fields_to_load. Check for typos in " + \
+                      model_dependency_tuple[1].__name__ + "\" in fields_to_load. Check for typos in " + \
                       "kwargs and item_names. (item_action_helpers:convert_objects_to_foreign_keys)"
             logger.error(message)
 

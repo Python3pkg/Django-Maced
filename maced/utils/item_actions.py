@@ -51,7 +51,7 @@ def merge_item(item_model, fields_to_save, item_name, item1_id, item2_id, item_n
         return HttpResponse(content=message, status=500)
     except ValueError as error:
         message = "An invalid value was received for a field, if you are using select-object, be sure to supply " + \
-                  "the select_object_model_tuples list in the kwargs. Reported error: " + str(error)
+                  "the model_dependency_tuples list in the kwargs. Reported error: " + str(error)
         logger.error(message)
 
         return HttpResponse(content=message, status=500)
@@ -80,7 +80,7 @@ def add_item(item_model, fields_to_save, item_name):
         return HttpResponse(content=message, status=500)
     except ValueError as error:
         message = "An invalid value was received for a field, if you are using select-object, be sure to supply " + \
-                  "the select_object_model_tuples list in the kwargs. Reported error: " + str(error)
+                  "the model_dependency_tuples list in the kwargs. Reported error: " + str(error)
         logger.error(message)
 
         return HttpResponse(content=message, status=500)
@@ -113,7 +113,7 @@ def edit_item(item_model, fields_to_save, item_name, item_id):
         return HttpResponse(content=message, status=500)
     except ValueError as error:
         message = "An invalid value was received for a field, if you are using select-object, be sure to supply " + \
-                  "the select_object_model_tuples list in the kwargs. Reported error: " + str(error)
+                  "the model_dependency_tuples list in the kwargs. Reported error: " + str(error)
         logger.error(message)
 
         return HttpResponse(content=message, status=500)
@@ -135,7 +135,7 @@ def delete_item(item_model, item_id):
     return data
 
 
-def get_item(item_model, select_object_model_tuples, item_id):
+def get_item(item_model, model_dependency_tuples, item_id):
     data = {}
 
     if not item_model.objects.filter(id=item_id).exists():
@@ -158,7 +158,7 @@ def get_item(item_model, select_object_model_tuples, item_id):
 
         fields_to_load[field_info.name] = getattr(item, field_info.name)
 
-    conversion_result = convert_objects_to_foreign_keys(fields_to_load, select_object_model_tuples)
+    conversion_result = convert_objects_to_foreign_keys(fields_to_load, model_dependency_tuples)
 
     # This will be a bool as long as it succeeded, otherwise it will be an HttpResponse. Since there are no safe
     # failures for this, there will never need to be a False returned.
