@@ -4,7 +4,7 @@ import logging
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import ProtectedError
 from django.http import HttpResponse
-from django.db import IntegrityError
+from django.db import IntegrityError, models
 
 from maced.utils.item_action_helpers import convert_objects_to_foreign_keys
 from maced.utils.misc import make_random_id, is_authenticated
@@ -153,6 +153,9 @@ def get_item(item_model, select_object_model_tuples, item_id):
 
     # Build a list of potential fields to fill in
     for field_info in fields_info:
+        if isinstance(field_info, models.fields.DateTimeField):  # Not supported yet
+            continue
+
         fields_to_load[field_info.name] = getattr(item, field_info.name)
 
     conversion_result = convert_objects_to_foreign_keys(fields_to_load, select_object_model_tuples)

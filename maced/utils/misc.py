@@ -33,7 +33,8 @@ class MissingFromPost:
 #         pass
 
 
-# Something I found here: http://stackoverflow.com/questions/3232943/update-value-of-a-nested-dictionary-of-varying-depth
+# Something I found here:
+# http://stackoverflow.com/questions/3232943/update-value-of-a-nested-dictionary-of-varying-depth
 def update_dictionary(dictionary_to_update, dictionary_to_update_with):
     for key, value in dictionary_to_update_with.items():
         if isinstance(value, collections.Mapping):
