@@ -2,9 +2,12 @@ import collections
 import random
 import string
 import json
-
 import sys
+import logging
+
 from django.http import HttpResponse
+
+logger = logging.getLogger("maced")
 
 BAD_ITEM_NAME_CHARACTERS = (
     "!", '"', "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", ".", "/", ":", ";", "<", "=", ">", "?", "@", "[", "\\",
@@ -129,17 +132,17 @@ def serialize_item_action_data(data):
     try:
         return json.dumps(data)
     except TypeError as error:
-        return HttpResponse(
-            content="There was a problem serializing the item action data. This likely caused by something missing " +
-                    "in select_object_models_info. If this maced item is a child of another model, be sure to " +
-                    "include the _ptr for the parent class. Raised error: " + str(error),
-            status=500
-        )
+        message = "There was a problem serializing the item action data. This likely caused by something missing " + \
+                  "in select_object_models_info. If this maced item is a child of another model, be sure to " + \
+                  "include the _ptr for the parent class. Raised error: " + str(error)
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
     except Exception as error:
-        return HttpResponse(
-            content="There was a problem serializing the item action data. Raised error: " + str(error),
-            status=500
-        )
+        message = "There was a problem serializing the item action data. Raised error: " + str(error)
+        logger.error(message)
+
+        return HttpResponse(content=message, status=500)
 
 
 def prettify_string(ugly_string):
