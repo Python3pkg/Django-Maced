@@ -4,8 +4,10 @@ import string
 import json
 import sys
 import logging
+import uuid
 
 from django.http import HttpResponse
+from django.db.models.fields.files import ImageFieldFile
 
 logger = logging.getLogger("maced")
 
@@ -130,6 +132,8 @@ def make_random_id(size):
 
 
 def serialize_item_action_data(data):
+    clean_data_before_serialization(data)
+
     try:
         return json.dumps(data)
     except TypeError as error:
@@ -144,6 +148,38 @@ def serialize_item_action_data(data):
         logger.error(message)
 
         return HttpResponse(content=message, status=500)
+
+
+def clean_data_before_serialization(data):
+    fields_to_exclude = recursive_data_cleaning_for_serialization(data)
+    recursive_data_pruning_for_tuples_for_serialization(data, fields_to_exclude)
+
+
+def recursive_data_cleaning_for_serialization(data):
+    fields_to_exclude = []
+
+    for field, value in data.items():
+        if value is None:
+            fields_to_exclude.append(field)
+
+        if isinstance(value, uuid.UUID):
+            data[field] = str(value)
+
+        if isinstance(value, ImageFieldFile):
+            fields_to_exclude.append(field)
+
+        if isinstance(value, dict):
+            fields_to_exclude.append((field, recursive_data_cleaning_for_serialization(value)))
+
+    return fields_to_exclude
+
+
+def recursive_data_pruning_for_tuples_for_serialization(data, fields_to_exclude):
+    for field in fields_to_exclude:
+        if isinstance(field, tuple):
+            recursive_data_pruning_for_tuples_for_serialization(data[field[0]], field[1])
+        else:
+            del data[field]
 
 
 def prettify_string(ugly_string):
