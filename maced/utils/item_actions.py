@@ -42,7 +42,12 @@ def merge_item(item_model, fields_to_save, item_name, item1_id, item2_id, item_n
 
     # Fill item1 with whatever came from the frontend. This will be the primary item.
     try:
-        item_model.objects.filter(id=item1_id).update(**fields_to_save)
+        item = item_model.objects.get(id=item1_id)
+
+        for field_name, field_value in fields_to_save.items():
+            setattr(item, field_name, field_value)
+
+        item.save()
     except IntegrityError as error:
         message = "An object related to this already exists or there is a problem with this item. Reported error: " + \
                   str(error)
@@ -104,7 +109,12 @@ def edit_item(item_model, fields_to_save, item_name, item_id):
     data["name"] = item_name
 
     try:
-        item_model.objects.filter(id=item_id).update(**fields_to_save)
+        item = item_model.objects.get(id=item_id)
+
+        for field_name, field_value in fields_to_save.items():
+            setattr(item, field_name, field_value)
+
+        item.save()
     except IntegrityError as error:
         message = "An object related to this already exists or there is a problem with this item. Reported error: " + \
                   str(error)
