@@ -44,7 +44,7 @@ def merge_item(item_model, fields_to_save, item_name, item1_id, item2_id, item_n
     try:
         item = item_model.objects.get(id=item1_id)
 
-        for field_name, field_value in fields_to_save.items():
+        for field_name, field_value in list(fields_to_save.items()):
             setattr(item, field_name, field_value)
 
         item.save()
@@ -111,7 +111,7 @@ def edit_item(item_model, fields_to_save, item_name, item_id):
     try:
         item = item_model.objects.get(id=item_id)
 
-        for field_name, field_value in fields_to_save.items():
+        for field_name, field_value in list(fields_to_save.items()):
             setattr(item, field_name, field_value)
 
         item.save()

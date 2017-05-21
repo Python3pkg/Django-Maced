@@ -18,7 +18,7 @@ from maced.utils.misc import validate_select_options, prettify_string, is_item_n
 if sys.version_info > (3, 0):
     STR_UNICODE_TUPLE = (str, )
 else:
-    STR_UNICODE_TUPLE = (str, unicode)
+    STR_UNICODE_TUPLE = (str, str)
 
 
 # The main function to craft html code for each item. This is the only function that should be called directly besides
@@ -256,7 +256,7 @@ def finalize_context_for_items(context, login_url=None):
     keys_to_be_deleted = []
     individual_maced_modals_keys_to_be_deleted = []
 
-    for key in context.keys():
+    for key in list(context.keys()):
         if any(delete_item in key for delete_item in delete_list):
             keys_to_be_deleted.append(key)
 

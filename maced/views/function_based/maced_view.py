@@ -19,7 +19,7 @@ logger = logging.getLogger("maced")
 if (sys.version_info > (3, 0)):
     STR_UNICODE_TUPLE = (str, )
 else:
-    STR_UNICODE_TUPLE = (str, unicode)
+    STR_UNICODE_TUPLE = (str, str)
 
 
 @transaction.atomic

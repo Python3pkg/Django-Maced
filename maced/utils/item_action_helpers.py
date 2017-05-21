@@ -14,7 +14,7 @@ logger = logging.getLogger("maced")
 if sys.version_info > (3, 0):
     STR_UNICODE_TUPLE = (str, )
 else:
-    STR_UNICODE_TUPLE = (str, unicode)
+    STR_UNICODE_TUPLE = (str, str)
 
 
 def get_and_validate_kwargs(**kwargs):
@@ -264,7 +264,7 @@ def convert_foreign_keys_to_objects(fields_to_save, model_dependency_tuples, act
         if len(model_dependency_tuple) == 3 and action_type != GET:
             continue
 
-        for field_name2, field_value in fields_to_save.items():
+        for field_name2, field_value in list(fields_to_save.items()):
             if field_name2 == field_name1:
                 if field_value == "":
                     break
@@ -299,7 +299,7 @@ def convert_objects_to_foreign_keys(fields_to_load, model_dependency_tuples):
     for model_dependency_tuple in model_dependency_tuples:
         field_name1 = model_dependency_tuple[0]
 
-        for field_name2, field_value in fields_to_load.items():
+        for field_name2, field_value in list(fields_to_load.items()):
             if field_name2 == field_name1:
                 try:
                     fields_to_load[field_name2] = field_value.id

@@ -71,10 +71,10 @@ def merge_model_objects(primary_object, original_alias_objects=None, keep_old=Fa
         # I don't know if this is necessary, but the 2.7 version used iteritems for the filter and so I am preserving
         # it just in case. Some day I'll test it and see if it is necessary.
         if sys.version_info > (3, 0):
-            for field_name, field in filter(lambda x: isinstance(x[1], GenericForeignKey), model.__dict__.items()):
+            for field_name, field in [x for x in list(model.__dict__.items()) if isinstance(x[1], GenericForeignKey)]:
                 generic_fields.append(field)
         else:
-            for field_name, field in filter(lambda x: isinstance(x[1], GenericForeignKey), model.__dict__.iteritems()):
+            for field_name, field in [x for x in iter(model.__dict__.items()) if isinstance(x[1], GenericForeignKey)]:
                 generic_fields.append(field)
 
     blank_local_fields = set([field.attname for field in primary_object._meta.local_fields if getattr(primary_object, field.attname) in [None, '']])

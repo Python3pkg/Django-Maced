@@ -19,7 +19,7 @@ BAD_ITEM_NAME_CHARACTERS = (
 if sys.version_info > (3, 0):
     STR_UNICODE_TUPLE = (str, )
 else:
-    STR_UNICODE_TUPLE = (str, unicode)
+    STR_UNICODE_TUPLE = (str, str)
 
 
 class MissingFromPost:
@@ -38,7 +38,7 @@ class MissingFromPost:
 # Something I found here:
 # http://stackoverflow.com/questions/3232943/update-value-of-a-nested-dictionary-of-varying-depth
 def update_dictionary(dictionary_to_update, dictionary_to_update_with):
-    for key, value in dictionary_to_update_with.items():
+    for key, value in list(dictionary_to_update_with.items()):
         if isinstance(value, collections.Mapping):
             recursion = update_dictionary(dictionary_to_update.get(key, {}), value)
             dictionary_to_update[key] = recursion
@@ -158,7 +158,7 @@ def clean_data_before_serialization(data):
 def recursive_data_cleaning_for_serialization(data):
     fields_to_exclude = []
 
-    for field, value in data.items():
+    for field, value in list(data.items()):
         if value is None:
             fields_to_exclude.append(field)
 
